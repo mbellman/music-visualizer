@@ -1,5 +1,4 @@
 import 'less/style.less';
-import Test from 'ts/Test';
 
 class Visualizer {
   public main (): void {
