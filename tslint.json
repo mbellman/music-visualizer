@@ -1,9 +1,34 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+    "array-type": [ false ],
+    "max-classes-per-file": [ false ],
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "public-static-field",
+          "protected-static-field",
+          "private-static-field",
+          "public-instance-field",
+          "protected-instance-field",
+          "private-instance-field",
+          "public-static-method",
+          "protected-static-method",
+          "private-static-method",
+          "constructor",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
+    ],
     "no-console": [ false ],
+    "ordered-imports": [ false ],
     "quotemark": [ true, "single" ],
     "semicolon": [ true, "always" ],
-    "space-before-function-paren": [ false ]
+    "space-before-function-paren": [ false ],
+    "trailing-comma": [ false ],
+    "variable-name": [ true, "allow-leading-underscore" ]
   }
 }

@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: [
-    path.resolve('./source/ts/index.ts')
+    path.resolve('./source/App.ts')
   ],
   module: {
     loaders: [

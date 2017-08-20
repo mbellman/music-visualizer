@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"baseUrl": "source",
+		"baseUrl": "./source",
 		"downlevelIteration": true,
 		"experimentalDecorators": true,
 		"lib": [
@@ -12,8 +12,8 @@
 		"noImplicitAny": true,
 		"target": "es5"
 	},
-	"files": [
-		"source/ts/index.ts"
+	"include": [
+		"source/**/*.ts"
 	],
 	"exclude": [
 		"node_modules"
