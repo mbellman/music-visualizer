@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"baseUrl": "source",
+		"downlevelIteration": true,
+		"experimentalDecorators": true,
+		"lib": [
+			"dom",
+			"es2015"
+		],
+		"module": "commonjs",
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"target": "es5"
+	},
+	"files": [
+		"source/ts/index.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
