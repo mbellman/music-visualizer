@@ -1,14 +1,12 @@
+import 'GUI/FileSelection/FileSelectionView';
 import 'GUI/App/AppStyles.less';
-import FileSelectionView from 'GUI/FileSelection/FileSelectionView';
-import IAppContext from 'GUI/App/IAppContext';
-import View from 'Base/View';
-import { Store, subscribe } from 'Base/Store';
+import { View } from 'Base/Core';
 
-export default class AppView extends View<IAppContext> {
-  public render (): string {
+export default class AppView extends View {
+  protected render (): string {
     return (`
       <div class="App">
-        ${this.put(FileSelectionView)}
+        <view type="FileSelectionView" />
       </div>
     `);
   }

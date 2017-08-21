@@ -1,17 +1,34 @@
+import 'GUI/FileSelection/FileSelectionStyles.less';
 import IFileSelectionContext from 'GUI/FileSelection/IFileSelectionContext';
-import View from 'Base/View';
+import { View, InjectableView } from 'Base/Core';
 
-export default class FileSelectionView extends View<IFileSelectionContext> {
-  public render (): string {
-    const { fileSelectionContext } = this._store.getState();
-    const { isFileSelected } = fileSelectionContext;
+@InjectableView('FileSelectionView')
+class FileSelectionView extends View<IFileSelectionContext> {
+  protected binding: string = 'fileSelectionContext';
+
+  protected onFirstUpdate (): void {
+    console.log('First update!');
+
+    document.body.onclick = () => {
+      this.updateContext({
+        file: 'Hey!'
+      });
+    };
+  }
+
+  protected render (fileSelectionContext: IFileSelectionContext): string {
+    const { file } = fileSelectionContext;
 
     return (`
       ${
-        isFileSelected ?
-          `Nice job.`
+        file ?
+          `Filename: ${file}`
         :
-          `You still need to pick a file...`
+          (`
+            <button class="FileSelection-upload">
+              Upload a File
+            </button>
+          `)
       }
     `);
   }

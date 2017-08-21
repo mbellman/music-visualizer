@@ -1,6 +1,5 @@
 const commonConfig = require('./common.config.js');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = Object.assign(commonConfig, {
@@ -19,7 +18,6 @@ module.exports = Object.assign(commonConfig, {
         messages: ['Demo: http://localhost:1234']
       }
     }),
-    new UglifyJSPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ]
