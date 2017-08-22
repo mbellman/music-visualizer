@@ -4,25 +4,28 @@ import { View, InjectableView } from 'Base/Core';
 
 @InjectableView('FileSelectionView')
 class FileSelectionView extends View<IFileSelectionContext> {
+  /**
+   * @override
+   */
   protected binding: string = 'fileSelectionContext';
 
-  protected onFirstUpdate (): void {
-    console.log('First update!');
-
-    document.body.onclick = () => {
-      this.updateContext({
-        file: 'Hey!'
-      });
-    };
+  /**
+   * @override
+   */
+  protected onMount (): void {
+    this.bind('click', '.FileSelection-upload', this._pickFile);
   }
 
+  /**
+   * @override
+   */
   protected render (fileSelectionContext: IFileSelectionContext): string {
     const { file } = fileSelectionContext;
 
     return (`
       ${
         file ?
-          `<span>Filename: ${file}</span>`
+          `Filename: ${file}`
         :
           (`
             <button class="FileSelection-upload">
@@ -31,5 +34,9 @@ class FileSelectionView extends View<IFileSelectionContext> {
           `)
       }
     `);
+  }
+
+  private _pickFile (): void {
+
   }
 }
