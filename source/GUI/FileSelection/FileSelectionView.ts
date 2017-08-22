@@ -22,7 +22,7 @@ class FileSelectionView extends View<IFileSelectionContext> {
     return (`
       ${
         file ?
-          `Filename: ${file}`
+          `<span>Filename: ${file}</span>`
         :
           (`
             <button class="FileSelection-upload">

@@ -6,9 +6,8 @@ class App {
   public constructor () {
     const store: Store = new Store(new AppState());
     const appView: AppView = new AppView(store);
-    const body: HTMLBodyElement = document.querySelector('body');
 
-    appView.attach(body).update();
+    appView.mount('body');
   }
 }
 

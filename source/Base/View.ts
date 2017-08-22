@@ -8,11 +8,8 @@ interface IViewConstructor {
 
 const ViewRegistry: IMap<IViewConstructor> = {};
 
-/**
- * @decorator
- */
 export function InjectableView (name: string) {
-  return <T extends IViewConstructor> (constructor: T) => {
+  return <T extends IViewConstructor>(constructor: T) => {
     ViewRegistry[name] = constructor;
   };
 }
@@ -21,19 +18,29 @@ export abstract class View<T = any> implements IDisposable {
   protected binding: string;
   private _childViews: Array<View> = [];
   private _html: string;
-  private _container: Element = document.createElement('div');
+  private _root: Element = document.createElement('div');
   private _store: Store;
-  private _parent: Element;
 
   public constructor (store: Store) {
     this._store = store;
   }
 
+  public mount (target: Element | string): void {
+    this.attach(target).update();
+  }
+
   public update (): this {
     const isFirstUpdate: boolean = !this._html;
+    const newRoot: Element = document.createElement('div');
 
     this._html = this.render(this._getContext());
-    this._container.innerHTML = this._html;
+    newRoot.innerHTML = this._html;
+
+    const child: Element = newRoot.children[0];
+
+    this._root.parentElement.replaceChild(child, this._root);
+
+    this._root = child;
 
     this._updateChildViews();
 
@@ -46,15 +53,19 @@ export abstract class View<T = any> implements IDisposable {
   }
 
   /**
-   * Attaches the View to a new parent element or selector.
+   * Attaches the View to a new target element or selector.
    *
-   * @param {Element | string} parent
+   * @param {Element | string} target
    * @returns {this}
    */
-  public attach (parent: Element | string): this {
+  public attach (target: Element | string): this {
     this.detach();
-    this._setParent(parent);
-    this._parent.appendChild(this._container);
+
+    if (typeof target === 'string') {
+      target = document.querySelector(target);
+    }
+
+    target.appendChild(this._root);
 
     this.onAttach();
 
@@ -63,7 +74,7 @@ export abstract class View<T = any> implements IDisposable {
 
   public detach (): this {
     if (this._isAttached()) {
-      this._parent.removeChild(this._container);
+      this._root.parentElement.removeChild(this._root);
 
       this.onDetach();
     }
@@ -72,6 +83,8 @@ export abstract class View<T = any> implements IDisposable {
   }
 
   public dispose (): void {
+    this.onDispose();
+
     // Detach, unbind events, etc.
   }
 
@@ -82,6 +95,7 @@ export abstract class View<T = any> implements IDisposable {
   protected onRender (): void {}
   protected onAttach (): void {}
   protected onDetach (): void {}
+  protected onDispose (): void {}
 
   protected updateContext (data: any): void {
     if (!this.binding) {
@@ -103,14 +117,8 @@ export abstract class View<T = any> implements IDisposable {
     return this._store.getState()[this.binding];
   }
 
-  private _setParent (parent: Element | string): void {
-    const isSelector: boolean = typeof parent === 'string';
-
-    this._parent = isSelector ? document.querySelector(<string>parent) : <Element>parent;
-  }
-
   private _isAttached (): boolean {
-    return this._parent && this._parent.contains(this._container);
+    return !!this._root.parentElement;
   }
 
   /**
@@ -130,17 +138,19 @@ export abstract class View<T = any> implements IDisposable {
 
     // Re-attach child Views
     const { slice } = Array.prototype;
-    const childViewDirectParents: Array<Element> = slice.call(this._container.querySelectorAll('view'), 0);
+    const childViewTargets: Array<Element> = slice.call(this._root.querySelectorAll('view'), 0);
 
-    for (const parent of childViewDirectParents) {
-      const viewType: string = parent.getAttribute('type');
+    for (const target of childViewTargets) {
+      const viewType: string = target.getAttribute('type');
       const ViewConstructor: IViewConstructor = ViewRegistry[viewType];
 
       if (ViewConstructor) {
-        const view: View = new ViewConstructor(this._store).update();
+        const view: View = new ViewConstructor(this._store);
 
-        parent.parentElement.replaceChild(view._container, parent);
+        target.parentElement.replaceChild(view._root, target);
         this._childViews.push(view);
+
+        view.update();
       }
     }
   }
