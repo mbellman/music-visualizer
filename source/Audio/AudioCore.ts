@@ -1,24 +1,22 @@
-type DecodeAudioDataHandler = (audioBuffer: AudioBuffer) => void;
+import { Callback } from 'Base/Core';
 
 export default class AudioCore {
   private static _context: AudioContext = new AudioContext();
 
-  public static decode (audioData: any, handler: DecodeAudioDataHandler): void {
+  public static decodeAudioData (audioData: ArrayBuffer, handler: Callback<AudioBuffer>): void {
     AudioCore._context.decodeAudioData(audioData, handler);
   }
 
-  public static play (buffer: AudioBuffer): AudioBufferSourceNode {
-    const node: AudioBufferSourceNode = AudioCore._context.createBufferSource();
+  public static createBufferSource (): AudioBufferSourceNode {
+    return AudioCore._context.createBufferSource();
+  }
 
-    node.buffer = buffer;
-
+  public static play (node: AudioBufferSourceNode): void {
     node.connect(AudioCore._context.destination);
     node.start(AudioCore._context.currentTime);
-
-    return node;
   }
 
   public static stop (node: AudioBufferSourceNode): void {
-    node.stop(this._context.currentTime);
+    node.stop();
   }
 }

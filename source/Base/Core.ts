@@ -1,6 +1,7 @@
 import EventManager from 'Base/EventManager';
-import IMap from 'Base/IMap';
 import Store from 'Base/Store';
 
-export { EventManager, IMap, Store };
+export { Utilities as U } from 'Base/Utilities';
+export { Callback, IMap } from 'Base/Types';
+export { EventManager, Store };
 export { InjectableView, View } from 'Base/View';

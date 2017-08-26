@@ -1,4 +1,4 @@
-type Resolver<T> = (value: T) => void;
+import { Callback } from 'Base/Core';
 
 interface IBase64Data {
   header: string;
@@ -6,8 +6,8 @@ interface IBase64Data {
 }
 
 export default class FileLoader {
-  public static blobFromFile (file: File): Promise<Blob> {
-    return new Promise((resolve: Resolver<Blob>) => {
+  public static fileToBlob (file: File): Promise<Blob> {
+    return new Promise((resolve: Callback<Blob>) => {
       const fileReader: FileReader = new FileReader();
 
       fileReader.addEventListener('loadend', () => {
@@ -29,8 +29,8 @@ export default class FileLoader {
     });
   }
 
-  public static arrayBufferFromUrl (url: string): Promise<any> {
-    return new Promise((resolve: Resolver<ArrayBuffer>) => {
+  public static urlToArrayBuffer (url: string): Promise<ArrayBuffer> {
+    return new Promise((resolve: Callback<ArrayBuffer>) => {
       const ajax: XMLHttpRequest = new XMLHttpRequest();
 
       ajax.open('GET', url);
@@ -40,7 +40,7 @@ export default class FileLoader {
     });
   }
 
-  public static _getBase64Data (fileResult: string): IBase64Data {
+  private static _getBase64Data (fileResult: string): IBase64Data {
     const [ header, data ] = fileResult.split(';base64,');
 
     return { header, data };

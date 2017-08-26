@@ -1,42 +1,30 @@
 import 'GUI/FileSelection/FileSelectionStyles.less';
+import AppState from 'AppState';
 import AudioFile from 'Audio/AudioFile';
 import FileLoader from 'FileLoader';
-import IFileSelectionContext from 'GUI/FileSelection/IFileSelectionContext';
 import { View, InjectableView } from 'Base/Core';
 
 @InjectableView('FileSelectionView')
-class FileSelectionView extends View<IFileSelectionContext> {
-  /**
-   * @override
-   */
-  protected context: string = 'fileSelectionContext';
-
+class FileSelectionView extends View<any> {
   /**
    * @override
    */
   protected onMount (): void {
-    this.bind('click', '.FileSelection-button', this._onClickFileSelectionButton);
+    this.bind('click', '.upload-button', this._onClickFileSelectionButton);
     this.bind('change', '#FileSelection-input', this._onSelectFile);
   }
 
   /**
    * @override
    */
-  protected render (fileSelectionContext: IFileSelectionContext): string {
-    const { filename } = fileSelectionContext;
-
+  protected render (): string {
     return (`
-      ${
-        filename ?
-          `Filename: ${filename}`
-        :
-          (`
-            <input type="file" id="FileSelection-input" class="u-hidden" />
-            <button class="FileSelection-button">
-              Upload a File
-            </button>
-          `)
-      }
+      <div class="FileSelection">
+        <input type="file" id="FileSelection-input" class="u-hidden" />
+        <button class="upload-button">
+          Upload a File
+        </button>
+      </div>
     `);
   }
 
@@ -46,12 +34,17 @@ class FileSelectionView extends View<IFileSelectionContext> {
 
   private async _onSelectFile (): Promise<void> {
     const { files } = <HTMLInputElement>this.find('#FileSelection-input');
-    const blob: Blob = await FileLoader.blobFromFile(files[0]);
+    const blob: Blob = await FileLoader.fileToBlob(files[0]);
     const url: string = URL.createObjectURL(blob);
-    const audio: AudioFile = new AudioFile(url);
 
-    audio.play();
+    this._addFile(new AudioFile(url));
+  }
 
-    this.updateStore(this.context, { filename: files[0].name });
+  private _addFile (audioFile: AudioFile): void {
+    const { files } = this.store.getState().fileListContext;
+
+    files.push(audioFile);
+
+    this.store.update('fileListContext', { files });
   }
 }

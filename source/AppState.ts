@@ -1,8 +1,8 @@
-import IFileSelectionContext from 'GUI/FileSelection/IFileSelectionContext';
+import IFileListContext from 'GUI/FileList/IFileListContext';
+import IVisualizerContext from 'GUI/Visualizer/IVisualizerContext';
 
 export default class AppState {
-  public fileSelectionContext: IFileSelectionContext = {
-    filename: null,
-    isLoading: false
+  public fileListContext: IFileListContext = {
+    files: []
   };
 }

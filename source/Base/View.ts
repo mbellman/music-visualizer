@@ -1,10 +1,10 @@
 import DOM from 'Base/DOM';
-import IMap from 'Base/IMap';
+import { Callback, IMap } from 'Base/Types';
 import Store from 'Base/Store';
 
-type UIEventHandler = (e: UIEvent) => any;
+type UIEventHandler = Callback<UIEvent>;
 
-interface IEventBinding {
+interface IUIEventBinding {
   event: string;
   handler: UIEventHandler;
 }
@@ -24,14 +24,14 @@ export function InjectableView (name: string) {
 export abstract class View<T = any> {
   private static _appRoot: Element = DOM.create('div');
   protected context: string;
+  protected store: Store;
   private _childViews: View[] = [];
-  private _eventBindings: IEventBinding[] = [];
+  private _eventBindings: IUIEventBinding[] = [];
   private _html: string;
   private _root: Element = DOM.create('div');
-  private _store: Store;
 
   public constructor (store: Store) {
-    this._store = store;
+    this.store = store;
   }
 
   public mount (target: Element | string): void {
@@ -54,10 +54,18 @@ export abstract class View<T = any> {
 
   protected abstract render (context?: T): string;
 
-  protected updateStore (key: string, data: any): void {
-    const state: any = this._getViewContext();
+  protected getContext (): T {
+    if (!this.context) {
+      return null;
+    }
 
-    this._store.update(key, Object.assign(state, data));
+    return this.store.getState()[this.context];
+  }
+
+  protected setContext (data: any): void {
+    const state: T = this.getContext();
+
+    this.store.update(this.context, Object.assign(state, data));
   }
 
   protected bind (event: string, selector: string, handler: UIEventHandler): void {
@@ -112,7 +120,7 @@ export abstract class View<T = any> {
     // this element both in the DOM and by reference.
     let newRoot: Element = DOM.create('div');
 
-    newRoot.innerHTML = this._html = this.render(this._getViewContext());
+    newRoot.innerHTML = this._html = this._renderParsed();
 
     if (newRoot.children.length === 1) {
       // **Only re-assign the new root to its first child
@@ -124,7 +132,7 @@ export abstract class View<T = any> {
     } else {
       // Since we have to preserve the wrapper element,
       // style it to minimally impact inner markup.
-      newRoot.setAttribute('style', 'position:relative;width:100%;height:100%;');
+      // newRoot.setAttribute('style', 'position:relative;width:100%;height:100%;');
     }
 
     DOM.replace(this._root, newRoot);
@@ -165,7 +173,7 @@ export abstract class View<T = any> {
       const ViewConstructor: IViewConstructor = ViewRegistry[viewType];
 
       if (ViewConstructor) {
-        const view: View = new ViewConstructor(this._store);
+        const view: View = new ViewConstructor(this.store);
 
         DOM.replace(target, view._root);
         view._update();
@@ -179,7 +187,7 @@ export abstract class View<T = any> {
       return;
     }
 
-    this._store.subscribe(this.context, () => this._update());
+    this.store.subscribe(this.context, () => this._update());
   }
 
   private _detach (): this {
@@ -197,15 +205,18 @@ export abstract class View<T = any> {
     // TODO: Detach, unbind events, etc.
   }
 
-  private _getViewContext (): T {
-    if (!this.context) {
-      return null;
-    }
-
-    return this._store.getState()[this.context];
-  }
-
   private _isAttached (): boolean {
     return !!this._root.parentElement;
+  }
+
+  private _renderParsed (): string {
+    const context: T = this.getContext();
+    const html: string = this.render(context);
+
+    return html.replace(/<View:.*?>/g, (match: string) => {
+      const viewName: string = match.split(':')[1].replace(/[^A-Za-z0-9]/g, '');
+
+      return `<view type=${viewName}></view>`;
+    });
   }
 }
