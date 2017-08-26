@@ -1,4 +1,4 @@
-import AppState from 'State/AppState';
+import AppState from 'AppState';
 import AppView from 'GUI/App/AppView';
 import { Store } from 'Base/Core';
 

@@ -2,6 +2,13 @@ import DOM from 'Base/DOM';
 import IMap from 'Base/IMap';
 import Store from 'Base/Store';
 
+type UIEventHandler = (e: UIEvent) => any;
+
+interface IEventBinding {
+  event: string;
+  handler: UIEventHandler;
+}
+
 interface IViewConstructor {
   new (store: Store): View;
 }
@@ -15,21 +22,25 @@ export function InjectableView (name: string) {
 }
 
 export abstract class View<T = any> {
-  protected binding: string;
-  private _childViews: Array<View> = [];
+  private static _appRoot: Element = DOM.create('div');
+  protected context: string;
+  private _childViews: View[] = [];
+  private _eventBindings: IEventBinding[] = [];
   private _html: string;
   private _root: Element = DOM.create('div');
   private _store: Store;
 
-  /**
-   * @constructor
-   */
   public constructor (store: Store) {
     this._store = store;
   }
 
   public mount (target: Element | string): void {
-    this._attach(target)._update();
+    if (typeof target === 'string') {
+      target = DOM.query(target)[0];
+    }
+
+    target.appendChild(View._appRoot);
+    this._attach(View._appRoot)._update();
   }
 
   /**
@@ -43,33 +54,45 @@ export abstract class View<T = any> {
 
   protected abstract render (context?: T): string;
 
-  protected updateContext (data: any): void {
-    if (!this.binding) {
-      return;
-    }
+  protected updateStore (key: string, data: any): void {
+    const state: any = this._getViewContext();
 
-    const context: T = this._getContext();
-
-    this._store.update(this.binding, Object.assign(context, data));
+    this._store.update(key, Object.assign(state, data));
   }
 
-  protected bind (event: string, selector: string, handler: () => void): void {
-    // ...
+  protected bind (event: string, selector: string, handler: UIEventHandler): void {
+    // Create a wrapper event handler to bind on the View
+    // hierarchy's root element, but which triggers the
+    // provided handler only when the UI Event target
+    // matches the selector provided for a child element
+    // of this View.
+    const targetedHandler: UIEventHandler = (e: UIEvent) => {
+      const target: Element = <Element>e.target;
+
+      if (this._root.contains(target) && target.matches(selector)) {
+        handler.call(this, e);
+      }
+    };
+
+    this._eventBindings.push({
+      event,
+      handler: targetedHandler
+    });
+
+    View._appRoot.addEventListener(event, targetedHandler);
   }
 
-  protected find (selector: string): Array<Element> {
+  protected find (selector: string): HTMLElement {
+    return <HTMLElement>this._root.querySelector(selector);
+  }
+
+  protected findAll (selector: string): HTMLElement[] {
     return Array.prototype.slice.call(this._root.querySelectorAll(selector), 0);
   }
 
-  private _attach (target: Element | string): this {
+  private _attach (target: Element): this {
     this._detach();
-
-    if (typeof target === 'string') {
-      target = DOM.query(target)[0];
-    }
-
     target.appendChild(this._root);
-
     this.onAttach();
 
     return this;
@@ -77,9 +100,7 @@ export abstract class View<T = any> {
 
   /**
    * Triggers a full View refresh, recursively updating
-   * the View's children if any.
-   *
-   * @private
+   * the View's child Views if any.
    */
   private _update (): this {
     const isMounting: boolean = !this._html;
@@ -91,7 +112,7 @@ export abstract class View<T = any> {
     // this element both in the DOM and by reference.
     let newRoot: Element = DOM.create('div');
 
-    newRoot.innerHTML = this._html = this.render(this._getContext());
+    newRoot.innerHTML = this._html = this.render(this._getViewContext());
 
     if (newRoot.children.length === 1) {
       // **Only re-assign the new root to its first child
@@ -100,6 +121,10 @@ export abstract class View<T = any> {
       // wrapper element to maintain a single root
       // reference.
       newRoot = newRoot.children[0];
+    } else {
+      // Since we have to preserve the wrapper element,
+      // style it to minimally impact inner markup.
+      newRoot.setAttribute('style', 'position:relative;width:100%;height:100%;');
     }
 
     DOM.replace(this._root, newRoot);
@@ -114,6 +139,8 @@ export abstract class View<T = any> {
       this.onMount();
     }
 
+    this.onUpdate();
+
     return this;
   }
 
@@ -121,8 +148,6 @@ export abstract class View<T = any> {
    * An atomic operation for refreshing all child Views,
    * both disposing of the existing ones and re-attaching
    * new children contained within the updated View markup.
-   *
-   * @private
    */
   private _updateChildViews (): void {
     // Detach and unbind all child Views
@@ -133,7 +158,7 @@ export abstract class View<T = any> {
     this._childViews.length = 0;
 
     // Attach new child Views
-    const childViewTargets: Array<Element> = this.find('view');
+    const childViewTargets: Element[] = this.findAll('view');
 
     for (const target of childViewTargets) {
       const viewType: string = target.getAttribute('type');
@@ -150,17 +175,16 @@ export abstract class View<T = any> {
   }
 
   private _subscribeToContextUpdates (): void {
-    if (!this.binding) {
+    if (!this.context) {
       return;
     }
 
-    this._store.subscribe(this.binding, () => this._update());
+    this._store.subscribe(this.context, () => this._update());
   }
 
   private _detach (): this {
     if (this._isAttached()) {
       DOM.remove(this._root);
-
       this.onDetach();
     }
 
@@ -170,15 +194,15 @@ export abstract class View<T = any> {
   private _dispose (): void {
     this.onDispose();
 
-    // Detach, unbind events, etc.
+    // TODO: Detach, unbind events, etc.
   }
 
-  private _getContext (): T {
-    if (!this.binding) {
+  private _getViewContext (): T {
+    if (!this.context) {
       return null;
     }
 
-    return this._store.getState()[this.binding];
+    return this._store.getState()[this.context];
   }
 
   private _isAttached (): boolean {

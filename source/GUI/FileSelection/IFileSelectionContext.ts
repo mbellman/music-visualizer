@@ -1,3 +1,4 @@
 export default interface IFileSelectionContext {
-  file: string;
+  filename: string;
+  isLoading: boolean;
 }

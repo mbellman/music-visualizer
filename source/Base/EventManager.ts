@@ -1,9 +1,9 @@
 import IMap from 'Base/IMap';
 
-type EventCallback = (...args: Array<any>) => void;
+type EventCallback = (...args: any[]) => void;
 
 export default class EventManager {
-  private _events: IMap<Array<EventCallback>> = {};
+  private _events: IMap<EventCallback[]> = {};
 
   public on (event: string, callback: EventCallback): void {
     this._checkEvent(event);
@@ -11,10 +11,10 @@ export default class EventManager {
     this._events[event].push(callback);
   }
 
-  public trigger (event: string, ...args: Array<any>): void {
+  public trigger (event: string, ...args: any[]): void {
     this._checkEvent(event);
 
-    const callbacks: Array<EventCallback> = this._events[event];
+    const callbacks: EventCallback[] = this._events[event];
 
     for (const callback of callbacks) {
       callback.apply(null, args);
