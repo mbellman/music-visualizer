@@ -1,5 +1,4 @@
-type FileLoadResolver = (value: Blob) => void;
-type UrlLoadResolver = (value: any) => void;
+type Resolver<T> = (value: T) => void;
 
 interface IBase64Data {
   header: string;
@@ -8,7 +7,7 @@ interface IBase64Data {
 
 export default class FileLoader {
   public static blobFromFile (file: File): Promise<Blob> {
-    return new Promise((resolve: FileLoadResolver) => {
+    return new Promise((resolve: Resolver<Blob>) => {
       const fileReader: FileReader = new FileReader();
 
       fileReader.addEventListener('loadend', () => {
@@ -31,7 +30,7 @@ export default class FileLoader {
   }
 
   public static arrayBufferFromUrl (url: string): Promise<any> {
-    return new Promise((resolve: UrlLoadResolver) => {
+    return new Promise((resolve: Resolver<ArrayBuffer>) => {
       const ajax: XMLHttpRequest = new XMLHttpRequest();
 
       ajax.open('GET', url);
