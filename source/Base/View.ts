@@ -129,10 +129,6 @@ export abstract class View<T = any> {
       // wrapper element to maintain a single root
       // reference.
       newRoot = newRoot.children[0];
-    } else {
-      // Since we have to preserve the wrapper element,
-      // style it to minimally impact inner markup.
-      // newRoot.setAttribute('style', 'position:relative;width:100%;height:100%;');
     }
 
     DOM.replace(this._root, newRoot);
