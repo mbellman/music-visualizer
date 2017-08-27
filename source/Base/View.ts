@@ -21,16 +21,15 @@ export function InjectableView (name: string) {
   };
 }
 
-export abstract class View<T = any> {
+export abstract class View<T = any, U extends Store = Store> {
   private static _appRoot: Element = DOM.create('div');
-  protected context: string;
-  protected store: Store;
+  protected store: U;
   private _childViews: View[] = [];
   private _eventBindings: IUIEventBinding[] = [];
   private _html: string;
   private _root: Element = DOM.create('div');
 
-  public constructor (store: Store) {
+  public constructor (store: U) {
     this.store = store;
   }
 
@@ -53,19 +52,12 @@ export abstract class View<T = any> {
   protected onDispose (): void {}
 
   protected abstract render (context?: T): string;
+  protected getContext (): T | void {}
 
-  protected getContext (): T {
-    if (!this.context) {
-      return null;
+  protected subscribe (...storeProps: string[]): void {
+    for (const prop of storeProps) {
+      this.store.subscribe(prop, () => this._update());
     }
-
-    return this.store.getState()[this.context];
-  }
-
-  protected setContext (data: any): void {
-    const state: T = this.getContext();
-
-    this.store.update(this.context, Object.assign(state, data));
   }
 
   protected bind (event: string, selector: string, handler: UIEventHandler): void {
@@ -139,7 +131,6 @@ export abstract class View<T = any> {
     this._updateChildViews();
 
     if (isMounting) {
-      this._subscribeToContextUpdates();
       this.onMount();
     }
 
@@ -178,14 +169,6 @@ export abstract class View<T = any> {
     }
   }
 
-  private _subscribeToContextUpdates (): void {
-    if (!this.context) {
-      return;
-    }
-
-    this.store.subscribe(this.context, () => this._update());
-  }
-
   private _detach (): this {
     if (this._isAttached()) {
       DOM.remove(this._root);
@@ -206,7 +189,7 @@ export abstract class View<T = any> {
   }
 
   private _renderParsed (): string {
-    const context: T = this.getContext();
+    const context: T = <T>this.getContext();
     const html: string = this.render(context);
 
     return html.replace(/<View:.*?>/g, (match: string) => {

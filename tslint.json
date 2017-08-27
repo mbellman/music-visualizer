@@ -3,6 +3,7 @@
   "rules": {
     "array-type": [ false ],
     "max-classes-per-file": [ false ],
+    "max-line-length": [ false ],
     "member-ordering": [
       true,
       {

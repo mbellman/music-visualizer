@@ -1,12 +1,10 @@
-import 'GUI/FileList/FileListView';
-import 'GUI/FileSelection/FileSelectionView';
-import 'GUI/App/AppStyles.less';
-import { View } from 'Base/Core';
+import 'GUI/Styles/AppStyles.less';
+import 'GUI/Views/FileListView';
+import 'GUI/Views/FileSelectionView';
+import { View, Implementation } from 'Base/Core';
 
 export default class AppView extends View {
-  /**
-   * @override
-   */
+  @Implementation
   protected render (): string {
     return (`
       <div class="App">

@@ -1,25 +1,25 @@
 import EventManager from 'Base/EventManager';
-import { Callback, IMap } from 'Base/Types';
+import { Callback } from 'Base/Types';
 
-export default class Store {
+export default abstract class Store<T = any> {
   private _eventManager: EventManager = new EventManager();
-  private _state: IMap<any>;
+  private _state: T;
 
-  public constructor (state: any = {}) {
+  public constructor (state: T) {
     this._state = state;
   }
 
-  public getState (): IMap<any> {
+  public subscribe (prop: keyof T, callback: Callback<any>): void {
+    this._eventManager.on(prop, callback);
+  }
+
+  protected getState (): T {
     return this._state;
   }
 
-  public update (prop: string, value: any): void {
-    this._state[prop] = value;
+  protected update (prop: keyof T, value: any): void {
+    this._state[prop] = Object.assign(this._state[prop], value);
 
     this._eventManager.trigger(prop, value);
-  }
-
-  public subscribe (prop: string, callback: Callback<any>): void {
-    this._eventManager.on(prop, callback);
   }
 }
