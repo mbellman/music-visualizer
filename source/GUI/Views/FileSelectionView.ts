@@ -1,11 +1,11 @@
 import 'GUI/Styles/FileSelectionStyles.less';
-import MusicVisualizerStore from 'MusicVisualizerStore';
 import AudioFile from 'Audio/AudioFile';
 import FileLoader from 'FileLoader';
+import { addFile, Signal } from 'Logic';
 import { InjectableView, View, Implementation, Override } from 'Base/Core';
 
 @InjectableView('FileSelectionView')
-class FileSelectionView extends View<void, MusicVisualizerStore> {
+class FileSelectionView extends View {
   @Override
   protected onMount (): void {
     this.bind('click', '.upload-button', this._onClickFileSelectionButton);
@@ -28,9 +28,11 @@ class FileSelectionView extends View<void, MusicVisualizerStore> {
     this.find('#FileSelection-input').click();
   }
 
-  private _onSelectFile (): void {
+  private async _onSelectFile (): Promise<void> {
     const { files } = <HTMLInputElement>this.find('#FileSelection-input');
 
-    this.store.addFile(files[0]);
+    await addFile(this.store, files[0]);
+
+    this.signal(Signal.UPDATED_FILES);
   }
 }

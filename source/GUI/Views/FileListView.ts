@@ -1,15 +1,15 @@
 import 'GUI/Styles/FileListStyles.less';
 import AudioFile from 'Audio/AudioFile';
 import IFileListContext from 'GUI/Contexts/IFileListContext';
-import MusicVisualizerStore from 'MusicVisualizerStore';
-import { InjectableView, View, Implementation, Override } from 'Base/Core';
+import { Signal, getAudioFiles } from 'Logic';
+import { InjectableView, View, Override, Implementation } from 'Base/Core';
 import { SoundState } from 'Audio/Constants';
 
 @InjectableView('FileListView')
-class FileListView extends View<IFileListContext, MusicVisualizerStore> {
+class FileListView extends View<IFileListContext> {
   @Override
   protected onMount (): void {
-    this.subscribe('fileListContext');
+    this.listen(Signal.UPDATED_FILES);
   }
 
   @Implementation
@@ -32,7 +32,7 @@ class FileListView extends View<IFileListContext, MusicVisualizerStore> {
   @Override
   protected getContext (): IFileListContext {
     return {
-      audioFiles: this.store.getAudioFiles()
+      audioFiles: getAudioFiles(this.store)
     };
   }
 }

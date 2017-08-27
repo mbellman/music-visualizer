@@ -1,7 +1,5 @@
-import IFileListContext from 'GUI/Contexts/IFileListContext';
+import AudioFile from 'Audio/AudioFile';
 
 export default class MusicVisualizerState {
-  public fileListContext: IFileListContext = {
-    audioFiles: []
-  };
+  public audioFiles: AudioFile[] = [];
 }

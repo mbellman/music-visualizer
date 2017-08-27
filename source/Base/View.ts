@@ -1,6 +1,7 @@
 import DOM from 'Base/DOM';
-import { Callback, IMap } from 'Base/Types';
+import EventManager from 'Base/EventManager';
 import Store from 'Base/Store';
+import { Callback, IMap } from 'Base/Types';
 
 type UIEventHandler = Callback<UIEvent>;
 
@@ -21,15 +22,16 @@ export function InjectableView (name: string) {
   };
 }
 
-export abstract class View<T = any, U extends Store = Store> {
+export abstract class View<T = any> {
   private static _appRoot: Element = DOM.create('div');
-  protected store: U;
+  private static _signals: EventManager = new EventManager();
+  protected store: Store;
   private _childViews: View[] = [];
   private _eventBindings: IUIEventBinding[] = [];
   private _html: string;
   private _root: Element = DOM.create('div');
 
-  public constructor (store: U) {
+  public constructor (store: Store) {
     this.store = store;
   }
 
@@ -54,10 +56,14 @@ export abstract class View<T = any, U extends Store = Store> {
   protected abstract render (context?: T): string;
   protected getContext (): T | void {}
 
-  protected subscribe (...storeProps: string[]): void {
-    for (const prop of storeProps) {
-      this.store.subscribe(prop, () => this._update());
+  protected listen (...signals: any[]): void {
+    for (const signal of signals) {
+      View._signals.on(signal, () => this._update());
     }
+  }
+
+  protected signal (signal: any): void {
+    View._signals.trigger(signal);
   }
 
   protected bind (event: string, selector: string, handler: UIEventHandler): void {

@@ -4,6 +4,10 @@ import ISound from 'audio/ISound';
 import { EventManager, U } from 'Base/Core';
 import { SoundState } from 'Audio/Constants';
 
+enum AudioEvent {
+  LOADED
+}
+
 export default class AudioFile implements ISound {
   private _analyserNode: AnalyserNode;
   private _audioBuffer: AudioBuffer;
@@ -27,7 +31,7 @@ export default class AudioFile implements ISound {
 
   public play (): void {
     if (!this._isLoaded) {
-      this._events.on('load', this.play);
+      this._events.on(AudioEvent.LOADED, this.play);
 
       return;
     }
@@ -66,7 +70,7 @@ export default class AudioFile implements ISound {
       this._audioBuffer = audioBuffer;
       this._isLoaded = true;
 
-      this._events.trigger('load');
+      this._events.trigger(AudioEvent.LOADED);
     });
   }
 
