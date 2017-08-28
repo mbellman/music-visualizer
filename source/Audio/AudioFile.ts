@@ -12,21 +12,23 @@ export default class AudioFile implements ISound {
   private _analyserNode: AnalyserNode;
   private _audioBuffer: AudioBuffer;
   private _events: EventManager = new EventManager();
-  private _filename: string;
   private _isLoaded: boolean = false;
+  private _name: string;
   private _node: AudioBufferSourceNode;
   private _state: SoundState = SoundState.SOUND_STOPPED;
+  private _url: string;
 
-  public constructor (filename: string) {
+  public constructor (url: string, name: string) {
     U.bindAll(this, 'play', '_onEnded');
 
-    this._filename = filename;
+    this._url = url;
+    this._name = name;
 
     this._load();
   }
 
   public get name (): string {
-    return this._filename;
+    return this._name;
   }
 
   public play (): void {
@@ -64,7 +66,7 @@ export default class AudioFile implements ISound {
   }
 
   private async _load (): Promise<void> {
-    const audioData: ArrayBuffer = await FileLoader.urlToArrayBuffer(this._filename);
+    const audioData: ArrayBuffer = await FileLoader.urlToArrayBuffer(this._url);
 
     AudioCore.decodeAudioData(audioData, (audioBuffer: AudioBuffer) => {
       this._audioBuffer = audioBuffer;
