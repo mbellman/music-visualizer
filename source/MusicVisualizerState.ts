@@ -1,10 +1,11 @@
 import AudioFile from 'Audio/AudioFile';
 
-export default class MusicVisualizerState {
-  public audioFiles: AudioFile[] = [];
+interface IPlaylist {
+  files: AudioFile[];
+}
 
-  public currentPlaying: any = {
-    audioFile: null,
-    index: null
+export default class MusicVisualizerState {
+  public playlist: IPlaylist = {
+    files: []
   };
 }

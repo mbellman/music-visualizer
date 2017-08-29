@@ -4,26 +4,7 @@
     "array-type": [ false ],
     "max-classes-per-file": [ false ],
     "max-line-length": [ false ],
-    "member-ordering": [
-      true,
-      {
-        "order": [
-          "public-static-field",
-          "protected-static-field",
-          "private-static-field",
-          "public-instance-field",
-          "protected-instance-field",
-          "private-instance-field",
-          "public-static-method",
-          "protected-static-method",
-          "private-static-method",
-          "constructor",
-          "public-instance-method",
-          "protected-instance-method",
-          "private-instance-method"
-        ]
-      }
-    ],
+    "member-ordering": [ false ],
     "no-angle-bracket-type-assertion": false,
     "no-console": [ false ],
     "no-empty": false,

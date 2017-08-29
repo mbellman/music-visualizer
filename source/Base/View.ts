@@ -22,10 +22,10 @@ export function InjectableView (name: string) {
   };
 }
 
-export abstract class View<T = any> {
+export abstract class View<T = any, U = any> {
   private static _appRoot: Element = DOM.create('div');
   private static _signals: EventManager = new EventManager();
-  protected store: Store;
+  protected store: Store<U>;
   private _childViews: View[] = [];
   private _eventBindings: IUIEventBinding[] = [];
   private _html: string;
@@ -41,7 +41,48 @@ export abstract class View<T = any> {
     }
 
     target.appendChild(View._appRoot);
-    this._attach(View._appRoot)._update();
+    this._attach(View._appRoot).update();
+  }
+
+  /**
+   * Triggers a full View refresh, recursively updating
+   * the View's child Views if any.
+   */
+  protected update (): this {
+    const isMounting: boolean = !this._html;
+
+    // View re-render + root replacement. The technique
+    // here creates a new wrapper element, renders the
+    // updated markup inside it, references the first
+    // child element**, and swaps the current root with
+    // this element both in the DOM and by reference.
+    let newRoot: Element = DOM.create('div');
+
+    newRoot.innerHTML = this._html = this._renderParsed();
+
+    if (newRoot.children.length === 1) {
+      // **Only re-assign the new root to its first child
+      // if exactly one exists. If no child elements or
+      // multiple child elements exist, preserve the
+      // wrapper element to maintain a single root
+      // reference.
+      newRoot = newRoot.children[0];
+    }
+
+    DOM.replace(this._root, newRoot);
+
+    this._root = newRoot;
+
+    // Remaining post-render operations
+    this._updateChildViews();
+
+    if (isMounting) {
+      this.onMount();
+    }
+
+    this.onUpdate();
+
+    return this;
   }
 
   /**
@@ -54,11 +95,14 @@ export abstract class View<T = any> {
   protected onDispose (): void {}
 
   protected abstract render (context?: T): string;
-  protected getContext (): T | void {}
 
-  protected listen (...signals: any[]): void {
+  protected getContext (state: U): T {
+    return null;
+  }
+
+  protected follow (...signals: any[]): void {
     for (const signal of signals) {
-      View._signals.on(signal, () => this._update());
+      View._signals.on(signal, () => this.update());
     }
   }
 
@@ -105,47 +149,6 @@ export abstract class View<T = any> {
   }
 
   /**
-   * Triggers a full View refresh, recursively updating
-   * the View's child Views if any.
-   */
-  private _update (): this {
-    const isMounting: boolean = !this._html;
-
-    // View re-render + root replacement. The technique
-    // here creates a new wrapper element, renders the
-    // updated markup inside it, references the first
-    // child element**, and swaps the current root with
-    // this element both in the DOM and by reference.
-    let newRoot: Element = DOM.create('div');
-
-    newRoot.innerHTML = this._html = this._renderParsed();
-
-    if (newRoot.children.length === 1) {
-      // **Only re-assign the new root to its first child
-      // if exactly one exists. If no child elements or
-      // multiple child elements exist, preserve the
-      // wrapper element to maintain a single root
-      // reference.
-      newRoot = newRoot.children[0];
-    }
-
-    DOM.replace(this._root, newRoot);
-
-    this._root = newRoot;
-
-    // Remaining post-render operations
-    this._updateChildViews();
-
-    if (isMounting) {
-      this.onMount();
-    }
-
-    this.onUpdate();
-
-    return this;
-  }
-
-  /**
    * An atomic operation for refreshing all child Views,
    * both disposing of the existing ones and re-attaching
    * new children contained within the updated View markup.
@@ -169,7 +172,7 @@ export abstract class View<T = any> {
         const view: View = new ViewConstructor(this.store);
 
         DOM.replace(target, view._root);
-        view._update();
+        view.update();
         this._childViews.push(view);
       }
     }
@@ -195,7 +198,7 @@ export abstract class View<T = any> {
   }
 
   private _renderParsed (): string {
-    const context: T = <T>this.getContext();
+    const context: T = this.getContext(this.store.getState());
     const html: string = this.render(context);
 
     return html.replace(/<View:.*?>/g, (match: string) => {

@@ -1,6 +1,7 @@
 import AudioFile from 'Audio/AudioFile';
 import FileLoader from 'FileLoader';
 import MusicVisualizerState from 'MusicVisualizerState';
+import { SoundState } from 'Audio/Constants';
 import { Store } from 'Base/Core';
 
 export enum Signal {
@@ -12,19 +13,21 @@ export async function uploadFile (store: Store<MusicVisualizerState>, file: File
   const url: string = URL.createObjectURL(blob);
   const filename: string = file.name;
   const audioFile: AudioFile = new AudioFile(url, filename);
-  const { audioFiles } = store.getState();
+  const { files } = store.getState().playlist;
 
-  audioFiles.push(audioFile);
+  files.push(audioFile);
 
-  store.update('audioFiles', audioFiles);
-}
-
-export function getAudioFiles (store: Store<MusicVisualizerState>): AudioFile[] {
-  return store.getState().audioFiles;
+  store.update('playlist', { files });
 }
 
 export function playAudioFile (store: Store<MusicVisualizerState>, index: number): void {
-  const audioFiles: AudioFile[] = getAudioFiles(store);
+  const audioFiles: AudioFile[] = store.getState().playlist.files;
 
-  audioFiles[index].play();
+  audioFiles.forEach((audioFile: AudioFile, i: number) => {
+    if (audioFile.isPlaying) {
+      audioFile.stop();
+    } else if (i === index) {
+      audioFile.play();
+    }
+  });
 }

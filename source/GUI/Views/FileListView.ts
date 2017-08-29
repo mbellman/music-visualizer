@@ -1,15 +1,16 @@
 import 'GUI/Styles/FileListStyles.less';
 import AudioFile from 'Audio/AudioFile';
 import IFileListContext from 'GUI/Contexts/IFileListContext';
-import { Signal, getAudioFiles, playAudioFile } from 'Logic';
+import MusicVisualizerState from 'MusicVisualizerState';
 import { InjectableView, View, U, Override, Implementation } from 'Base/Core';
+import { Signal, playAudioFile } from 'Logic';
 import { SoundState } from 'Audio/Constants';
 
 @InjectableView('FileListView')
-class FileListView extends View<IFileListContext> {
+class FileListView extends View<IFileListContext, MusicVisualizerState> {
   @Override
   protected onMount (): void {
-    this.listen(Signal.UPDATED_FILES);
+    this.follow(Signal.UPDATED_FILES);
 
     this.bind('click', '.FileList-item', this._onClickPlay);
   }
@@ -21,8 +22,10 @@ class FileListView extends View<IFileListContext> {
     return (`
       ${
         audioFiles.map((audioFile: AudioFile) => {
+          const { isPlaying } = audioFile;
+
           return (`
-            <div class="FileList-item">
+            <div class="FileList-item ${isPlaying ? 'playing' : ''}">
               File: ${audioFile.name}
             </div>
           `);
@@ -32,9 +35,11 @@ class FileListView extends View<IFileListContext> {
   }
 
   @Override
-  protected getContext (): IFileListContext {
+  protected getContext (state: MusicVisualizerState): IFileListContext {
+    const { files } = this.store.getState().playlist;
+
     return {
-      audioFiles: getAudioFiles(this.store)
+      audioFiles: files
     };
   }
 
@@ -43,5 +48,7 @@ class FileListView extends View<IFileListContext> {
     const index: number = Array.prototype.slice.call(target.parentElement.children, 0).indexOf(target);
 
     playAudioFile(this.store, index);
+
+    this.update();
   }
 }

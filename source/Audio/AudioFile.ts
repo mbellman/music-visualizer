@@ -31,6 +31,10 @@ export default class AudioFile implements ISound {
     return this._name;
   }
 
+  public get isPlaying (): boolean {
+    return this._state === SoundState.SOUND_PLAYING;
+  }
+
   public play (): void {
     if (!this._isLoaded) {
       this._events.on(AudioEvent.LOADED, this.play);
@@ -55,10 +59,6 @@ export default class AudioFile implements ISound {
     AudioCore.stop(this._node);
 
     this._state = SoundState.SOUND_STOPPED;
-  }
-
-  public listen (): void {
-
   }
 
   private _onEnded (): void {
