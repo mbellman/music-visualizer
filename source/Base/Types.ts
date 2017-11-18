@@ -1,5 +1,6 @@
-export type Callback<T, U = any> = (value: T) => U;
+export type Callback<T, U = any> = (...value: T[]) => U;
 
-export interface IMap<T> {
-  [key: string]: T;
+export interface IHashMap<V> {
+  [key: string]: V;
+  [key: number]: V;
 }

@@ -1,7 +1,6 @@
 import AudioCore from 'audio/AudioCore';
-import FileLoader from 'FileLoader';
 import ISound from 'audio/ISound';
-import { EventManager, U } from 'Base/Core';
+import { EventManager, FileLoader, Utils } from 'Base/Core';
 import { SoundState } from 'Audio/Constants';
 
 enum AudioEvent {
@@ -19,7 +18,7 @@ export default class AudioFile implements ISound {
   private _url: string;
 
   public constructor (url: string, name: string) {
-    U.bindAll(this, 'play', '_onEnded');
+    Utils.bindAll(this, 'play', '_onEnded');
 
     this._url = url;
     this._name = name;
@@ -76,6 +75,10 @@ export default class AudioFile implements ISound {
     });
   }
 
+  /**
+   * The limited lifetime of WebAudio nodes requires that we
+   * recreate a node any time we want to re-play the audio.
+   */
   private _resetNode (): void {
     this._node = AudioCore.createBufferSource();
     this._node.buffer = this._audioBuffer;

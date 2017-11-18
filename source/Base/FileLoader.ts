@@ -1,4 +1,4 @@
-import { Callback } from 'Base/Core';
+import { Callback } from 'Base/Types';
 
 interface IBase64Data {
   header: string;
@@ -40,8 +40,8 @@ export default class FileLoader {
     });
   }
 
-  private static _getBase64Data (fileResult: string): IBase64Data {
-    const [ header, data ] = fileResult.split(';base64,');
+  private static _getBase64Data (fileReaderResult: string): IBase64Data {
+    const [ header, data ] = fileReaderResult.split(';base64,');
 
     return { header, data };
   }

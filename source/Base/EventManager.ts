@@ -1,18 +1,18 @@
-import { Callback, IMap } from 'Base/Types';
+import { Callback, IHashMap } from 'Base/Types';
 
-type EventHandler = Callback<any[]>;
+type EventHandler = Callback<any>;
 
 export default class EventManager {
-  private _events: IMap<EventHandler[]> = {};
+  private _events: IHashMap<EventHandler[]> = {};
 
   public on (event: any, callback: EventHandler): void {
-    this._checkEvent(event);
+    this._verifyEvent(event);
 
     this._events[event].push(callback);
   }
 
   public trigger (event: any, ...args: any[]): void {
-    this._checkEvent(event);
+    this._verifyEvent(event);
 
     const callbacks: EventHandler[] = this._events[event];
 
@@ -21,7 +21,7 @@ export default class EventManager {
     }
   }
 
-  private _checkEvent (event: any): void {
+  private _verifyEvent (event: any): void {
     if (!this._events[event]) {
       this._events[event] = [];
     }

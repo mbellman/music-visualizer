@@ -5,7 +5,7 @@
 		"experimentalDecorators": true,
 		"lib": [
 			"dom",
-			"es2015"
+			"es6"
 		],
 		"module": "commonjs",
 		"noEmitOnError": true,

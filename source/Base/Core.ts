@@ -1,8 +1,10 @@
 import EventManager from 'Base/EventManager';
-import Store from 'Base/Store';
+import FileLoader from 'Base/FileLoader';
 
-export { Callback, IMap } from 'Base/Types';
+export { Callback, IHashMap } from 'Base/Types';
+export { EventManager };
+export { FileLoader };
 export { Implementation, Override } from 'Base/Decorators';
-export { EventManager, Store };
-export { InjectableView, View } from 'Base/View';
-export { Utilities as U } from 'Base/Utilities';
+export { IQuery, default as $ } from 'Base/$';
+export { Map } from 'Base/Polyfills';
+export { Utils } from 'Base/Utils';

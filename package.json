@@ -6,6 +6,7 @@
 	},
 	"devDependencies": {
 		"@types/core-js": "^0.9.42",
+		"core-js": "^2.5.1",
 		"css-loader": "^0.28.5",
 		"friendly-errors-webpack-plugin": "^1.6.1",
 		"less": "^2.7.2",
