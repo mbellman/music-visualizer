@@ -1,9 +1,41 @@
 import AudioFile from 'Audio/AudioFile';
-import { FileLoader } from 'Base/Core';
+import FileLoader from 'AppBase/FileLoader';
 import { SoundState } from 'Audio/Constants';
 
 export default class AudioBank {
   private static _files: AudioFile[] = [];
+
+  private static get _currentlyPlayingIndex (): number {
+    for (let i = 0; i < AudioBank._files.length; i++) {
+      const audioFile: AudioFile = AudioBank._files[i];
+
+      if (audioFile.isPlaying) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  public static playAudioFile (index: number): void {
+    AudioBank._files.forEach((audioFile: AudioFile, i: number) => {
+      if (audioFile.isPlaying) {
+        audioFile.stop();
+      }
+
+      if (i === index) {
+        audioFile.play();
+      }
+    });
+  }
+
+  public static playNext (): void {
+    AudioBank.playAudioFile(AudioBank._currentlyPlayingIndex + 1);
+  }
+
+  public static playPrevious (): void {
+    AudioBank.playAudioFile(AudioBank._currentlyPlayingIndex - 1);
+  }
 
   public static async uploadFile (file: File): Promise<void> {
     const blob: Blob = await FileLoader.fileToBlob(file);
@@ -11,16 +43,6 @@ export default class AudioBank {
     const filename: string = file.name;
     const audioFile: AudioFile = new AudioFile(url, filename);
 
-    this._files.push(audioFile);
-  }
-
-  public static playAudioFile (index: number): void {
-    this._files.forEach((audioFile: AudioFile, i: number) => {
-      if (audioFile.isPlaying) {
-        audioFile.stop();
-      } else if (i === index) {
-        audioFile.play();
-      }
-    });
+    AudioBank._files.push(audioFile);
   }
 }

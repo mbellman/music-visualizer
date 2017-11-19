@@ -26,26 +26,14 @@ class Query implements IQuery {
     return this;
   }
 
-  public off (event: string, listener: UIEventListener = null): this {
-    if (!listener) {
-      this._eventListenerMap.forEach((mappedEvent: string, mappedListener: UIEventListener) => {
-        this.off(mappedEvent, mappedListener);
-      });
-    }
-
-    this._forElements((element: Element) => {
-      element.removeEventListener(event, listener);
-    });
+  public off (event: string = null, listener: UIEventListener = null): this {
+    this._off(this._eventToEventArray(event), listener);
 
     return this;
   }
 
   public on (event: string, listener: UIEventListener): this {
-    this._eventListenerMap.set(listener, event);
-
-    this._forElements((element: Element) => {
-      element.addEventListener(event, listener);
-    });
+    this._on(this._eventToEventArray(event), listener);
 
     return this;
   }
@@ -58,14 +46,44 @@ class Query implements IQuery {
     return this;
   }
 
+  private _eventToEventArray (event: string = null) {
+    return !!event ? event.split(' ') : [null];
+  }
+
   private _forElements (handler: Callback<Element>): void {
     this._elements.forEach((element: Element) => {
       handler(element);
     });
   }
 
+  private _off (events: string[], listener: UIEventListener = null): void {
+    events.forEach((event: string) => {
+      if (!event || !listener) {
+        this._eventListenerMap.forEach((mappedEvent: string, mappedListener: UIEventListener) => {
+          if (!event || mappedEvent === event) {
+            this.off(mappedEvent, mappedListener);
+          }
+        });
+      } else {
+        this._forElements((element: Element) => {
+          element.removeEventListener(event, listener);
+        });
+      }
+    });
+  }
+
+  private _on (events: string[], listener: UIEventListener): void {
+    events.forEach((event: string) => {
+      this._eventListenerMap.set(listener, event);
+
+      this._forElements((element: Element) => {
+        element.addEventListener(event, listener);
+      });
+    });
+  }
+
   private _saveSelectedElementsAsKeys (selector: string): void {
-    this._elements = Array.prototype.slice.call(null, document.querySelectorAll(selector));
+    this._elements = Array.prototype.slice.call(document.querySelectorAll(selector), 0);
 
     this._elements.forEach((element: Element, index: number) => {
       this[index] = element;

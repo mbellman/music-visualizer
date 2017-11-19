@@ -1,6 +1,7 @@
 import AudioCore from 'audio/AudioCore';
+import FileLoader from 'AppBase/FileLoader';
 import ISound from 'audio/ISound';
-import { EventManager, FileLoader, Utils } from 'Base/Core';
+import { EventManager, Utils } from 'Base/Core';
 import { SoundState } from 'Audio/Constants';
 
 enum AudioEvent {
@@ -45,9 +46,11 @@ export default class AudioFile implements ISound {
       this._resetNode();
     }
 
-    AudioCore.play(this._node);
+    if (this._state !== SoundState.SOUND_PLAYING) {
+      AudioCore.play(this._node);
 
-    this._state = SoundState.SOUND_PLAYING;
+      this._state = SoundState.SOUND_PLAYING;
+    }
   }
 
   public pause (): void {
@@ -77,9 +80,13 @@ export default class AudioFile implements ISound {
 
   /**
    * The limited lifetime of WebAudio nodes requires that we
-   * recreate a node any time we want to re-play the audio.
+   * recreate a node any time we want to replay the audio.
    */
   private _resetNode (): void {
+    if (this._node) {
+      this._node.removeEventListener('ended', this._onEnded);
+    }
+
     this._node = AudioCore.createBufferSource();
     this._node.buffer = this._audioBuffer;
 
