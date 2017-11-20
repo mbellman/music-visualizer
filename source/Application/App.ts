@@ -1,4 +1,5 @@
 import AppUI from 'Application/GUI/UIs/AppUI';
+import CanvasUI from 'Application/GUI/UIs/CanvasUI';
 import { $, IQuery } from 'Base/Core';
 
 export default class App {
@@ -9,6 +10,8 @@ export default class App {
 
     this._bindUI();
     this._bindHandlers();
+
+    CanvasUI.start();
   }
 
   private _bindUI (): void {
