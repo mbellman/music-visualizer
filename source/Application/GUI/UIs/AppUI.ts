@@ -1,6 +1,6 @@
 import 'Application/GUI/Styles/AppStyles.less';
 import AudioBank from 'Application/AudioBank';
-import CanvasUI from 'Application/GUI/UIs/CanvasUI';
+import VisualizerUI from 'Application/GUI/UIs/VisualizerUI';
 import SettingsUI from 'Application/GUI/UIs/SettingsUI';
 
 export default class AppUI {
@@ -8,7 +8,7 @@ export default class AppUI {
     <input type="file" id="file-input" />
     <div class="app">
       ${SettingsUI.template}
-      ${CanvasUI.template}
+      ${VisualizerUI.template}
     </div>
   `;
 

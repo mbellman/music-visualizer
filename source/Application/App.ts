@@ -1,5 +1,5 @@
 import AppUI from 'Application/GUI/UIs/AppUI';
-import CanvasUI from 'Application/GUI/UIs/CanvasUI';
+import VisualizerUI from 'Application/GUI/UIs/VisualizerUI';
 import { $, IQuery } from 'Base/Core';
 
 export default class App {
@@ -11,7 +11,7 @@ export default class App {
     this._bindUI();
     this._bindHandlers();
 
-    CanvasUI.start();
+    VisualizerUI.start();
   }
 
   private _bindUI (): void {

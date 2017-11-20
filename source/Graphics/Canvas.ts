@@ -1,27 +1,14 @@
-import IScreen from 'Graphics/IScreen';
 import { IHashMap } from 'Base/Core';
 
 type DrawHandler = (context: CanvasRenderingContext2D) => void;
 
-interface ICanvasConfiguration {
-  fillColor?: string;
-  strokeColor?: string;
-  strokeWidth?: number;
+export enum DrawSetting {
+  FILL_COLOR = 'fillStyle',
+  STROKE_COLOR = 'strokeStyle',
+  STROKE_WIDTH = 'lineWidth'
 }
 
-interface IContextConfiguration {
-  fillStyle: string;
-  lineWidth: number;
-  strokeStyle: string;
-}
-
-export default class Canvas implements IScreen {
-  private static _configurationConversions: IHashMap<keyof IContextConfiguration> = {
-    fillColor: 'fillStyle',
-    strokeColor: 'strokeStyle',
-    strokeWidth: 'lineWidth'
-  };
-
+export default class Canvas {
   private _context: CanvasRenderingContext2D;
   private _element: HTMLCanvasElement;
 
@@ -42,46 +29,37 @@ export default class Canvas implements IScreen {
     this._context.clearRect(0, 0, this.width, this.height);
   }
 
-  public configure (configuration: ICanvasConfiguration): void {
-    Object.keys(configuration).forEach((key: keyof ICanvasConfiguration) => {
-      const contextKey: keyof IContextConfiguration = Canvas._configurationConversions[key];
-
-      this._context[contextKey] = configuration[key];
-    });
-  }
-
-  public draw (handler: DrawHandler): void {
-    this._context.beginPath();
-
-    handler(this._context);
-  }
-
   public drawCircle (x: number, y: number, radius: number): void {
-    this.draw((context: CanvasRenderingContext2D) => {
-      context.arc(x, y, radius, 0, 2 * Math.PI);
-      context.stroke();
-      context.fill();
-    });
+    this._begin();
+    this._context.arc(x, y, radius, 0, 2 * Math.PI);
+    this._context.fill();
+    this._context.stroke();
   }
 
   public drawLine (x1: number, y1: number, x2: number, y2: number): void {
-    this.draw((context: CanvasRenderingContext2D) => {
-      context.moveTo(x1, y1);
-      context.lineTo(x2, y2);
-      context.stroke();
-    });
+    this._begin();
+    this._context.moveTo(x1, y1);
+    this._context.lineTo(x2, y2);
+    this._context.stroke();
   }
 
   public drawRect (x: number, y: number, width: number, height: number): void {
-    this.draw((context: CanvasRenderingContext2D) => {
-      context.rect(x, y, width, height);
-      context.fill();
-      context.stroke();
-    });
+    this._begin();
+    this._context.rect(x, y, width, height);
+    this._context.fill();
+    this._context.stroke();
+  }
+
+  public set (property: DrawSetting, value: any): void {
+    this._context[property] = value;
   }
 
   public setSize (width: number, height: number): void {
     this._element.width = width;
     this._element.height = height;
+  }
+
+  private _begin (): void {
+    this._context.beginPath();
   }
 }
