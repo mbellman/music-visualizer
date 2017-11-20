@@ -129,7 +129,3 @@ export interface IQuery {
 export default function $ (selector: string | Element | Query): IQuery {
   return new Query(selector);
 }
-
-const something: any = window;
-
-something.$ = $;
