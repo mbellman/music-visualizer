@@ -1,9 +1,13 @@
+import Canvas from 'Graphics/Canvas';
 import Visualizer from 'AppBase/Visualizer';
+import { IColor } from 'AppBase/Visualization/Types';
 
 export default abstract class Effect {
+  protected color: IColor;
   private _startTime: number = Date.now();
 
-  public constructor () {
+  public constructor (color: IColor, ...args: any[]) {
+    this.color = color;
     this._startTime = Date.now();
   }
 
@@ -11,5 +15,6 @@ export default abstract class Effect {
     return Date.now() - this._startTime;
   }
 
-  protected abstract onUpdate (visualizer: Visualizer): void;
+  public abstract draw (canvas: Canvas): void;
+  public abstract update (dt: number, tempo: number): void;
 }

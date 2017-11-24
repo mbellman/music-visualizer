@@ -2,17 +2,25 @@ import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Bar from 'AppBase/Visualization/Effects/Bar';
 import Effect from 'AppBase/Visualization/Effects/Effect';
 import { Utils } from 'Base/Core';
+import { IColor } from 'AppBase/Visualization/Types';
+import { IHashMap } from 'Base/Types';
 
-interface IConfiguration {
+interface IVisualizerConfiguration {
   framerate?: 30 | 60;
   tempo?: number;
 }
 
+type EffectFactory<T extends Effect = Effect> = (...args: any[]) => T;
+type EffectGroup = Effect[];
+
 export default class Visualizer {
   private _canvas: Canvas;
-  private _effects: Effect[] = [];
+  private _effectPresets: IHashMap<EffectFactory[]> = {};
+  private _effectGroups: EffectGroup[] = [];
+  private _isRunning: boolean = false;
+  private _lastTick: number;
 
-  private _configuration: IConfiguration = {
+  private _configuration: IVisualizerConfiguration = {
     framerate: 60,
     tempo: 100
   };
@@ -27,23 +35,65 @@ export default class Visualizer {
     return this._configuration.tempo;
   }
 
-  public configure (configuration: IConfiguration): void {
-    Object.keys(configuration).forEach((key: keyof IConfiguration) => {
+  public configure (configuration: IVisualizerConfiguration): void {
+    Object.keys(configuration).forEach((key: keyof IVisualizerConfiguration) => {
       this._configuration[key] = configuration[key];
     });
+  }
+
+  public createEffect (name: string, effectFactories: EffectFactory[]): void {
+    this._effectPresets[name] = effectFactories;
+  }
+
+  public run (): void {
+    this._isRunning = true;
+    this._lastTick = Date.now();
+
+    this._render();
   }
 
   public setSize (width: number, height: number): void {
     this._canvas.setSize(width, height);
   }
 
-  public addBar (y: number): void {
-    const topPixel: number = Math.round(this._canvas.height * (y / 100));
+  public spawnEffect (name: string, ...args: any[]): void {
+    const effectFactories: EffectFactory[] = this._effectPresets[name];
+    const effectGroup: EffectGroup = [];
 
-    this._effects.push(new Bar());
+    for (const effectFactory of effectFactories) {
+      const effect: Effect = effectFactory.apply(null, args);
+
+      effectGroup.push(effect);
+    }
+
+    this._effectGroups.push(effectGroup);
+  }
+
+  public stop (): void {
+    this._isRunning = false;
   }
 
   private _render (): void {
+    if (!this._isRunning) {
+      return;
+    }
 
+    this._canvas.clear();
+
+    const dt: number = (Date.now() - this._lastTick) / 1000;
+    this._lastTick = Date.now();
+
+    for (const effectGroup of this._effectGroups) {
+      this._canvas.save();
+
+      for (const effect of effectGroup) {
+        effect.update(dt, this.tempo);
+        effect.draw(this._canvas);
+      }
+
+      this._canvas.restore();
+    }
+
+    requestAnimationFrame(this._render);
   }
 }

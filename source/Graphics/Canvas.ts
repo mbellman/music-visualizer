@@ -1,7 +1,5 @@
 import { IHashMap } from 'Base/Core';
 
-type DrawHandler = (context: CanvasRenderingContext2D) => void;
-
 export enum DrawSetting {
   FILL_COLOR = 'fillStyle',
   STROKE_COLOR = 'strokeStyle',
@@ -50,6 +48,10 @@ export default class Canvas {
     this._context.stroke();
   }
 
+  public save (): void {
+    this._context.save();
+  }
+
   public set (property: DrawSetting, value: any): void {
     this._context[property] = value;
   }
@@ -57,6 +59,10 @@ export default class Canvas {
   public setSize (width: number, height: number): void {
     this._element.width = width;
     this._element.height = height;
+  }
+
+  public restore (): void {
+    this._context.restore();
   }
 
   private _begin (): void {
