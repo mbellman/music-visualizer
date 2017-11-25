@@ -5,9 +5,9 @@ import EffectSpawn from 'AppBase/Visualization/EffectSpawn';
 import { IColor } from 'AppBase/Visualization/Types';
 import { IHashMap } from 'Base/Types';
 import { Utils } from 'Base/Core';
+import { setTimeout } from 'core-js/library/web/timers';
 
 type EffectFactory<T extends Effect = Effect> = (...args: any[]) => T;
-type EffectChunk = Effect[];
 
 interface IEffectPreset {
   effects: EffectFactory[];

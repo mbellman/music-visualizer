@@ -1,8 +1,9 @@
 import 'Application/GUI/Styles/VisualizerStyles.less';
 import Bar from 'AppBase/Visualization/Effects/Bar';
-import Visualizer from 'AppBase/Visualizer';
+import Visualizer from 'AppBase/Visualization/Visualizer';
 import { $, Utils } from 'Base/Core';
 import Glow from 'AppBase/Visualization/Effects/Glow';
+import OscillatingBall from 'AppBase/Visualization/Effects/OscillatingBall';
 
 export default class VisualizerUI {
   public static template: string = `
@@ -30,7 +31,8 @@ export default class VisualizerUI {
 
     visualizer.define('GreenBar', {
       effects: [
-        (top: number) => new Bar({ R: 0, G: 255, B: 0 }, top, 200, 20)
+        (top: number) => new Bar({ R: 0, G: 255, B: 0 }, top, 200, 20),
+        (top: number) => new OscillatingBall({ R: 255, G: 0, B: 0 }, top, 10, 200)
       ]
     });
 

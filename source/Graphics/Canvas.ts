@@ -30,19 +30,19 @@ export default class Canvas {
   }
 
   public circle (x: number, y: number, radius: number): void {
-    this._begin();
+    this._context.beginPath();
     this._context.arc(x, y, radius, 0, 2 * Math.PI);
   }
 
   public line (x1: number, y1: number, x2: number, y2: number): void {
-    this._begin();
+    this._context.beginPath();
     this._context.moveTo(x1, y1);
     this._context.lineTo(x2, y2);
-    this._context.stroke();
+    this.stroke();
   }
 
   public rectangle (x: number, y: number, width: number, height: number): void {
-    this._begin();
+    this._context.beginPath();
     this._context.rect(x, y, width, height);
   }
 
@@ -69,9 +69,5 @@ export default class Canvas {
 
   public stroke (): void {
     this._context.stroke();
-  }
-
-  private _begin (): void {
-    this._context.beginPath();
   }
 }

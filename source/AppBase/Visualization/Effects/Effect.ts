@@ -1,5 +1,5 @@
 import Canvas from 'Graphics/Canvas';
-import Visualizer from 'AppBase/Visualizer';
+import Visualizer from 'AppBase/Visualization/Visualizer';
 import { IColor } from 'AppBase/Visualization/Types';
 
 export default abstract class Effect {
