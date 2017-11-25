@@ -2,6 +2,7 @@ import 'Application/GUI/Styles/VisualizerStyles.less';
 import Bar from 'AppBase/Visualization/Effects/Bar';
 import Visualizer from 'AppBase/Visualizer';
 import { $, Utils } from 'Base/Core';
+import Glow from 'AppBase/Visualization/Effects/Glow';
 
 export default class VisualizerUI {
   public static template: string = `
@@ -19,11 +20,22 @@ export default class VisualizerUI {
       tempo: 180
     });
 
-    visualizer.createEffect('RedBar', [
-      (top: number) => new Bar({ R: 255, G: 0, B: 0 }, top, 250, 20)
-    ]);
+    visualizer.define('GlowingBar', {
+      effects: [
+        () => new Glow({ R: 0, G: 255, B: 255}, 20),
+        (top: number) => new Bar({ R: 0, G: 255, B: 255 }, top, 250, 20)
+      ],
+      primary: 2
+    });
+
+    visualizer.define('GreenBar', {
+      effects: [
+        (top: number) => new Bar({ R: 0, G: 255, B: 0 }, top, 200, 20)
+      ]
+    });
 
     visualizer.run();
-    visualizer.spawnEffect('RedBar', 50);
+    visualizer.spawn('GlowingBar', 40);
+    visualizer.spawn('GreenBar', 60);
   }
 }

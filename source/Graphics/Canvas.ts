@@ -2,6 +2,8 @@ import { IHashMap } from 'Base/Core';
 
 export enum DrawSetting {
   FILL_COLOR = 'fillStyle',
+  GLOW_BLUR = 'shadowBlur',
+  GLOW_COLOR = 'shadowColor',
   STROKE_COLOR = 'strokeStyle',
   STROKE_WIDTH = 'lineWidth'
 }
@@ -27,25 +29,29 @@ export default class Canvas {
     this._context.clearRect(0, 0, this.width, this.height);
   }
 
-  public drawCircle (x: number, y: number, radius: number): void {
+  public circle (x: number, y: number, radius: number): void {
     this._begin();
     this._context.arc(x, y, radius, 0, 2 * Math.PI);
-    this._context.fill();
-    this._context.stroke();
   }
 
-  public drawLine (x1: number, y1: number, x2: number, y2: number): void {
+  public line (x1: number, y1: number, x2: number, y2: number): void {
     this._begin();
     this._context.moveTo(x1, y1);
     this._context.lineTo(x2, y2);
     this._context.stroke();
   }
 
-  public drawRect (x: number, y: number, width: number, height: number): void {
+  public rectangle (x: number, y: number, width: number, height: number): void {
     this._begin();
     this._context.rect(x, y, width, height);
+  }
+
+  public fill (): void {
     this._context.fill();
-    this._context.stroke();
+  }
+
+  public restore (): void {
+    this._context.restore();
   }
 
   public save (): void {
@@ -61,8 +67,8 @@ export default class Canvas {
     this._element.height = height;
   }
 
-  public restore (): void {
-    this._context.restore();
+  public stroke (): void {
+    this._context.stroke();
   }
 
   private _begin (): void {

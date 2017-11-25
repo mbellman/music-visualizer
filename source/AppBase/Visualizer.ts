@@ -1,22 +1,28 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Bar from 'AppBase/Visualization/Effects/Bar';
 import Effect from 'AppBase/Visualization/Effects/Effect';
-import { Utils } from 'Base/Core';
+import EffectSpawn from 'AppBase/Visualization/EffectSpawn';
 import { IColor } from 'AppBase/Visualization/Types';
 import { IHashMap } from 'Base/Types';
+import { Utils } from 'Base/Core';
+
+type EffectFactory<T extends Effect = Effect> = (...args: any[]) => T;
+type EffectChunk = Effect[];
+
+interface IEffectPreset {
+  effects: EffectFactory[];
+  primary?: number;
+}
 
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
   tempo?: number;
 }
 
-type EffectFactory<T extends Effect = Effect> = (...args: any[]) => T;
-type EffectGroup = Effect[];
-
 export default class Visualizer {
   private _canvas: Canvas;
-  private _effectPresets: IHashMap<EffectFactory[]> = {};
-  private _effectGroups: EffectGroup[] = [];
+  private _effectPresets: IHashMap<IEffectPreset> = {};
+  private _effectSpawns: EffectSpawn[] = [];
   private _isRunning: boolean = false;
   private _lastTick: number;
 
@@ -26,7 +32,7 @@ export default class Visualizer {
   };
 
   public constructor (element: HTMLCanvasElement) {
-    Utils.bindAll(this, '_render');
+    Utils.bindAll(this, '_tick');
 
     this._canvas = new Canvas(element);
   }
@@ -41,59 +47,65 @@ export default class Visualizer {
     });
   }
 
-  public createEffect (name: string, effectFactories: EffectFactory[]): void {
-    this._effectPresets[name] = effectFactories;
+  public define (presetName: string, preset: IEffectPreset): void {
+    this._effectPresets[presetName] = preset;
   }
 
   public run (): void {
     this._isRunning = true;
     this._lastTick = Date.now();
 
-    this._render();
+    this._tick();
   }
 
   public setSize (width: number, height: number): void {
     this._canvas.setSize(width, height);
   }
 
-  public spawnEffect (name: string, ...args: any[]): void {
-    const effectFactories: EffectFactory[] = this._effectPresets[name];
-    const effectGroup: EffectGroup = [];
+  public spawn (name: string, ...args: any[]): void {
+    const { effects: effectFactories, primary } = this._effectPresets[name];
+    const effects: Effect[] = [];
 
     for (const effectFactory of effectFactories) {
       const effect: Effect = effectFactory.apply(null, args);
 
-      effectGroup.push(effect);
+      effects.push(effect);
     }
 
-    this._effectGroups.push(effectGroup);
+    this._effectSpawns.push(new EffectSpawn(effects, primary));
   }
 
   public stop (): void {
     this._isRunning = false;
   }
 
-  private _render (): void {
+  private _tick (): void {
     if (!this._isRunning) {
       return;
     }
 
+    const dt: number = (Date.now() - this._lastTick) / 1000;
+    let i: number = 0;
+
     this._canvas.clear();
 
-    const dt: number = (Date.now() - this._lastTick) / 1000;
-    this._lastTick = Date.now();
+    while (i < this._effectSpawns.length) {
+      const effectSpawn: EffectSpawn = this._effectSpawns[i];
 
-    for (const effectGroup of this._effectGroups) {
-      this._canvas.save();
+      effectSpawn.update(dt, this.tempo);
 
-      for (const effect of effectGroup) {
-        effect.update(dt, this.tempo);
-        effect.draw(this._canvas);
+      if (effectSpawn.isExpired) {
+        this._effectSpawns.splice(i, 1);
+
+        continue;
       }
 
-      this._canvas.restore();
+      effectSpawn.draw(this._canvas);
+      i++;
     }
 
-    requestAnimationFrame(this._render);
+    this._lastTick = Date.now();
+
+    requestAnimationFrame(this._tick);
   }
 }

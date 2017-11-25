@@ -23,10 +23,16 @@ export default class Bar extends Effect {
   public draw (canvas: Canvas): void {
     const pX: number = Math.round(this._x / 100 * canvas.width);
     const pY: number = Math.round(this._y / 100 * canvas.height);
-    const { R, G, B } = this.color;
 
-    canvas.set(DrawSetting.FILL_COLOR, `rgb(${R}, ${G}, ${B}`);
-    canvas.drawRect(pX, pY, this._width, this._height);
+    if (pX + this._width < 0) {
+      this.expire();
+
+      return;
+    }
+
+    canvas.set(DrawSetting.FILL_COLOR, this.color);
+    canvas.rectangle(pX, pY, this._width, this._height);
+    canvas.fill();
   }
 
   @Implementation

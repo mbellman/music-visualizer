@@ -3,16 +3,27 @@ import Visualizer from 'AppBase/Visualizer';
 import { IColor } from 'AppBase/Visualization/Types';
 
 export default abstract class Effect {
-  protected color: IColor;
+  protected color: string;
+  private _isExpired: boolean = false;
   private _startTime: number = Date.now();
 
   public constructor (color: IColor, ...args: any[]) {
-    this.color = color;
+    const { R, G, B } = color;
+
+    this.color = `rgb(${R}, ${G}, ${B})`;
     this._startTime = Date.now();
   }
 
   public get age (): number {
     return Date.now() - this._startTime;
+  }
+
+  public get isExpired (): boolean {
+    return this._isExpired;
+  }
+
+  protected expire (): void {
+    this._isExpired = true;
   }
 
   public abstract draw (canvas: Canvas): void;
