@@ -4,7 +4,6 @@ import { IColor } from 'Graphics/Types';
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 
 export default class Stroke extends Effect {
-  public readonly type: EffectType = EffectType.POST;
   private _color: string;
   private _width: number;
 

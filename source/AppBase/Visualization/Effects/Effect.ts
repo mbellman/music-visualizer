@@ -7,7 +7,6 @@ export enum EffectType {
 }
 
 export default abstract class Effect {
-  public abstract readonly type: EffectType;
   private _delay: number = 0;
   private _startTime: number = Date.now();
 
@@ -15,10 +14,18 @@ export default abstract class Effect {
     return Date.now() - this._startTime;
   }
 
+  public get delayedAge (): number {
+    return Math.max(this.age - this._delay, 0);
+  }
+
   public delay (delay: number): this {
     this._delay = delay;
 
     return this;
+  }
+
+  public isDelaying (): boolean {
+    return this.delayedAge === 0;
   }
 
   public abstract update (canvas: Canvas, shape: Shape, dt: number, tempo: number): void;

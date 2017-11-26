@@ -7,8 +7,7 @@ export default abstract class Shape {
   protected offsetY: number = 0;
   protected x: number = 0;
   protected y: number = 0;
-  private _preEffects: Effect[] = [];
-  private _postEffects: Effect[] = [];
+  private _effects: Effect[] = [];
   private _startTime: number = Date.now();
 
   public constructor (x: number, y: number) {
@@ -28,12 +27,8 @@ export default abstract class Shape {
     return this.y + this.offsetY;
   }
 
-  public add (effect: Effect): this {
-    if (effect.type === EffectType.PRE) {
-      this._preEffects.push(effect);
-    } else {
-      this._postEffects.push(effect);
-    }
+  public pipe (effect: Effect): this {
+    this._effects.push(effect);
 
     return this;
   }
@@ -47,14 +42,12 @@ export default abstract class Shape {
   }
 
   public update (canvas: Canvas, dt: number, tempo: number): void {
-    for (const effect of this._preEffects) {
-      effect.update(canvas, this, dt, tempo);
-    }
-
     this.draw(canvas);
 
-    for (const effect of this._postEffects) {
-      effect.update(canvas, this, dt, tempo);
+    for (const effect of this._effects) {
+      if (!effect.isDelaying()) {
+        effect.update(canvas, this, dt, tempo);
+      }
     }
   }
 }

@@ -26,11 +26,19 @@ export default class VisualizerUI {
 
     visualizer.define('GlowingBar', (x: number, y: number) => {
       return [
-        new Ball(x, y, 20)
-          .add(new Glow({ R: 255, G: 0, B: 0 }, 10))
-          .add(new Stroke({ R: 0, G: 255, B: 255 }, 5))
-          .add(new Fill({ R: 0, G: 0, B: 0 }))
-          .add(new Scroll())
+        new Ball(x, y, 10)
+          .pipe(
+            new Glow({ R: 255, G: 0, B: 0 }, 20)
+              .delay(7000)
+              .fadeIn(250)
+              .fadeOut(1000)
+          )
+          .pipe(new Stroke({ R: 0, G: 255, B: 255 }, 3))
+          .pipe(
+            new Fill({ R: 0, G: 255, B: 255 })
+              .delay(7000)
+          )
+          .pipe(new Scroll())
       ];
     });
 
@@ -43,9 +51,9 @@ export default class VisualizerUI {
 
     visualizer.run();
 
-    for (let i = 0; i < 250; i++) {
+    for (let i = 0; i < 500; i++) {
       const delay: number = Utils.random(0, 30000);
-      const top: number = Utils.random(0, 90);
+      const top: number = Utils.random(20, 80);
 
       setTimeout(() => {
         visualizer.spawn('GlowingBar', visualizer.width, top / 100 * visualizer.height);

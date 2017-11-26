@@ -4,7 +4,6 @@ import { IColor } from 'Graphics/Types';
 import { Implementation } from 'Base/Decorators';
 
 export default class Fill extends Effect {
-  public readonly type: EffectType = EffectType.POST;
   private _color: string;
 
   public constructor (color: IColor) {
