@@ -1,18 +1,11 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Bar from 'AppBase/Visualization/Effects/Bar';
 import Effect from 'AppBase/Visualization/Effects/Effect';
-import EffectSpawn from 'AppBase/Visualization/EffectSpawn';
-import { IColor } from 'AppBase/Visualization/Types';
+import Shape from 'AppBase/Visualization/Shapes/Shape';
+import VisualizerNote from 'AppBase/Visualization/VisualizerNote';
 import { IHashMap } from 'Base/Types';
 import { Utils } from 'Base/Core';
-import { setTimeout } from 'core-js/library/web/timers';
 
-type EffectFactory<T extends Effect = Effect> = (...args: any[]) => T;
-
-interface IEffectPreset {
-  effects: EffectFactory[];
-  primary?: number;
-}
+type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
@@ -21,10 +14,11 @@ interface IVisualizerConfiguration {
 
 export default class Visualizer {
   private _canvas: Canvas;
-  private _effectPresets: IHashMap<IEffectPreset> = {};
-  private _effectSpawns: EffectSpawn[] = [];
+  private _garbageCollectionCounter: number = 50;
   private _isRunning: boolean = false;
   private _lastTick: number;
+  private _shapeFactories: IHashMap<ShapeFactory> = {};
+  private _visualizerNotes: VisualizerNote[] = [];
 
   private _configuration: IVisualizerConfiguration = {
     framerate: 60,
@@ -37,8 +31,16 @@ export default class Visualizer {
     this._canvas = new Canvas(element);
   }
 
+  public get height (): number {
+    return this._canvas.height;
+  }
+
   public get tempo (): number {
     return this._configuration.tempo;
+  }
+
+  public get width (): number {
+    return this._canvas.width;
   }
 
   public configure (configuration: IVisualizerConfiguration): void {
@@ -47,8 +49,8 @@ export default class Visualizer {
     });
   }
 
-  public define (presetName: string, preset: IEffectPreset): void {
-    this._effectPresets[presetName] = preset;
+  public define (name: string, shapeFactory: ShapeFactory): void {
+    this._shapeFactories[name] = shapeFactory;
   }
 
   public run (): void {
@@ -63,16 +65,11 @@ export default class Visualizer {
   }
 
   public spawn (name: string, ...args: any[]): void {
-    const { effects: effectFactories, primary } = this._effectPresets[name];
-    const effects: Effect[] = [];
+    const shapeFactory: ShapeFactory = this._shapeFactories[name];
+    const shapes: Shape[] = shapeFactory.apply(null, args);
+    const visualizerNote: VisualizerNote = new VisualizerNote(shapeFactory.apply(null, args));
 
-    for (const effectFactory of effectFactories) {
-      const effect: Effect = effectFactory.apply(null, args);
-
-      effects.push(effect);
-    }
-
-    this._effectSpawns.push(new EffectSpawn(effects, primary));
+    this._visualizerNotes.push(visualizerNote);
   }
 
   public stop (): void {
@@ -85,27 +82,37 @@ export default class Visualizer {
     }
 
     const dt: number = (Date.now() - this._lastTick) / 1000;
-    let i: number = 0;
 
     this._canvas.clear();
 
-    while (i < this._effectSpawns.length) {
-      const effectSpawn: EffectSpawn = this._effectSpawns[i];
+    for (const visualizerNote of this._visualizerNotes) {
+      visualizerNote.update(this._canvas, dt, this.tempo);
+    }
 
-      effectSpawn.update(dt, this.tempo);
-
-      if (effectSpawn.isExpired) {
-        this._effectSpawns.splice(i, 1);
-
-        continue;
-      }
-
-      effectSpawn.draw(this._canvas);
-      i++;
+    if (--this._garbageCollectionCounter === 0) {
+      this._garbageCollectVisualizerNotes();
     }
 
     this._lastTick = Date.now();
 
     requestAnimationFrame(this._tick);
+  }
+
+  private _garbageCollectVisualizerNotes (): void {
+    let i: number = 0;
+
+    while (i < this._visualizerNotes.length) {
+      const visualizerNote: VisualizerNote = this._visualizerNotes[i];
+
+      if (visualizerNote.isOffscreen()) {
+        this._visualizerNotes.splice(i, 1);
+
+        continue;
+      }
+
+      i++;
+    }
+
+    this._garbageCollectionCounter = 50;
   }
 }

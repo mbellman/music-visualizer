@@ -1,3 +1,4 @@
+import { IColor } from 'Graphics/Types';
 import { IHashMap } from 'Base/Core';
 
 export enum DrawSetting {
@@ -11,6 +12,12 @@ export enum DrawSetting {
 export default class Canvas {
   private _context: CanvasRenderingContext2D;
   private _element: HTMLCanvasElement;
+
+  public static colorToString (color: IColor): string {
+    const { R, G, B } = color;
+
+    return `rgb(${R}, ${G}, ${B})`;
+  }
 
   public constructor (element: HTMLCanvasElement) {
     this._context = element.getContext('2d');

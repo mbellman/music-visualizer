@@ -1,31 +1,25 @@
 import Canvas from 'Graphics/Canvas';
-import Visualizer from 'AppBase/Visualization/Visualizer';
-import { IColor } from 'AppBase/Visualization/Types';
+import Shape from 'AppBase/Visualization/Shapes/Shape';
+
+export enum EffectType {
+  PRE,
+  POST
+}
 
 export default abstract class Effect {
-  protected color: string;
-  private _isExpired: boolean = false;
+  public abstract readonly type: EffectType;
+  private _delay: number = 0;
   private _startTime: number = Date.now();
-
-  public constructor (color: IColor, ...args: any[]) {
-    const { R, G, B } = color;
-
-    this.color = `rgb(${R}, ${G}, ${B})`;
-    this._startTime = Date.now();
-  }
 
   public get age (): number {
     return Date.now() - this._startTime;
   }
 
-  public get isExpired (): boolean {
-    return this._isExpired;
+  public delay (delay: number): this {
+    this._delay = delay;
+
+    return this;
   }
 
-  protected expire (): void {
-    this._isExpired = true;
-  }
-
-  public abstract draw (canvas: Canvas): void;
-  public abstract update (dt: number, tempo: number): void;
+  public abstract update (canvas: Canvas, shape: Shape, dt: number, tempo: number): void;
 }
