@@ -3,7 +3,6 @@ import Effect from 'AppBase/Visualization/Effects/Effect';
 import Shape from 'AppBase/Visualization/Shapes/Shape';
 
 export default class VisualizerNote {
-  private _isExpired: boolean = false;
   private _shapes: Shape[] = [];
 
   public constructor (shapes: Shape[]) {

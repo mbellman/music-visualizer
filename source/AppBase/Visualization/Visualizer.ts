@@ -82,6 +82,7 @@ export default class Visualizer {
     }
 
     const dt: number = (Date.now() - this._lastTick) / 1000;
+    this._lastTick = Date.now();
 
     this._canvas.clear();
 
@@ -92,8 +93,6 @@ export default class Visualizer {
     if (--this._garbageCollectionCounter === 0) {
       this._garbageCollectVisualizerNotes();
     }
-
-    this._lastTick = Date.now();
 
     requestAnimationFrame(this._tick);
   }

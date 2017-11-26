@@ -27,7 +27,7 @@ export default class VisualizerUI {
     visualizer.define('GlowingBar', (x: number, y: number) => {
       return [
         new Ball(x, y, 20)
-          .add(new Glow({ R: 255, G: 0, B: 0 }, 20))
+          .add(new Glow({ R: 255, G: 0, B: 0 }, 10))
           .add(new Stroke({ R: 0, G: 255, B: 255 }, 5))
           .add(new Fill({ R: 0, G: 0, B: 0 }))
           .add(new Scroll())
@@ -43,8 +43,8 @@ export default class VisualizerUI {
 
     visualizer.run();
 
-    for (let i = 0; i < 100; i++) {
-      const delay: number = Utils.random(0, 10000);
+    for (let i = 0; i < 250; i++) {
+      const delay: number = Utils.random(0, 30000);
       const top: number = Utils.random(0, 90);
 
       setTimeout(() => {

@@ -21,11 +21,11 @@ export default abstract class Shape {
   }
 
   public get pixelX (): number {
-    return Math.round(this.x + this.offsetX);
+    return this.x + this.offsetX;
   }
 
   public get pixelY (): number {
-    return Math.round(this.y + this.offsetY);
+    return this.y + this.offsetY;
   }
 
   public add (effect: Effect): this {
