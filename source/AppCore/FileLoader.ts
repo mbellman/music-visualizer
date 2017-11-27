@@ -1,4 +1,4 @@
-import { Callback } from 'Base/Types';
+import { Callback } from 'Base/Core';
 
 interface IBase64Data {
   header: string;

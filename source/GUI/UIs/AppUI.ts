@@ -1,7 +1,7 @@
-import 'Application/GUI/Styles/AppStyles.less';
-import AudioBank from 'Application/AudioBank';
-import VisualizerUI from 'Application/GUI/UIs/VisualizerUI';
-import SettingsUI from 'Application/GUI/UIs/SettingsUI';
+import 'GUI/Styles/AppStyles.less';
+import AudioBank from 'AppCore/AudioBank';
+import VisualizerUI from 'GUI/UIs/VisualizerUI';
+import SettingsUI from 'GUI/UIs/SettingsUI';
 
 export default class AppUI {
   public static template: string = `

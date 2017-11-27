@@ -1,5 +1,5 @@
 import Canvas from 'Graphics/Canvas';
-import Shape from 'AppBase/Visualization/Shapes/Shape';
+import Shape from 'AppCore/Visualization/Shapes/Shape';
 
 export enum EffectType {
   PRE,

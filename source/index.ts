@@ -1,4 +1,4 @@
-import App from 'Application/App';
+import App from 'GUI/App';
 
 const app: App = new App();
 

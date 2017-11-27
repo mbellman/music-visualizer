@@ -1,9 +1,8 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Effect from 'AppBase/Visualization/Effects/Effect';
-import Shape from 'AppBase/Visualization/Shapes/Shape';
-import VisualizerNote from 'AppBase/Visualization/VisualizerNote';
-import { IHashMap } from 'Base/Types';
-import { Utils } from 'Base/Core';
+import Effect from 'AppCore/Visualization/Effects/Effect';
+import Shape from 'AppCore/Visualization/Shapes/Shape';
+import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
+import { IHashMap, Utils } from 'Base/Core';
 
 type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 

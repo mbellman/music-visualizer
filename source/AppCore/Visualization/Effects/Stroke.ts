@@ -1,7 +1,7 @@
-import Effect, { EffectType } from 'AppBase/Visualization/Effects/Effect';
-import { Implementation } from 'Base/Decorators';
-import { IColor } from 'Graphics/Types';
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
+import Effect, { EffectType } from 'AppCore/Visualization/Effects/Effect';
+import { IColor } from 'Graphics/Types';
+import { Implementation } from 'Base/Core';
 
 export default class Stroke extends Effect {
   private _color: string;

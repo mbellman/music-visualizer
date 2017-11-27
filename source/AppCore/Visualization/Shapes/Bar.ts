@@ -1,6 +1,6 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Shape from 'AppBase/Visualization/Shapes/Shape';
-import { Implementation } from 'Base/Decorators';
+import Shape from 'AppCore/Visualization/Shapes/Shape';
+import { Implementation } from 'Base/Core';
 
 export default class Bar extends Shape {
   private _height: number;

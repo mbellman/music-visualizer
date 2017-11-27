@@ -1,5 +1,5 @@
-import AppUI from 'Application/GUI/UIs/AppUI';
-import VisualizerUI from 'Application/GUI/UIs/VisualizerUI';
+import AppUI from 'GUI/UIs/AppUI';
+import VisualizerUI from 'GUI/UIs/VisualizerUI';
 import { $, IQuery } from 'Base/Core';
 
 export default class App {

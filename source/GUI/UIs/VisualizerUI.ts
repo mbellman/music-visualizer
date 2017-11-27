@@ -1,12 +1,12 @@
-import 'Application/GUI/Styles/VisualizerStyles.less';
-import Bar from 'AppBase/Visualization/Shapes/Bar';
-import Fill from 'AppBase/Visualization/Effects/Fill';
-import Glow from 'AppBase/Visualization/Effects/Glow';
-import Scroll from 'AppBase/Visualization/Effects/Scroll';
-import Visualizer from 'AppBase/Visualization/Visualizer';
+import 'GUI/Styles/VisualizerStyles.less';
+import Bar from 'AppCore/Visualization/Shapes/Bar';
+import Fill from 'AppCore/Visualization/Effects/Fill';
+import Glow from 'AppCore/Visualization/Effects/Glow';
+import Scroll from 'AppCore/Visualization/Effects/Scroll';
+import Visualizer from 'AppCore/Visualization/Visualizer';
 import { $, Utils } from 'Base/Core';
-import Ball from 'AppBase/Visualization/Shapes/Ball';
-import Stroke from 'AppBase/Visualization/Effects/Stroke';
+import Ball from 'AppCore/Visualization/Shapes/Ball';
+import Stroke from 'AppCore/Visualization/Effects/Stroke';
 
 export default class VisualizerUI {
   public static template: string = `

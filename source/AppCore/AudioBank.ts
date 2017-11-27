@@ -1,5 +1,5 @@
 import AudioFile from 'Audio/AudioFile';
-import FileLoader from 'AppBase/FileLoader';
+import FileLoader from 'AppCore/FileLoader';
 import { SoundState } from 'Audio/Constants';
 
 export default class AudioBank {

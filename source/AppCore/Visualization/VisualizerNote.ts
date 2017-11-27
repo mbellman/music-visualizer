@@ -1,6 +1,6 @@
 import Canvas from 'Graphics/Canvas';
-import Effect from 'AppBase/Visualization/Effects/Effect';
-import Shape from 'AppBase/Visualization/Shapes/Shape';
+import Effect from 'AppCore/Visualization/Effects/Effect';
+import Shape from 'AppCore/Visualization/Shapes/Shape';
 
 export default class VisualizerNote {
   private _shapes: Shape[] = [];
