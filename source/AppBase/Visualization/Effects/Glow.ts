@@ -6,8 +6,8 @@ import { Implementation } from 'Base/Decorators';
 export default class Glow extends Effect {
   private _blur: number;
   private _color: string;
-  private _fadeInTime: number = -1;
-  private _fadeOutTime: number = -1;
+  private _fadeInTime: number = 0;
+  private _fadeOutTime: number = 0;
 
   public constructor (color: IColor, blur: number = 5) {
     super();
@@ -39,18 +39,19 @@ export default class Glow extends Effect {
   }
 
   private _getBlurAmount (): number {
-    if (this._fadeInTime === -1 && this._fadeOutTime === -1) {
+    const shouldUseDefault: boolean = this.delayedAge > this._fadeInTime && this._fadeOutTime === 0;
+    const hasFadedOut: boolean = !shouldUseDefault && this.delayedAge > this._fadeInTime + this._fadeOutTime;
+
+    if (shouldUseDefault) {
       return this._blur;
-    }
-
-    if (this.delayedAge > this._fadeInTime + this._fadeOutTime) {
+    } else if (hasFadedOut) {
       return 0;
+    } else {
+      const isFadingIn: boolean = this.delayedAge < this._fadeInTime;
+      const elapsedFadeOutTime: number = this.delayedAge - this._fadeInTime;
+      const blurMultiplier: number = isFadingIn ? this.delayedAge / this._fadeInTime : 1 - elapsedFadeOutTime / this._fadeOutTime;
+
+      return this._blur * blurMultiplier;
     }
-
-    const isFadingIn: boolean = this.delayedAge < this._fadeInTime;
-    const fadeOutAge: number = this.delayedAge - this._fadeInTime;
-    const blurMultiplier: number = isFadingIn ? this.delayedAge / this._fadeInTime : 1 - fadeOutAge / this._fadeOutTime;
-
-    return this._blur * blurMultiplier;
   }
 }

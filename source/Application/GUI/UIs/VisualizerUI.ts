@@ -31,7 +31,6 @@ export default class VisualizerUI {
             new Glow({ R: 255, G: 0, B: 0 }, 20)
               .delay(7000)
               .fadeIn(250)
-              .fadeOut(1000)
           )
           .pipe(new Stroke({ R: 0, G: 255, B: 255 }, 3))
           .pipe(
