@@ -50,7 +50,7 @@ export default class VisualizerUI {
 
     visualizer.run();
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 100; i++) {
       const delay: number = Utils.random(0, 30000);
       const top: number = Utils.random(20, 80);
 

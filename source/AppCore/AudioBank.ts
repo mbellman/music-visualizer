@@ -40,9 +40,9 @@ export default class AudioBank {
   public static async uploadFile (file: File): Promise<void> {
     const blob: Blob = await FileLoader.fileToBlob(file);
     const url: string = URL.createObjectURL(blob);
-    const filename: string = file.name;
-    const audioFile: AudioFile = new AudioFile(url, filename);
+    const audioFile: AudioFile = new AudioFile(url, file.name);
 
     AudioBank._files.push(audioFile);
+    URL.revokeObjectURL(url);
   }
 }

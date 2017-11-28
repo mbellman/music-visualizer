@@ -2,6 +2,7 @@ import 'GUI/Styles/AppStyles.less';
 import AudioBank from 'AppCore/AudioBank';
 import VisualizerUI from 'GUI/UIs/VisualizerUI';
 import SettingsUI from 'GUI/UIs/SettingsUI';
+import MidiConverter from 'AppCore/MIDI/MidiConverter';
 
 export default class AppUI {
   public static template: string = `
@@ -14,10 +15,15 @@ export default class AppUI {
 
   public static async onFileDrop (event: DragEvent): Promise<void> {
     const file: File = event.dataTransfer.files[0];
+    const extension: string = file.name.split('.').pop();
 
-    await AudioBank.uploadFile(file);
+    if (extension === 'mid') {
+      MidiConverter.midiToSequence(file);
+    } else {
+      await AudioBank.uploadFile(file);
 
-    AudioBank.playAudioFile(0);
+      AudioBank.playAudioFile(0);
+    }
   }
 
   public static onFileInputChange (): void {

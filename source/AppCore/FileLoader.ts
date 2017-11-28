@@ -6,27 +6,42 @@ interface IBase64Data {
 }
 
 export default class FileLoader {
-  public static fileToBlob (file: File): Promise<Blob> {
-    return new Promise((resolve: Callback<Blob>) => {
+  public static fileToBase64Data (file: File): Promise<IBase64Data> {
+    return new Promise((resolve: Callback<IBase64Data>) => {
       const fileReader: FileReader = new FileReader();
 
       fileReader.addEventListener('loadend', () => {
-        const { header, data } = FileLoader._getBase64Data(fileReader.result);
-        const decodedData: string = atob(data);
-        const decodedBytes: number[] = new Array(decodedData.length);
+        const base64Data: IBase64Data = FileLoader._getBase64Data(fileReader.result);
 
-        for (let i = 0; i < decodedBytes.length; i++) {
-          decodedBytes[i] = decodedData.charCodeAt(i);
-        }
-
-        const decodedByteArray = new Uint8Array(decodedBytes);
-        const blob: Blob = new Blob([decodedByteArray], { type: header });
-
-        resolve(blob);
+        resolve(base64Data);
       });
 
       fileReader.readAsDataURL(file);
     });
+  }
+
+  public static async fileToBlob (file: File): Promise<Blob> {
+    const uint8Array: Uint8Array = await FileLoader.fileToUint8Array(file);
+
+    return new Blob([uint8Array], { type: file.type });
+  }
+
+  public static async fileToString (file: File): Promise<string> {
+    const uint8Array: Uint8Array = await FileLoader.fileToUint8Array(file);
+
+    return String.fromCharCode.apply(null, uint8Array);
+  }
+
+  public static async fileToUint8Array (file: File): Promise<Uint8Array> {
+    const { header, data } = await FileLoader.fileToBase64Data(file);
+    const decodedData: string = atob(data);
+    const decodedBytes: number[] = new Array(decodedData.length);
+
+    for (let i = 0; i < decodedBytes.length; i++) {
+      decodedBytes[i] = decodedData.charCodeAt(i);
+    }
+
+    return new Uint8Array(decodedBytes);
   }
 
   public static urlToArrayBuffer (url: string): Promise<ArrayBuffer> {
