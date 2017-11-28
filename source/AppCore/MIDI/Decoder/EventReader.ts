@@ -7,13 +7,15 @@ import {
 /**
  * Adapted from:
  *
+ * https://github.com/gasman/jasmid/blob/master/midifile.js
  * https://www.csie.ntu.edu.tw/~r92092/ref/midi/
  * http://www.ccarh.org/courses/253/handout/smf/#track_event
- * http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html#BMA1_
- * https://github.com/gasman/jasmid/blob/master/midifile.js
+ * http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
+ * https://www.midikits.net/midi_analyser/running_status.htm
  */
 export default class EventReader {
   private _stream: Stream;
+  private _runningStatusCode: number;
 
   public constructor (data: string) {
     this._stream = new Stream(data);
@@ -49,7 +51,7 @@ export default class EventReader {
   private _getEventType (eventCode: number): EventType {
     if (eventCode < 0xF0) {
       return EventType.MIDI_EVENT;
-    } else if (eventCode === SysexEventType.F0 || eventCode === SysexEventType.F7) {
+    } else if (eventCode === 0xF0 || eventCode === 0xF7) {
       return EventType.SYSEX_EVENT;
     } else if (eventCode === 0xFF) {
       return EventType.META_EVENT;
@@ -67,8 +69,19 @@ export default class EventReader {
   }
 
   private _nextMidiEventData (eventCode: number): IMidiEventData {
-    const type: number = eventCode >> 4;
-    const channel: number = eventCode & 0x0F;
+    const isRunningStatusEvent: boolean = eventCode < 0x80;
+
+    if (isRunningStatusEvent) {
+      // Running status MIDI events are truncated from the front
+      // by one byte, so we have to set our stream position back
+      // accordingly.
+      this._stream.rewind(1);
+    } else {
+      this._runningStatusCode = eventCode;
+    }
+
+    const type: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) >> 4;
+    const channel: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) & 0x0F;
     let note: number;
 
     switch (type) {
@@ -99,7 +112,7 @@ export default class EventReader {
         break;
     }
 
-    return { type, channel, note };
+    return { type, note, channel };
   }
 
   private _nextSysexEventData (eventCode: number): ISysexEventData {
@@ -107,41 +120,5 @@ export default class EventReader {
     const data: string = this._stream.next(size);
 
     return { type: eventCode, size, data };
-  }
-
-  public _readMidiEvent (eventType: number): IMidiEventData {
-    const midiEventType: number = eventType >> 4;
-    const channel: number = eventType & 0x0F;
-    let note: number;
-
-    switch (midiEventType) {
-      case MidiEventType.NOTE_OFF:
-        note = this._stream.nextInt8();
-
-        this._stream.advance(1);
-
-        break;
-      case MidiEventType.NOTE_ON:
-        note = this._stream.nextInt8();
-
-        this._stream.advance(1);
-
-        break;
-      case MidiEventType.PROGRAM_CHANGE:
-      case MidiEventType.CHANNEL_AFTERTOUCH:
-        this._stream.advance(1);
-
-        break;
-      default:
-        this._stream.advance(2);
-
-        break;
-    }
-
-    return {
-      type: midiEventType,
-      note,
-      channel
-    };
   }
 }

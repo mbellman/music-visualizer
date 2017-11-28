@@ -58,7 +58,7 @@ export default class Stream {
       const int8: number = this.nextInt8();
 
       if (int8 & 0x80) {
-        varInt += int8 & 0x7F;
+        varInt += (int8 & 0x7F);
         varInt <<= 7;
       } else {
         return varInt + int8;
@@ -68,5 +68,9 @@ export default class Stream {
 
   public reset (): void {
     this._position = 0;
+  }
+
+  public rewind (length: number): void {
+    this._position -= length;
   }
 }

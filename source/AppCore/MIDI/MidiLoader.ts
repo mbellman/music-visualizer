@@ -31,7 +31,7 @@ export default class MidiLoader {
         const eventReader: EventReader = new EventReader(chunk.data);
 
         for (const event of eventReader.events()) {
-          console.log(event);
+
         }
       }
     }
