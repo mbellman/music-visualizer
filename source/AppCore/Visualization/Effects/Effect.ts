@@ -1,11 +1,6 @@
 import Canvas from 'Graphics/Canvas';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 
-export enum EffectType {
-  PRE,
-  POST
-}
-
 export default abstract class Effect {
   private _delay: number = 0;
   private _startTime: number = Date.now();

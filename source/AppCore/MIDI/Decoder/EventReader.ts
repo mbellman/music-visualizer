@@ -1,0 +1,147 @@
+import Stream from 'AppCore/MIDI/Decoder/Stream';
+import {
+  EventType, IMetaEvent, IMetaEventData, IMidiEvent, IMidiEventData,
+  ISysexEvent, ISysexEventData, MetaEventType, MidiEventType, SysexEventType
+} from 'AppCore/MIDI/Types';
+
+/**
+ * Adapted from:
+ *
+ * https://www.csie.ntu.edu.tw/~r92092/ref/midi/
+ * http://www.ccarh.org/courses/253/handout/smf/#track_event
+ * http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html#BMA1_
+ * https://github.com/gasman/jasmid/blob/master/midifile.js
+ */
+export default class EventReader {
+  private _stream: Stream;
+
+  public constructor (data: string) {
+    this._stream = new Stream(data);
+  }
+
+  public * events (): IterableIterator<IMidiEvent | IMetaEvent | ISysexEvent> {
+    while (!this._stream.done()) {
+      const deltaTime: number = this._stream.nextVarInt();
+      const eventCode: number = this._stream.nextInt8();
+      const eventType: EventType = this._getEventType(eventCode);
+      let data: IMetaEventData | IMidiEventData | ISysexEventData;
+
+      switch (eventType) {
+        case EventType.META_EVENT:
+          // The meta event code 0xFF is constant, so we need not pass
+          // it into the meta event object generation method.
+          data = this._nextMetaEventData();
+          break;
+        case EventType.MIDI_EVENT:
+          data = this._nextMidiEventData(eventCode);
+          break;
+        case EventType.SYSEX_EVENT:
+          data = this._nextSysexEventData(eventCode);
+          break;
+        default:
+          throw new Error(`Invalid event code 0x${eventCode.toString(16)}!`);
+      }
+
+      yield { deltaTime, ...data };
+    }
+  }
+
+  private _getEventType (eventCode: number): EventType {
+    if (eventCode < 0xF0) {
+      return EventType.MIDI_EVENT;
+    } else if (eventCode === SysexEventType.F0 || eventCode === SysexEventType.F7) {
+      return EventType.SYSEX_EVENT;
+    } else if (eventCode === 0xFF) {
+      return EventType.META_EVENT;
+    } else {
+      return null;
+    }
+  }
+
+  private _nextMetaEventData (): IMetaEventData {
+    const type: number = this._stream.nextInt8();
+    const size: number = this._stream.nextVarInt();
+    const data: string = this._stream.next(size);
+
+    return { header: 0xFF, type, size, data };
+  }
+
+  private _nextMidiEventData (eventCode: number): IMidiEventData {
+    const type: number = eventCode >> 4;
+    const channel: number = eventCode & 0x0F;
+    let note: number;
+
+    switch (type) {
+      case MidiEventType.CHANNEL_AFTERTOUCH:
+        this._stream.advance(1);
+        break;
+      case MidiEventType.CONTROLLER:
+        this._stream.advance(2);
+        break;
+      case MidiEventType.NOTE_AFTERTOUCH:
+        this._stream.advance(2);
+        break;
+      case MidiEventType.NOTE_OFF:
+        note = this._stream.nextInt8();
+
+        this._stream.advance(1);
+        break;
+      case MidiEventType.NOTE_ON:
+        note = this._stream.nextInt8();
+
+        this._stream.advance(1);
+        break;
+      case MidiEventType.PITCH_BEND:
+        this._stream.advance(2);
+        break;
+      case MidiEventType.PROGRAM_CHANGE:
+        this._stream.advance(1);
+        break;
+    }
+
+    return { type, channel, note };
+  }
+
+  private _nextSysexEventData (eventCode: number): ISysexEventData {
+    const size: number = this._stream.nextVarInt();
+    const data: string = this._stream.next(size);
+
+    return { type: eventCode, size, data };
+  }
+
+  public _readMidiEvent (eventType: number): IMidiEventData {
+    const midiEventType: number = eventType >> 4;
+    const channel: number = eventType & 0x0F;
+    let note: number;
+
+    switch (midiEventType) {
+      case MidiEventType.NOTE_OFF:
+        note = this._stream.nextInt8();
+
+        this._stream.advance(1);
+
+        break;
+      case MidiEventType.NOTE_ON:
+        note = this._stream.nextInt8();
+
+        this._stream.advance(1);
+
+        break;
+      case MidiEventType.PROGRAM_CHANGE:
+      case MidiEventType.CHANNEL_AFTERTOUCH:
+        this._stream.advance(1);
+
+        break;
+      default:
+        this._stream.advance(2);
+
+        break;
+    }
+
+    return {
+      type: midiEventType,
+      note,
+      channel
+    };
+  }
+}

@@ -15,6 +15,10 @@ export default class Stream {
     this._position += length;
   }
 
+  public done (): boolean {
+    return this._position >= this._string.length;
+  }
+
   public next (length: number): string {
     const chunk: string = this._string.substr(this._position, length);
 
@@ -53,8 +57,8 @@ export default class Stream {
     while (true) {
       const int8: number = this.nextInt8();
 
-      if (int8 & 128) {
-        varInt += int8 & 127;
+      if (int8 & 0x80) {
+        varInt += int8 & 0x7F;
         varInt <<= 7;
       } else {
         return varInt + int8;

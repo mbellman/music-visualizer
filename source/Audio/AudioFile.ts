@@ -2,11 +2,7 @@ import AudioCore from 'audio/AudioCore';
 import FileLoader from 'AppCore/FileLoader';
 import ISound from 'audio/ISound';
 import { EventManager, Utils } from 'Base/Core';
-import { SoundState } from 'Audio/Constants';
-
-enum AudioEvent {
-  LOADED
-}
+import { AudioEvent, SoundState } from 'Audio/Constants';
 
 export default class AudioFile implements ISound {
   private _analyserNode: AnalyserNode;

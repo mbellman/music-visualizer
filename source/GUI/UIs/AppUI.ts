@@ -2,7 +2,7 @@ import 'GUI/Styles/AppStyles.less';
 import AudioBank from 'AppCore/AudioBank';
 import VisualizerUI from 'GUI/UIs/VisualizerUI';
 import SettingsUI from 'GUI/UIs/SettingsUI';
-import MidiConverter from 'AppCore/MIDI/MidiConverter';
+import MidiLoader from 'AppCore/MIDI/MidiLoader';
 
 export default class AppUI {
   public static template: string = `
@@ -18,7 +18,7 @@ export default class AppUI {
     const extension: string = file.name.split('.').pop();
 
     if (extension === 'mid') {
-      MidiConverter.midiToSequence(file);
+      MidiLoader.fileToSequence(file);
     } else {
       await AudioBank.uploadFile(file);
 

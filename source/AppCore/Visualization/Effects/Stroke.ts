@@ -1,5 +1,5 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Effect, { EffectType } from 'AppCore/Visualization/Effects/Effect';
+import Effect from 'AppCore/Visualization/Effects/Effect';
 import { IColor } from 'Graphics/Types';
 import { Implementation } from 'Base/Core';
 

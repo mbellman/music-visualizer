@@ -1,3 +1,7 @@
+export enum AudioEvent {
+  LOADED
+}
+
 export enum SoundState {
   SOUND_STOPPED,
   SOUND_PLAYING,
