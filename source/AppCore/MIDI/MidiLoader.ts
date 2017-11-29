@@ -27,19 +27,23 @@ export default class MidiLoader {
         let runningTime: number = 0;
 
         for (const event of eventReader.events()) {
+          runningTime += event.deltaTime;
+
           switch (event.type) {
             case MetaEventType.TEMPO:
               // TODO
               break;
             case MidiEventType.NOTE_ON:
-              channel.addNote(new Note(event.note, 0, runningTime + event.deltaTime));
+              channel.addNote(new Note(event.pitch, 0, runningTime));
               break;
             case MidiEventType.NOTE_OFF:
-              channel.getNote(channel.length - 1).duration = event.deltaTime;
+              const lastNote: Note = channel.getNote(channel.length - 1);
+
+              if (lastNote) {
+                lastNote.duration = runningTime - lastNote.delay;
+              }
               break;
           }
-
-          runningTime += event.deltaTime;
         }
 
         if (channel.length > 0) {

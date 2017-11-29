@@ -82,7 +82,7 @@ export default class EventReader {
 
     let type: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) >> 4;
     const channel: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) & 0x0F;
-    let note: number;
+    let pitch: number;
 
     switch (type) {
       case MidiEventType.CHANNEL_AFTERTOUCH:
@@ -95,12 +95,12 @@ export default class EventReader {
         this._stream.advance(2);
         break;
       case MidiEventType.NOTE_OFF:
-        note = this._stream.nextInt8();
+        pitch = this._stream.nextInt8();
 
         this._stream.advance(1);
         break;
       case MidiEventType.NOTE_ON:
-        note = this._stream.nextInt8();
+        pitch = this._stream.nextInt8();
 
         const velocity: number = this._stream.nextInt8();
 
@@ -119,7 +119,7 @@ export default class EventReader {
         break;
     }
 
-    return { type, channel, note };
+    return { type, channel, pitch };
   }
 
   private _nextSysexEventData (eventCode: number): ISysexEventData {

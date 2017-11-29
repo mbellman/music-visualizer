@@ -72,7 +72,7 @@ export interface IMetaEventData {
 export interface IMidiEventData {
   type: MidiEventType;
   channel?: number;
-  note?: number;
+  pitch?: number;
 }
 
 export interface ISysexEventData {

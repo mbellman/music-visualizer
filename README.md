@@ -4,7 +4,6 @@ A music visualizer.
 To-do:
 
 **MIDI Conversion**
-* Correct note duration resolution
 * Automatically resolve tempo
 * Remove redundant channels (identical # of notes to an existing channel; unnecessary for visualization purposes)
 

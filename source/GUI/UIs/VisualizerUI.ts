@@ -94,11 +94,7 @@ export default class VisualizerUI {
           const noteX: number = width;
           const noteY: number = (127 - note.pitch) * pitchRatio * heightRatio * spreadRatio - height / 4 * spreadRatio;
 
-          if (j % 2 === 0) {
-            VisualizerUI._visualizer.spawn('Bar', noteX, noteY, (note.duration * tempoRatio) / 6, 20);
-          } else {
-            VisualizerUI._visualizer.spawn('Ball', noteX, noteY);
-          }
+          VisualizerUI._visualizer.spawn('Bar', noteX, noteY, (note.duration * tempoRatio) / 6, 20);
         }, tempoRatio * note.delay);
       }
     }
