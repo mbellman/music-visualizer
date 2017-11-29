@@ -1,9 +1,11 @@
+import Channel from 'AppCore/MIDI/Channel';
 import ChunkReader from 'AppCore/MIDI/Decoder/ChunkReader';
 import EventReader from 'AppCore/MIDI/Decoder/EventReader';
 import FileLoader from 'AppCore/FileLoader';
+import Note from 'AppCore/MIDI/Note';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Stream from 'AppCore/MIDI/Decoder/Stream';
-import { ChunkType, IChunk, IHeader, MidiEventType } from 'AppCore/MIDI/Types';
+import { ChunkType, IChunk, IHeader, MidiEventType, MetaEventType, IMidiEvent } from 'AppCore/MIDI/Types';
 
 /**
  * Adapted from:
@@ -19,19 +21,29 @@ export default class MidiLoader {
     const sequence: Sequence = new Sequence();
 
     for (const chunk of chunkReader.chunks()) {
-      if (chunk.type === ChunkType.HEADER) {
-        // The header chunk will precede all track chunks, so
-        // it's safe to assume this condition will trip first.
-        const { trackCount } = MidiLoader._parseHeaderChunk(chunk);
-
-        for (let i = 0; i < trackCount; i++) {
-          sequence.addChannel();
-        }
-      } else if (chunk.type === ChunkType.TRACK) {
+      if (chunk.type === ChunkType.TRACK) {
         const eventReader: EventReader = new EventReader(chunk.data);
+        const channel: Channel = new Channel();
+        let runningTime: number = 0;
 
         for (const event of eventReader.events()) {
+          switch (event.type) {
+            case MetaEventType.TEMPO:
+              // TODO
+              break;
+            case MidiEventType.NOTE_ON:
+              channel.addNote(new Note(event.note, 0, runningTime + event.deltaTime));
+              break;
+            case MidiEventType.NOTE_OFF:
+              channel.getNote(channel.length - 1).duration = event.deltaTime;
+              break;
+          }
 
+          runningTime += event.deltaTime;
+        }
+
+        if (channel.length > 0) {
+          sequence.addChannel(channel);
         }
       }
     }

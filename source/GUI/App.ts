@@ -11,17 +11,17 @@ export default class App {
     this._bindUI();
     this._bindHandlers();
 
-    VisualizerUI.start();
+    VisualizerUI.initialize();
   }
 
   private _bindUI (): void {
-    this.ui.$app = $('.app');
+    this.ui.$visualizer = $('.visualizer-container canvas');
     this.ui.$fileInput = $('input#file-input');
   }
 
   private _bindHandlers (): void {
-    this.ui.$app
-      .on('drop', AppUI.onFileDrop)
+    this.ui.$visualizer
+      .on('drop', VisualizerUI.onFileDrop)
       .on('drop dragover', (e) => e.preventDefault());
 
     this.ui.$fileInput.on('change', AppUI.onFileInputChange);

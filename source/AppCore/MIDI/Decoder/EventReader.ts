@@ -80,9 +80,10 @@ export default class EventReader {
       this._runningStatusCode = eventCode;
     }
 
-    const type: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) >> 4;
+    let type: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) >> 4;
     const channel: number = (isRunningStatusEvent ? this._runningStatusCode : eventCode) & 0x0F;
     let note: number;
+    let velocity: number;
 
     switch (type) {
       case MidiEventType.CHANNEL_AFTERTOUCH:
@@ -101,8 +102,14 @@ export default class EventReader {
         break;
       case MidiEventType.NOTE_ON:
         note = this._stream.nextInt8();
+        velocity = this._stream.nextInt8();
 
-        this._stream.advance(1);
+        if (velocity === 0) {
+          // A zero-velocity note-on event is to be treated as the
+          // note-off event for the previous note-on event.
+          type = MidiEventType.NOTE_OFF;
+        }
+
         break;
       case MidiEventType.PITCH_BEND:
         this._stream.advance(2);
@@ -112,7 +119,7 @@ export default class EventReader {
         break;
     }
 
-    return { type, note, channel };
+    return { type, channel, note, velocity };
   }
 
   private _nextSysexEventData (eventCode: number): ISysexEventData {
