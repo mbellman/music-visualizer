@@ -73,7 +73,6 @@ export interface IMidiEventData {
   type: MidiEventType;
   channel?: number;
   note?: number;
-  velocity?: number;
 }
 
 export interface ISysexEventData {
