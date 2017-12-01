@@ -25,10 +25,6 @@ export default class VisualizerUI {
 
     VisualizerUI._visualizer.setSize(1190, 640);
 
-    VisualizerUI._visualizer.configure({
-      tempo: 224
-    });
-
     VisualizerUI._visualizer.define('Bar', (x: number, y: number, width: number, height: number) => {
       return [
         new Bar(x, y, width, height)
@@ -77,25 +73,30 @@ export default class VisualizerUI {
   }
 
   private static _visualize (sequence: Sequence): void {
+    VisualizerUI._visualizer.configure({
+      tempo: sequence.tempo
+    });
+
+    console.log(sequence);
+
     VisualizerUI._visualizer.run();
 
     const { width, height } = VisualizerUI._visualizer;
-    const heightRatio: number = height / 100;
-    const pitchRatio: number = 100 / 127;
-    const tempoRatio: number = VisualizerUI._visualizer.tempo / 96;
-    const spreadRatio: number = 2;
-    let i: number = 0;
+    const visualizerHeightRatio: number = height / 100;
+    const heightToPitchRatio: number = 100 / 127;
+    const spreadFactor: number = 1.5;
+    const pixelsPerSecond: number = 60 * 0.01667 * sequence.tempo;
+    const beatsPerSecond: number = sequence.tempo / 60;
+    const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
 
     for (const channel of sequence.channels()) {
-      const j: number = i++;
-
       for (const note of channel.notes()) {
         window.setTimeout(() => {
           const noteX: number = width;
-          const noteY: number = (127 - note.pitch) * pitchRatio * heightRatio * spreadRatio - height / 4 * spreadRatio;
+          const noteY: number = (127 - note.pitch) * heightToPitchRatio * visualizerHeightRatio * spreadFactor - height / 3;
 
-          VisualizerUI._visualizer.spawn('Bar', noteX, noteY, (note.duration * tempoRatio) / 6, 20);
-        }, tempoRatio * note.delay);
+          VisualizerUI._visualizer.spawn('Bar', noteX, noteY, note.duration * pixelsPerBeat, 12);
+        }, 1000 * note.delay / beatsPerSecond);
       }
     }
   }

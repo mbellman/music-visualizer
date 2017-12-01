@@ -59,7 +59,7 @@ export interface ITrack {
 }
 
 export interface ITrackEvent {
-  deltaTime: number;
+  delta: number;
 }
 
 export interface IMetaEventData {

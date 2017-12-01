@@ -4,17 +4,16 @@ A music visualizer.
 To-do:
 
 **MIDI Conversion**
-* Automatically resolve tempo
-* Remove redundant channels (identical # of notes to an existing channel; unnecessary for visualization purposes)
+* Register dynamic tempo changes
 
 **Audio Stream Visualization/Frequency Analysis**
 * No progress yet
 
 **Visualizer**
-* Correct note timing/bar effect width inconsistencies
 * Improve vertical scaling
+* Feed sequence into Visualizer instance to run visualization
 * Rendering optimizations
 
 **UI**
-* Add a settings screen for customizing effects
+* Add a settings screen for customizing effects + tempo
 * Add an active tracks list

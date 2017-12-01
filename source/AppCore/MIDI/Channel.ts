@@ -11,8 +11,14 @@ export default class Channel {
     this._notes.push(note);
   }
 
-  public getNote (index: number): Note {
-    return this._notes[index];
+  public getLastNoteAtPitch (pitch: number): Note {
+    for (let i = this._notes.length - 1; i >= 0; i--) {
+      const note: Note = this._notes[i];
+
+      if (note.pitch === pitch) {
+        return note;
+      }
+    }
   }
 
   public * notes (): IterableIterator<Note> {

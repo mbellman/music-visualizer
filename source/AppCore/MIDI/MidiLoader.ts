@@ -19,36 +19,46 @@ export default class MidiLoader {
     const data: string = await FileLoader.fileToString(file);
     const chunkReader: ChunkReader = new ChunkReader(data);
     const sequence: Sequence = new Sequence();
+    let ticksPerBeat: number;
 
     for (const chunk of chunkReader.chunks()) {
-      if (chunk.type === ChunkType.TRACK) {
-        const eventReader: EventReader = new EventReader(chunk.data);
-        const channel: Channel = new Channel();
-        let runningTime: number = 0;
+      switch (chunk.type) {
+        case ChunkType.HEADER:
+          ticksPerBeat = MidiLoader._parseHeaderChunk(chunk).ticksPerBeat;
+          break;
+        case ChunkType.TRACK:
+          const eventReader: EventReader = new EventReader(chunk.data);
+          const channel: Channel = new Channel();
+          let runningTicks: number = 0;
 
-        for (const event of eventReader.events()) {
-          runningTime += event.deltaTime;
+          for (const event of eventReader.events()) {
+            runningTicks += event.delta;
 
-          switch (event.type) {
-            case MetaEventType.TEMPO:
-              // TODO
-              break;
-            case MidiEventType.NOTE_ON:
-              channel.addNote(new Note(event.pitch, 0, runningTime));
-              break;
-            case MidiEventType.NOTE_OFF:
-              const lastNote: Note = channel.getNote(channel.length - 1);
+            switch (event.type) {
+              case MetaEventType.TEMPO:
+                const stream: Stream = new Stream(event.data);
+                const tempo: number = Math.floor(60 / (stream.nextInt24() / 1000000));
 
-              if (lastNote) {
-                lastNote.duration = runningTime - lastNote.delay;
-              }
-              break;
+                sequence.tempo = tempo;
+                break;
+              case MidiEventType.NOTE_ON:
+                channel.addNote(new Note(event.pitch, 0, runningTicks / ticksPerBeat));
+                break;
+              case MidiEventType.NOTE_OFF:
+                const noteOn: Note = channel.getLastNoteAtPitch(event.pitch);
+
+                if (noteOn) {
+                  noteOn.duration = runningTicks / ticksPerBeat - noteOn.delay;
+                }
+                break;
+            }
           }
-        }
 
-        if (channel.length > 0) {
-          sequence.addChannel(channel);
-        }
+          if (channel.length > 0) {
+            sequence.addChannel(channel);
+          }
+
+          break;
       }
     }
 

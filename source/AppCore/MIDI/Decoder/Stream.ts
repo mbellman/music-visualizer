@@ -39,6 +39,14 @@ export default class Stream {
     return (this.nextInt8() << 8) + this.nextInt8();
   }
 
+  public nextInt24 (): number {
+    return (
+      (this.nextInt8() << 16) +
+      (this.nextInt8() << 8) +
+      this.nextInt8()
+    );
+  }
+
   public nextInt32 (): number {
     return (
       (this.nextInt8() << 24) +

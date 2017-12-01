@@ -1,10 +1,15 @@
+import { Utils } from 'Base/Utils';
+
 export default class Note {
+  /**
+   * Both delay and duration are measured in quarter-note units.
+   */
   public delay: number;
   public duration: number;
   public pitch: number;
 
   public constructor (pitch?: number, duration?: number, delay?: number) {
-    this.pitch = pitch;
+    this.pitch = Utils.clamp(pitch, 0, 127);
     this.duration = duration;
     this.delay = delay;
   }

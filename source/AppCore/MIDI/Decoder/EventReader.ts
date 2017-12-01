@@ -23,7 +23,7 @@ export default class EventReader {
 
   public * events (): IterableIterator<IMidiEvent | IMetaEvent | ISysexEvent> {
     while (!this._stream.done()) {
-      const deltaTime: number = this._stream.nextVarInt();
+      const delta: number = this._stream.nextVarInt();
       const eventCode: number = this._stream.nextInt8();
       const eventType: EventType = this._getEventType(eventCode);
       let data: IMetaEventData | IMidiEventData | ISysexEventData;
@@ -44,7 +44,7 @@ export default class EventReader {
           throw new Error(`Invalid event code 0x${eventCode.toString(16)}!`);
       }
 
-      yield { deltaTime, ...data };
+      yield { delta, ...data };
     }
   }
 
