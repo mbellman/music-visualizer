@@ -4,7 +4,7 @@ import { Callback, EventManager } from 'Base/Core';
 import { UIEventListener, IRegisteredElement } from 'Base/DOM/Types';
 import ElementData from 'Base/DOM/ElementData';
 
-class Query implements IQuery {
+export class Query {
   [element: number]: Element;
   private _elements: Element[] = [];
 
@@ -119,13 +119,6 @@ class Query implements IQuery {
   }
 }
 
-export interface IQuery {
-  [element: number]: Element;
-  html: (html: string) => this;
-  remove: () => this;
-  on: (event: string, handler: Callback<UIEvent>) => this;
-}
-
-export default function $ (selector: string | Element | Query): IQuery {
+export default function $ (selector: string | Element | Query): Query {
   return new Query(selector);
 }

@@ -10,10 +10,17 @@ To-do:
 * No progress yet
 
 **Visualizer**
-* Improve vertical scaling
-* Feed sequence into Visualizer instance to run visualization
 * Rendering optimizations
+* Improve vertical scaling
+* Improve horizontal note alignment
+* Handle effects on a per-track basis
+* Real-time tempo adjustments
 
 **UI**
 * Add a settings screen for customizing effects + tempo
 * Add an active tracks list
+
+**Code cleanup**
+* Remove Sequence/Channel/Note stuff from MIDI directory
+* Remove Channel.getLastNoteOfPitch(), see if there's a better way of solving the note-off problem
+* MidiLoader tidying

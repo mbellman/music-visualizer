@@ -1,5 +1,3 @@
-import App from 'GUI/App';
+import { main } from 'App/UI';
 
-const app: App = new App();
-
-app.start();
+main();

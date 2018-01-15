@@ -1,8 +1,9 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Effect from 'AppCore/Visualization/Effects/Effect';
+import Sequence from 'AppCore/MIDI/Sequence';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
-import { IHashMap, Utils } from 'Base/Core';
+import { Map, Utils } from 'Base/Core';
 
 type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 
@@ -11,12 +12,14 @@ interface IVisualizerConfiguration {
   tempo?: number;
 }
 
+const GARBAGE_COLLECTION_DELAY: number = 50;
+
 export default class Visualizer {
   private _canvas: Canvas;
-  private _garbageCollectionCounter: number = 50;
+  private _garbageCollectionCounter: number = GARBAGE_COLLECTION_DELAY;
   private _isRunning: boolean = false;
   private _lastTick: number;
-  private _shapeFactories: IHashMap<ShapeFactory> = {};
+  private _shapeFactories: Map<string, ShapeFactory> = new Map();
   private _visualizerNotes: VisualizerNote[] = [];
 
   private _configuration: IVisualizerConfiguration = {
@@ -49,7 +52,7 @@ export default class Visualizer {
   }
 
   public define (name: string, shapeFactory: ShapeFactory): void {
-    this._shapeFactories[name] = shapeFactory;
+    this._shapeFactories.set(name, shapeFactory);
   }
 
   public run (): void {
@@ -64,15 +67,44 @@ export default class Visualizer {
   }
 
   public spawn (name: string, ...args: any[]): void {
-    const shapeFactory: ShapeFactory = this._shapeFactories[name];
+    const shapeFactory: ShapeFactory = this._shapeFactories.get(name);
     const shapes: Shape[] = shapeFactory.apply(null, args);
-    const visualizerNote: VisualizerNote = new VisualizerNote(shapeFactory.apply(null, args));
+    const visualizerNote: VisualizerNote = new VisualizerNote(shapes);
 
     this._visualizerNotes.push(visualizerNote);
   }
 
   public stop (): void {
+    this._canvas.clear();
+
     this._isRunning = false;
+  }
+
+  public visualize (sequence: Sequence): void {
+    const { tempo } = sequence;
+
+    this.configure({ tempo });
+    this.run();
+
+    const { width, height } = this;
+    const visualizerHeightRatio: number = height / 100;
+    const heightToPitchRatio: number = 100 / 127;
+    const spreadFactor: number = 1.5;
+    const pixelsPerSecond: number = 60 * 0.01667 * tempo;
+    const beatsPerSecond: number = tempo / 60;
+    const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
+    const defaultEffect: string = this._shapeFactories.keys()[0];
+
+    for (const channel of sequence.channels()) {
+      for (const note of channel.notes()) {
+        window.setTimeout(() => {
+          const noteX: number = width;
+          const noteY: number = (127 - note.pitch) * heightToPitchRatio * visualizerHeightRatio * spreadFactor - height / 3;
+
+          this.spawn(defaultEffect, noteX, noteY, note.duration * pixelsPerBeat, 12);
+        }, 1000 * note.delay / beatsPerSecond);
+      }
+    }
   }
 
   private _tick (): void {
@@ -111,6 +143,6 @@ export default class Visualizer {
       i++;
     }
 
-    this._garbageCollectionCounter = 50;
+    this._garbageCollectionCounter = GARBAGE_COLLECTION_DELAY;
   }
 }
