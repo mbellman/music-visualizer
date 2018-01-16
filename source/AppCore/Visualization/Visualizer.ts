@@ -12,13 +12,14 @@ interface IVisualizerConfiguration {
   tempo?: number;
 }
 
-const GARBAGE_COLLECTION_DELAY: number = 50;
-
 export default class Visualizer {
+  public static readonly GARBAGE_COLLECTION_DELAY: number = 50;
+  public static readonly FRAME_DELTA: number = 0.01667;
+  private _bufferCanvas: Canvas = new Canvas();
   private _canvas: Canvas;
-  private _garbageCollectionCounter: number = GARBAGE_COLLECTION_DELAY;
+  private _frame: number = 0;
+  private _garbageCollectionCounter: number = Visualizer.GARBAGE_COLLECTION_DELAY;
   private _isRunning: boolean = false;
-  private _lastTick: number;
   private _shapeFactories: Map<string, ShapeFactory> = new Map();
   private _visualizerNotes: VisualizerNote[] = [];
 
@@ -57,13 +58,13 @@ export default class Visualizer {
 
   public run (): void {
     this._isRunning = true;
-    this._lastTick = Date.now();
 
     this._tick();
   }
 
   public setSize (width: number, height: number): void {
     this._canvas.setSize(width, height);
+    this._bufferCanvas.setSize(width, height);
   }
 
   public spawn (name: string, ...args: any[]): void {
@@ -112,18 +113,17 @@ export default class Visualizer {
       return;
     }
 
-    const dt: number = (Date.now() - this._lastTick) / 1000;
-    this._lastTick = Date.now();
-
-    this._canvas.clear();
-
-    for (const visualizerNote of this._visualizerNotes) {
-      visualizerNote.update(this._canvas, dt, this.tempo);
+    if (this._configuration.framerate === 30) {
+      this._render30fps();
+    } else {
+      this._render60fps();
     }
 
-    if (--this._garbageCollectionCounter === 0) {
+    if (this._frame % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
       this._garbageCollectVisualizerNotes();
     }
+
+    this._frame++;
 
     requestAnimationFrame(this._tick);
   }
@@ -143,6 +143,33 @@ export default class Visualizer {
       i++;
     }
 
-    this._garbageCollectionCounter = GARBAGE_COLLECTION_DELAY;
+    this._garbageCollectionCounter = Visualizer.GARBAGE_COLLECTION_DELAY;
+  }
+
+  private _render30fps (): void {
+    const isRenderingFrame: boolean = this._frame % 2 === 0;
+    const halfwayIndex: number = Math.floor(this._visualizerNotes.length / 2);
+    const startIndex: number = isRenderingFrame ? halfwayIndex : 0;
+    const endIndex: number = isRenderingFrame ? this._visualizerNotes.length : halfwayIndex;
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const visualizerNote: VisualizerNote = this._visualizerNotes[i];
+
+      visualizerNote.update(this._bufferCanvas, 2 * Visualizer.FRAME_DELTA, this.tempo);
+    }
+
+    if (isRenderingFrame) {
+      this._canvas.clear();
+      this._canvas.image(this._bufferCanvas.element, 0, 0);
+      this._bufferCanvas.clear();
+    }
+  }
+
+  private _render60fps (): void {
+    this._canvas.clear();
+
+    for (const visualizerNote of this._visualizerNotes) {
+      visualizerNote.update(this._canvas, Visualizer.FRAME_DELTA, this.tempo);
+    }
   }
 }

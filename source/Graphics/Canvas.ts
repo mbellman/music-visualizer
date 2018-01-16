@@ -1,4 +1,4 @@
-import { IColor } from 'Graphics/Types';
+import { CanvasImageSource, IColor } from 'Graphics/Types';
 import { IHashMap } from 'Base/Core';
 
 export enum DrawSetting {
@@ -10,8 +10,8 @@ export enum DrawSetting {
 }
 
 export default class Canvas {
+  public readonly element: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
-  private _element: HTMLCanvasElement;
 
   public static colorToString (color: IColor): string {
     const { R, G, B } = color;
@@ -19,17 +19,21 @@ export default class Canvas {
     return `rgb(${R}, ${G}, ${B})`;
   }
 
-  public constructor (element: HTMLCanvasElement) {
+  public constructor (element?: HTMLCanvasElement) {
+    if (!element) {
+      element = document.createElement('canvas');
+    }
+
+    this.element = element;
     this._context = element.getContext('2d');
-    this._element = element;
   }
 
   public get height (): number {
-    return this._element.height;
+    return this.element.height;
   }
 
   public get width (): number {
-    return this._element.width;
+    return this.element.width;
   }
 
   public clear (): void {
@@ -39,6 +43,14 @@ export default class Canvas {
   public circle (x: number, y: number, radius: number): void {
     this._context.beginPath();
     this._context.arc(x, y, radius, 0, 2 * Math.PI);
+  }
+
+  public image (image: CanvasImageSource, x: number, y: number): void;
+  public image (image: CanvasImageSource, x: number, y: number, width: number, height: number): void;
+  public image (image: CanvasImageSource, clipX: number, clipY: number, clipWidth: number, clipHeight: number, x: number, y: number, width: number, height: number): void;
+
+  public image (): void {
+    this._context.drawImage.apply(this._context, arguments);
   }
 
   public line (x1: number, y1: number, x2: number, y2: number): void {
@@ -70,8 +82,8 @@ export default class Canvas {
   }
 
   public setSize (width: number, height: number): void {
-    this._element.width = width;
-    this._element.height = height;
+    this.element.width = width;
+    this.element.height = height;
   }
 
   public stroke (): void {

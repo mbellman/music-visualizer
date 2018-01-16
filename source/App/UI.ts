@@ -64,4 +64,8 @@ export function main (): void {
   visualizer.setSize(1190, 640);
   visualizer.define('Bar', barFactory);
   visualizer.define('Ball', ballFactory);
+
+  visualizer.configure({
+    framerate: 60
+  });
 }
