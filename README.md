@@ -10,9 +10,8 @@ To-do:
 * No progress yet
 
 **Visualizer**
-* Rendering optimizations: seek an alternative to object creation for actively rendered notes
+* Rendering optimizations
 * Improve vertical scaling
-* Improve horizontal note alignment
 * Handle effects on a per-track basis
 * Real-time tempo adjustments
 
