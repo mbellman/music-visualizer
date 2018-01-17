@@ -11,24 +11,26 @@ type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
+  speed?: number;
   tempo?: number;
 }
 
 export default class Visualizer {
   public static readonly GARBAGE_COLLECTION_DELAY: number = 50;
-  public static readonly FRAME_DELTA: number = 0.01667;
   private _beat: number = 0;
   private _bufferCanvas: Canvas = new Canvas();
   private _canvas: Canvas;
   private _frame: number = 0;
   private _garbageCollectionCounter: number = Visualizer.GARBAGE_COLLECTION_DELAY;
   private _isRunning: boolean = false;
+  private _lastTick: number;
   private _noteQueue: NoteQueue;
   private _shapeFactories: Map<string, ShapeFactory> = new Map();
   private _visualizerNotes: VisualizerNote[] = [];
 
   private _configuration: IVisualizerConfiguration = {
     framerate: 60,
+    speed: 100,
     tempo: 100
   };
 
@@ -50,6 +52,10 @@ export default class Visualizer {
     return this._canvas.width;
   }
 
+  private get _speedFactor (): number {
+    return this._configuration.speed / 100;
+  }
+
   public configure (configuration: IVisualizerConfiguration): void {
     Object.keys(configuration).forEach((key: keyof IVisualizerConfiguration) => {
       this._configuration[key] = configuration[key];
@@ -62,6 +68,7 @@ export default class Visualizer {
 
   public run (): void {
     this._isRunning = true;
+    this._lastTick = Date.now();
 
     this._tick();
   }
@@ -99,10 +106,15 @@ export default class Visualizer {
       return;
     }
 
+    const time: number = Date.now();
+    const dt: number = (time - this._lastTick) / 1000;
+
+    this._lastTick = time;
+
     if (this._configuration.framerate === 30) {
-      this._render30fps();
+      this._render30fps(dt);
     } else {
-      this._render60fps();
+      this._render60fps(dt);
     }
 
     if (this._frame % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
@@ -132,7 +144,7 @@ export default class Visualizer {
     this._garbageCollectionCounter = Visualizer.GARBAGE_COLLECTION_DELAY;
   }
 
-  private _runNoteSpawnCheck (): void {
+  private _runNoteSpawnCheck (dt: number): void {
     const notes: Note[] = this._noteQueue.next(this._beat);
 
     if (notes.length > 0) {
@@ -140,7 +152,7 @@ export default class Visualizer {
       const visualizerHeightRatio: number = this.height / 100;
       const heightToPitchRatio: number = 100 / 127;
       const spreadFactor: number = 1.5;
-      const pixelsPerSecond: number = framerate * (60 / framerate) * Visualizer.FRAME_DELTA * tempo;
+      const pixelsPerSecond: number = framerate * (60 / framerate) * 0.01667 * tempo * this._speedFactor;
       const beatsPerSecond: number = tempo / 60;
       const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
       const defaultEffect: string = this._shapeFactories.keys()[0];
@@ -154,7 +166,7 @@ export default class Visualizer {
     }
   }
 
-  private _render30fps (): void {
+  private _render30fps (dt: number): void {
     const shouldRerender: boolean = this._frame % 2 === 0;
     const halfwayIndex: number = Math.floor(this._visualizerNotes.length / 2);
     const startIndex: number = shouldRerender ? halfwayIndex : 0;
@@ -163,7 +175,7 @@ export default class Visualizer {
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
 
-      visualizerNote.update(this._bufferCanvas, 2 * Visualizer.FRAME_DELTA, this.tempo);
+      visualizerNote.update(this._bufferCanvas, 2 * dt, this.tempo * this._speedFactor);
     }
 
     if (shouldRerender) {
@@ -171,27 +183,26 @@ export default class Visualizer {
       this._canvas.image(this._bufferCanvas.element, 0, 0);
       this._bufferCanvas.clear();
 
-      this._updateBeat();
-      this._runNoteSpawnCheck();
+      this._updateBeat(dt);
+      this._runNoteSpawnCheck(dt);
     }
   }
 
-  private _render60fps (): void {
+  private _render60fps (dt: number): void {
     this._canvas.clear();
 
     for (const visualizerNote of this._visualizerNotes) {
-      visualizerNote.update(this._canvas, Visualizer.FRAME_DELTA, this.tempo);
+      visualizerNote.update(this._canvas, dt, this.tempo * this._speedFactor);
     }
 
-    this._updateBeat();
-    this._runNoteSpawnCheck();
+    this._updateBeat(dt);
+    this._runNoteSpawnCheck(dt);
   }
 
-  private _updateBeat (): void {
+  private _updateBeat (dt: number): void {
     const { framerate, tempo } = this._configuration;
-    const dt: number = (60 / framerate) * Visualizer.FRAME_DELTA;
     const beatsPerSecond: number = tempo / 60;
 
-    this._beat += beatsPerSecond * dt;
+    this._beat += beatsPerSecond * (60 / framerate) * dt;
   }
 }

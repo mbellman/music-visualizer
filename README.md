@@ -10,10 +10,10 @@ To-do:
 * No progress yet
 
 **Visualizer**
-* Rendering optimizations
 * Improve vertical scaling
 * Handle effects on a per-track basis
 * Real-time tempo adjustments
+* Rendering optimizations
 
 **UI**
 * Add a settings screen for customizing effects + tempo

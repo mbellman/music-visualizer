@@ -66,6 +66,7 @@ export function main (): void {
   visualizer.define('Ball', ballFactory);
 
   visualizer.configure({
-    framerate: 60
+    framerate: 60,
+    speed: 80
   });
 }
