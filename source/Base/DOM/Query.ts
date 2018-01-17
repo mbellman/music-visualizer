@@ -1,21 +1,57 @@
-import ElementDataManager from 'Base/DOM/ElementDataManager';
-import MultiMap from 'Base/Polyfills/MultiMap';
-import { Callback, EventManager } from 'Base/Core';
-import { UIEventListener, IRegisteredElement } from 'Base/DOM/Types';
 import ElementData from 'Base/DOM/ElementData';
+import ElementDataManager from 'Base/DOM/ElementDataManager';
+import EventManager from 'Base/EventManager';
+import MultiMap from 'Base/Polyfills/MultiMap';
+import { Callback } from 'Base/Types';
+import { UIEventListener, IRegisteredElement } from 'Base/DOM/Types';
+import { Utils } from 'Base/Utils';
 
 export class Query {
   [element: number]: Element;
   private _elements: Element[] = [];
 
-  public constructor (selector: string | Element | Query) {
+  public constructor (selector: string | Element | Element[] | Query) {
     if (typeof selector === 'string') {
-      this._saveSelectedElementsAsKeys(selector);
-    } else if (selector instanceof Element) {
-      this._saveSingleElement(selector);
+      this._savedSelectedElements(selector);
     } else if (selector instanceof Query) {
       return selector;
+    } else if (selector instanceof Element) {
+      this._saveElements([ selector ]);
+    } else if (selector[0] instanceof Element) {
+      this._saveElements(selector);
     }
+  }
+
+  public append (html: string): this {
+    this._forElements((element: Element) => {
+      element.innerHTML += html;
+    });
+
+    return this;
+  }
+
+  public empty (): this {
+    return this.html('');
+  }
+
+  public find (selector: string): Query {
+    let matchedElements: Element[] = [];
+
+    this._forElements((element: Element) => {
+      const matchedChildren: Element[] = Utils.toArray(element.querySelectorAll(selector));
+
+      matchedElements = matchedElements.concat(matchedChildren);
+    });
+
+    return $(matchedElements);
+  }
+
+  public hide (): this {
+    this._forElements((element: HTMLElement) => {
+      element.style.display = 'none';
+    });
+
+    return this;
   }
 
   public html (html: string): this {
@@ -41,6 +77,14 @@ export class Query {
   public remove (): this {
     this._forElements((element: Element) => {
       element.parentElement.removeChild(element);
+    });
+
+    return this;
+  }
+
+  public show (): this {
+    this._forElements((element: HTMLElement) => {
+      element.style.display = 'block';
     });
 
     return this;
@@ -94,7 +138,7 @@ export class Query {
     });
   }
 
-  private _saveSelectedElementsAsKeys (selector: string): void {
+  private _savedSelectedElements (selector: string): void {
     this._elements = Array.prototype.slice.call(document.querySelectorAll(selector), 0);
 
     this._elements.forEach((element: Element, index: number) => {
@@ -104,11 +148,14 @@ export class Query {
     });
   }
 
-  private _saveSingleElement (element: Element): void {
-    this[0] = element;
-    this._elements = [element];
+  private _saveElements (elements: Element[]): void {
+    this._elements = elements;
 
-    ElementDataManager.register(element);
+    elements.forEach((element: Element, index: number) => {
+      this[index] = element;
+
+      ElementDataManager.register(element);
+    });
   }
 
   private _unbindEventListener (element: Element, event: string, listener: UIEventListener): void {
@@ -119,6 +166,6 @@ export class Query {
   }
 }
 
-export default function $ (selector: string | Element | Query): Query {
+export default function $ (selector: string | Element | Element[] | Query): Query {
   return new Query(selector);
 }

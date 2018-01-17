@@ -16,7 +16,36 @@ body {
     top: 50%;
     width: 1200px;
 
-    .visualizer-container {
+    > div {
+      background-color: black;
+      border-radius: 7px;
+      height: ~"calc(100% - 10px)";
+      left: 5px;
+      overflow: hidden;
+      position: relative;
+      top: 5px;
+      width: ~"calc(100% - 10px)";
+    }
+
+    .options {
+      background-color: black;
+
+      .name {
+        color: white;
+      }
+
+      .channels {
+        .channel {
+          padding: 10px 10px 20px;
+  
+          .name {
+            color: white;
+          }
+        }
+      }
+    }
+
+    .visualizer {
       background-color: black;
       border-radius: 7px;
       height: ~"calc(100% - 10px)";

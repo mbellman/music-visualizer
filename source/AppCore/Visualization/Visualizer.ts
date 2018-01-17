@@ -145,7 +145,7 @@ export default class Visualizer {
   }
 
   private _runNoteSpawnCheck (dt: number): void {
-    const notes: Note[] = this._noteQueue.next(this._beat);
+    const notes: Note[] = this._noteQueue.take(this._beat);
 
     if (notes.length > 0) {
       const { framerate, tempo } = this._configuration;

@@ -54,7 +54,7 @@ export default class MidiLoader {
             }
           }
 
-          if (channel.length > 0) {
+          if (channel.size > 0) {
             sequence.addChannel(channel);
           }
 

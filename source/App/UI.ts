@@ -6,6 +6,7 @@ import Visualizer from 'AppCore/Visualization/Visualizer';
 import { $ } from 'Base/Core';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { Query } from 'Base/DOM/Query';
+import Channel from 'AppCore/MIDI/Channel';
 
 export function main (): void {
   /**
@@ -14,8 +15,8 @@ export function main (): void {
   $('body').html(`
     <input type="file" id="file-input" />
     <div class="app">
-      <div class="settings"></div>
-      <div class="visualizer-container">
+      <div class="options"></div>
+      <div class="visualizer">
         <canvas></canvas>
       </div>
     </div>
@@ -25,12 +26,50 @@ export function main (): void {
    * UI
    */
   const $fileInput: Query = $('input#file-input');
-  const $visualizer: Query = $('.visualizer-container canvas');
+  const $options: Query = $('.options');
+  const $visualizer: Query = $('.visualizer');
+  const $visualizerCanvas: Query = $('.visualizer > canvas');
 
   /**
    * Variables
    */
-  const visualizer: Visualizer = new Visualizer($visualizer[0] as HTMLCanvasElement);
+  const visualizer: Visualizer = new Visualizer($visualizerCanvas[0] as HTMLCanvasElement);
+
+  /**
+   * Various UI methods
+   */
+  function addChannelOptions (channel: Channel): void {
+    $options
+      .find('.channels')
+      .append(`
+        <div class="channel">
+          <label class="name">${channel.size}</label>
+        </div>
+      `);
+  }
+
+  function showOptions (): void {
+    $options.show();
+    $visualizer.hide();
+  }
+
+  function loadSequenceOptions (sequence: Sequence): void {
+    $options.html(`
+      <h4 class="name">${sequence.name}</h4>
+      <div class="channels"></div>
+    `);
+
+    for (const channel of sequence.channels()) {
+      addChannelOptions(channel);
+    }
+
+    showOptions();
+  }
+
+  function showVisualizer (): void {
+    $visualizer.show();
+    $options.hide();
+  }
 
   /**
    * Event handlers
@@ -46,7 +85,10 @@ export function main (): void {
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
 
-      visualizer.visualize(sequence);
+      sequence.name = file.name;
+
+      loadSequenceOptions(sequence);
+      // visualizer.visualize(sequence);
     } else {
       await AudioBank.uploadFile(file);
 
@@ -55,11 +97,16 @@ export function main (): void {
   }
 
   /**
-   * Initialization
+   * Event bindings
    */
-  $visualizer
+  $visualizerCanvas
     .on('drop', onFileDrop)
     .on('drop dragover', (e) => e.preventDefault());
+
+  /**
+   * Initialization
+   */
+  $options.hide();
 
   visualizer.setSize(1190, 640);
   visualizer.define('Bar', barFactory);

@@ -13,7 +13,7 @@ export default class NoteQueue {
    * measured in quarter-notes, removing them and shifting
    * the queue forward.
    */
-  public next (delay: number): Note[] {
+  public take (delay: number): Note[] {
     const notes: Note[] = [];
 
     for (const channel of this._channels) {
