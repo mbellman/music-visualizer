@@ -18,7 +18,7 @@ export default class MidiLoader {
   public static async fileToSequence (file: File): Promise<Sequence> {
     const data: string = await FileLoader.fileToString(file);
     const chunkReader: ChunkReader = new ChunkReader(data);
-    const sequence: Sequence = new Sequence();
+    const sequence: Sequence = new Sequence(file.name);
     let ticksPerBeat: number;
 
     for (const chunk of chunkReader.chunks()) {

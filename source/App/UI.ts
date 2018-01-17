@@ -85,10 +85,8 @@ export function main (): void {
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
 
-      sequence.name = file.name;
-
-      loadSequenceOptions(sequence);
-      // visualizer.visualize(sequence);
+      // loadSequenceOptions(sequence);
+      visualizer.visualize(sequence);
     } else {
       await AudioBank.uploadFile(file);
 
@@ -113,7 +111,7 @@ export function main (): void {
   visualizer.define('Ball', ballFactory);
 
   visualizer.configure({
-    framerate: 60,
+    framerate: 30,
     speed: 80
   });
 }

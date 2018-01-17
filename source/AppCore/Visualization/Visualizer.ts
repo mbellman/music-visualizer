@@ -17,9 +17,10 @@ interface IVisualizerConfiguration {
 
 export default class Visualizer {
   public static readonly GARBAGE_COLLECTION_DELAY: number = 50;
-  private _beat: number = 0;
+  public static readonly TICK_CONSTANT: number = 0.01667;
   private _bufferCanvas: Canvas = new Canvas();
   private _canvas: Canvas;
+  private _currentBeat: number = 0;
   private _frame: number = 0;
   private _garbageCollectionCounter: number = Visualizer.GARBAGE_COLLECTION_DELAY;
   private _isRunning: boolean = false;
@@ -144,15 +145,15 @@ export default class Visualizer {
     this._garbageCollectionCounter = Visualizer.GARBAGE_COLLECTION_DELAY;
   }
 
-  private _runNoteSpawnCheck (dt: number): void {
-    const notes: Note[] = this._noteQueue.take(this._beat);
+  private _runNoteSpawnCheck (): void {
+    const notes: Note[] = this._noteQueue.take(this._currentBeat);
 
     if (notes.length > 0) {
       const { framerate, tempo } = this._configuration;
       const visualizerHeightRatio: number = this.height / 100;
       const heightToPitchRatio: number = 100 / 127;
       const spreadFactor: number = 1.5;
-      const pixelsPerSecond: number = framerate * (60 / framerate) * 0.01667 * tempo * this._speedFactor;
+      const pixelsPerSecond: number = framerate * (60 / framerate) * Visualizer.TICK_CONSTANT * tempo * this._speedFactor;
       const beatsPerSecond: number = tempo / 60;
       const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
       const defaultEffect: string = this._shapeFactories.keys()[0];
@@ -175,7 +176,7 @@ export default class Visualizer {
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
 
-      visualizerNote.update(this._bufferCanvas, 2 * dt, this.tempo * this._speedFactor);
+      visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._speedFactor);
     }
 
     if (shouldRerender) {
@@ -183,8 +184,8 @@ export default class Visualizer {
       this._canvas.image(this._bufferCanvas.element, 0, 0);
       this._bufferCanvas.clear();
 
-      this._updateBeat(dt);
-      this._runNoteSpawnCheck(dt);
+      this._updateCurrentBeat(dt);
+      this._runNoteSpawnCheck();
     }
   }
 
@@ -195,14 +196,14 @@ export default class Visualizer {
       visualizerNote.update(this._canvas, dt, this.tempo * this._speedFactor);
     }
 
-    this._updateBeat(dt);
-    this._runNoteSpawnCheck(dt);
+    this._updateCurrentBeat(dt);
+    this._runNoteSpawnCheck();
   }
 
-  private _updateBeat (dt: number): void {
+  private _updateCurrentBeat (dt: number): void {
     const { framerate, tempo } = this._configuration;
     const beatsPerSecond: number = tempo / 60;
 
-    this._beat += beatsPerSecond * (60 / framerate) * dt;
+    this._currentBeat += beatsPerSecond * (60 / framerate) * dt;
   }
 }
