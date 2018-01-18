@@ -5,7 +5,7 @@ import { Implementation } from 'Base/Core';
 
 export default class Scroll extends Effect {
   @Implementation
-  public update (canvas: Canvas, shape: Shape, dt: number, tempo: number): void {
-    shape.move(-dt * tempo);
+  public update (canvas: Canvas, dt: number, tempo: number): void {
+    this.shape.move(-dt * tempo);
   }
 }

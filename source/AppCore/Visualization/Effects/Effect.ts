@@ -28,5 +28,5 @@ export default abstract class Effect {
     this.shape = shape;
   }
 
-  public abstract update (canvas: Canvas, shape: Shape, dt: number, tempo: number): void;
+  public abstract update (canvas: Canvas, dt: number, tempo: number): void;
 }

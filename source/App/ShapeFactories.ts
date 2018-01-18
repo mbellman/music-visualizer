@@ -11,14 +11,14 @@ export function barFactory (x: number, y: number, width: number, height: number)
     new Bar(x, y, width, height)
       .pipe(
         new Glow({ R: 255, G: 0, B: 255 }, 20)
-          .delay(3000)
+          .delay(2000)
           .fadeIn(250)
-          .fadeOut(250)
+          .fadeOut(500)
       )
       .pipe(new Stroke({ R: 0, G: 255, B: 255 }, 3))
       .pipe(
         new Fill({ R: 0, G: 0, B: 150 })
-          .delay(3000)
+          .delay(2000)
       )
       .pipe(new Scroll())
   ];

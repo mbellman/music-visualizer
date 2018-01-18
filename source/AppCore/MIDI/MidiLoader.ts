@@ -27,14 +27,16 @@ export default class MidiLoader {
         case ChunkType.HEADER:
           ticksPerBeat = MidiLoader._parseHeaderChunk(chunk).ticksPerBeat;
 
+          console.log(ticksPerBeat);
+
           break;
         case ChunkType.TRACK:
           const eventReader: EventReader = new EventReader(chunk.data);
           const channel: Channel = new Channel(channelIndex);
-          let runningTicks: number = 0;
+          let currentBeat: number = 0;
 
           for (const event of eventReader.events()) {
-            runningTicks += event.delta;
+            currentBeat += (event.delta / ticksPerBeat);
 
             switch (event.type) {
               case MetaEventType.TEMPO:
@@ -44,13 +46,13 @@ export default class MidiLoader {
                 sequence.tempo = tempo;
                 break;
               case MidiEventType.NOTE_ON:
-                channel.addNote(new Note(event.pitch, 0, runningTicks / ticksPerBeat));
+                channel.addNote(new Note(event.pitch, 0, currentBeat));
                 break;
               case MidiEventType.NOTE_OFF:
                 const noteOn: Note = channel.getLastNoteAtPitch(event.pitch);
 
                 if (noteOn) {
-                  noteOn.duration = runningTicks / ticksPerBeat - noteOn.delay;
+                  noteOn.duration = currentBeat - noteOn.delay;
                 }
                 break;
             }

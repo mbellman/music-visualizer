@@ -48,7 +48,7 @@ export default abstract class Shape {
 
     for (const effect of this._effects) {
       if (!effect.isDelaying()) {
-        effect.update(canvas, this, dt, tempo);
+        effect.update(canvas, dt, tempo);
       }
     }
   }

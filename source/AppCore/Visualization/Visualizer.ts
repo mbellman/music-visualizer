@@ -102,29 +102,6 @@ export default class Visualizer {
     this.run();
   }
 
-  private _tick (): void {
-    if (!this._isRunning) {
-      return;
-    }
-
-    const time: number = Date.now();
-    const dt: number = (time - this._lastTick) / 1000;
-
-    this._lastTick = time;
-
-    if (this._configuration.framerate === 30) {
-      this._render30fps(dt);
-    } else {
-      this._render60fps(dt);
-    }
-
-    if (++this._frame % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
-      this._garbageCollectVisualizerNotes();
-    }
-
-    requestAnimationFrame(this._tick);
-  }
-
   private _garbageCollectVisualizerNotes (): void {
     let i: number = 0;
 
@@ -159,17 +136,18 @@ export default class Visualizer {
       for (const note of notes) {
         const noteX: number = this.width;
         const noteY: number = (127 - note.pitch) * heightToPitchRatio * visualizerHeightRatio * spreadFactor - this.height / 3;
+        const noteWidth: number = note.duration * pixelsPerBeat;
 
-        this.spawn(defaultEffect, noteX, noteY, note.duration * pixelsPerBeat, 12);
+        this.spawn(defaultEffect, noteX, noteY, noteWidth, 12);
       }
     }
   }
 
   private _render30fps (dt: number): void {
-    const shouldRerender: boolean = this._frame % 2 === 0;
-    const halfwayIndex: number = Math.floor(this._visualizerNotes.length / 2);
-    const startIndex: number = shouldRerender ? halfwayIndex : 0;
-    const endIndex: number = shouldRerender ? this._visualizerNotes.length : halfwayIndex;
+    const isRerenderingFrame: boolean = this._frame % 2 === 0;
+    const midpoint: number = Math.floor(this._visualizerNotes.length / 2);
+    const startIndex: number = isRerenderingFrame ? midpoint : 0;
+    const endIndex: number = isRerenderingFrame ? this._visualizerNotes.length : midpoint;
 
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
@@ -177,7 +155,7 @@ export default class Visualizer {
       visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._speedFactor);
     }
 
-    if (shouldRerender) {
+    if (isRerenderingFrame) {
       this._canvas.clear();
       this._canvas.image(this._bufferCanvas.element, 0, 0);
       this._bufferCanvas.clear();
@@ -196,6 +174,29 @@ export default class Visualizer {
 
     this._updateCurrentBeat(dt);
     this._runNoteSpawnCheck();
+  }
+
+  private _tick (): void {
+    if (!this._isRunning) {
+      return;
+    }
+
+    const time: number = Date.now();
+    const dt: number = (time - this._lastTick) / 1000;
+
+    this._lastTick = time;
+
+    if (this._configuration.framerate === 30) {
+      this._render30fps(dt);
+    } else {
+      this._render60fps(dt);
+    }
+
+    if (this._frame++ % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
+      this._garbageCollectVisualizerNotes();
+    }
+
+    requestAnimationFrame(this._tick);
   }
 
   private _updateCurrentBeat (dt: number): void {

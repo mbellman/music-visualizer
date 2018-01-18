@@ -125,6 +125,6 @@ export function main (): void {
 
   visualizer.configure({
     framerate: 60,
-    speed: 80
+    speed: 100
   });
 }

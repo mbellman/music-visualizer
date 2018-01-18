@@ -2,7 +2,8 @@ import { Utils } from 'Base/Utils';
 
 export default class Note {
   /**
-   * Both delay and duration are measured in quarter-note units.
+   * Both delay and duration are measured in beats,
+   * represented as a rational number.
    */
   public delay: number;
   public duration: number;
