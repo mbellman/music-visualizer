@@ -16,10 +16,13 @@ To-do:
 * Rendering optimizations
 
 **UI**
-* Add a settings screen for customizing effects + tempo
+* Add channel effects options
+* Allow channel shape picker to include multiple shapes
 * Add an active tracks list
 
 **Code cleanup**
+* Move Channel.getLastNoteAtPitch() logic into MidiLoader
+* Clean up the formulas used in note spawning (Visualizer._runNoteSpawnCheck())
 * Remove Sequence/Channel/Note stuff from MIDI directory
-* Remove Channel.getLastNoteOfPitch(), see if there's a better way of solving the note-off problem
+* Remove ShapeFactories.ts once options screen allows for full visualizer customization
 * MidiLoader tidying

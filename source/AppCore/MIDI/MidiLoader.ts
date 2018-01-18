@@ -27,8 +27,6 @@ export default class MidiLoader {
         case ChunkType.HEADER:
           ticksPerBeat = MidiLoader._parseHeaderChunk(chunk).ticksPerBeat;
 
-          console.log(ticksPerBeat);
-
           break;
         case ChunkType.TRACK:
           const eventReader: EventReader = new EventReader(chunk.data);

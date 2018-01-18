@@ -20,6 +20,13 @@ export default class Visualizer {
   public static readonly TICK_CONSTANT: number = 0.01667;
   private _bufferCanvas: Canvas = new Canvas();
   private _canvas: Canvas;
+
+  private _configuration: IVisualizerConfiguration = {
+    framerate: 60,
+    speed: 100,
+    tempo: 100
+  };
+
   private _currentBeat: number = 0;
   private _frame: number = 0;
   private _garbageCollectionCounter: number = Visualizer.GARBAGE_COLLECTION_DELAY;
@@ -28,12 +35,6 @@ export default class Visualizer {
   private _noteQueue: NoteQueue;
   private _shapeFactories: Map<string, ShapeFactory> = new Map();
   private _visualizerNotes: VisualizerNote[] = [];
-
-  private _configuration: IVisualizerConfiguration = {
-    framerate: 60,
-    speed: 100,
-    tempo: 100
-  };
 
   public constructor (element: HTMLCanvasElement) {
     Utils.bindAll(this, '_tick');
@@ -121,9 +122,9 @@ export default class Visualizer {
   }
 
   private _runNoteSpawnCheck (): void {
-    const notes: Note[] = this._noteQueue.take(this._currentBeat);
+    const spawnableNotes: Note[] = this._noteQueue.take(this._currentBeat);
 
-    if (notes.length > 0) {
+    if (spawnableNotes.length > 0) {
       const { framerate, tempo } = this._configuration;
       const visualizerHeightRatio: number = this.height / 100;
       const heightToPitchRatio: number = 100 / 127;
@@ -133,7 +134,7 @@ export default class Visualizer {
       const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
       const defaultEffect: string = this._shapeFactories.keys()[0];
 
-      for (const note of notes) {
+      for (const note of spawnableNotes) {
         const noteX: number = this.width;
         const noteY: number = (127 - note.pitch) * heightToPitchRatio * visualizerHeightRatio * spreadFactor - this.height / 3;
         const noteWidth: number = note.duration * pixelsPerBeat;
@@ -143,11 +144,16 @@ export default class Visualizer {
     }
   }
 
+  /**
+   * Renders half of the current visualization to a buffer canvas
+   * on each frame, rendering the full visualization to the main
+   * canvas on every even frame.
+   */
   private _render30fps (dt: number): void {
-    const isRerenderingFrame: boolean = this._frame % 2 === 0;
+    const isFinalRender: boolean = this._frame % 2 === 0;
     const midpoint: number = Math.floor(this._visualizerNotes.length / 2);
-    const startIndex: number = isRerenderingFrame ? midpoint : 0;
-    const endIndex: number = isRerenderingFrame ? this._visualizerNotes.length : midpoint;
+    const startIndex: number = isFinalRender ? midpoint : 0;
+    const endIndex: number = isFinalRender ? this._visualizerNotes.length : midpoint;
 
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
@@ -155,7 +161,7 @@ export default class Visualizer {
       visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._speedFactor);
     }
 
-    if (isRerenderingFrame) {
+    if (isFinalRender) {
       this._canvas.clear();
       this._canvas.image(this._bufferCanvas.element, 0, 0);
       this._bufferCanvas.clear();
