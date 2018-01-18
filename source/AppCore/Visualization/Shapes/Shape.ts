@@ -28,6 +28,8 @@ export default abstract class Shape {
   }
 
   public pipe (effect: Effect): this {
+    effect.track(this);
+
     this._effects.push(effect);
 
     return this;

@@ -118,11 +118,9 @@ export default class Visualizer {
       this._render60fps(dt);
     }
 
-    if (this._frame % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
+    if (++this._frame % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
       this._garbageCollectVisualizerNotes();
     }
-
-    this._frame++;
 
     requestAnimationFrame(this._tick);
   }

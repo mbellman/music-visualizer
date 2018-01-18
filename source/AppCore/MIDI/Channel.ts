@@ -1,7 +1,12 @@
 import Note from 'AppCore/MIDI/Note';
 
 export default class Channel {
+  public readonly id: number | string;
   private _notes: Note[] = [];
+
+  public constructor (id?: number | string) {
+    this.id = id;
+  }
 
   public get size (): number {
     return this._notes.length;

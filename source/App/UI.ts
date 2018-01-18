@@ -25,6 +25,7 @@ export function main (): void {
   /**
    * UI
    */
+  const $app: Query = $('.app');
   const $fileInput: Query = $('input#file-input');
   const $options: Query = $('.options');
   const $visualizer: Query = $('.visualizer');
@@ -39,11 +40,23 @@ export function main (): void {
    * Various UI methods
    */
   function addChannelOptions (channel: Channel): void {
-    $options
-      .find('.channels')
+    $options.find('.channels')
       .append(`
-        <div class="channel">
-          <label class="name">${channel.size}</label>
+        <div class="channel" id="channel-${channel.id}">
+          <canvas class="preview"></canvas>
+
+          <div>
+            <h4 class="title">Channel ${channel.id}</h4>
+            <label>Total notes:</label> <span>${channel.size}</span>
+          </div>
+
+          <label>Shape:</label>
+          <select id="${channel.id}">
+            <option value="Bar">Bar</option>
+            <option value="Ball">Ball</option>
+          </select>
+
+          <label>Effects:</label>
         </div>
       `);
   }
@@ -55,7 +68,7 @@ export function main (): void {
 
   function loadSequenceOptions (sequence: Sequence): void {
     $options.html(`
-      <h4 class="name">${sequence.name}</h4>
+      <h3 class="sequence-title">${sequence.name}</h3>
       <div class="channels"></div>
     `);
 
@@ -85,8 +98,8 @@ export function main (): void {
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
 
-      // loadSequenceOptions(sequence);
-      visualizer.visualize(sequence);
+      loadSequenceOptions(sequence);
+      // visualizer.visualize(sequence);
     } else {
       await AudioBank.uploadFile(file);
 
@@ -97,7 +110,7 @@ export function main (): void {
   /**
    * Event bindings
    */
-  $visualizerCanvas
+  $app
     .on('drop', onFileDrop)
     .on('drop dragover', (e) => e.preventDefault());
 
@@ -111,7 +124,7 @@ export function main (): void {
   visualizer.define('Ball', ballFactory);
 
   visualizer.configure({
-    framerate: 30,
+    framerate: 60,
     speed: 80
   });
 }

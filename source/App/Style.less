@@ -1,3 +1,19 @@
+.transition(@prop, @length) {
+  transition: @length linear @prop;
+  -webkit-transition: @length linear @prop;
+}
+
+h1, h2, h3, h4, h5, p {
+  margin: 0;
+}
+
+select {
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 5px;
+}
+
 body {
   background-color: #0f001d;
 
@@ -9,9 +25,13 @@ body {
     background-color: #6300c0;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5) inset;
+    color: white;
+    cursor: default;
+    font-family: Arial;
     height: 650px;
     left: 50%;
     margin: -325px 0 0 -600px;
+    overflow: hidden;
     position: absolute;
     top: 50%;
     width: 1200px;
@@ -19,9 +39,10 @@ body {
     > div {
       background-color: black;
       border-radius: 7px;
+      box-sizing: border-box;
       height: ~"calc(100% - 10px)";
       left: 5px;
-      overflow: hidden;
+      padding: 10px;
       position: relative;
       top: 5px;
       width: ~"calc(100% - 10px)";
@@ -29,17 +50,45 @@ body {
 
     .options {
       background-color: black;
+      overflow: hidden;
 
-      .name {
-        color: white;
+      .sequence-title {
+        margin: 0 0 15px;
       }
 
       .channels {
         .channel {
-          padding: 10px 10px 20px;
-  
-          .name {
-            color: white;
+          border-radius: 4px;
+          opacity: 0.4;
+          padding: 5px;
+          .transition(all, 0.05s);
+
+          &:hover {
+            opacity: 1;
+          }
+
+          canvas.preview {
+            border: 1px solid #fff;
+            float: left;
+            height: 50px;
+            width: 80px;
+          }
+
+          .title {
+            color: #bbb;
+            display: inline-block;
+            margin: 0 5px 5px;
+          }
+
+          label {
+            color: #888;
+            font-size: 15px;
+            margin-left: 10px;
+          }
+
+          select {
+            background: #335;
+            color: #aaa;
           }
         }
       }

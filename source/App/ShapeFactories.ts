@@ -13,7 +13,7 @@ export function barFactory (x: number, y: number, width: number, height: number)
         new Glow({ R: 255, G: 0, B: 255 }, 20)
           .delay(3000)
           .fadeIn(250)
-          .fadeOut(500)
+          .fadeOut(250)
       )
       .pipe(new Stroke({ R: 0, G: 255, B: 255 }, 3))
       .pipe(
@@ -30,9 +30,13 @@ export function ballFactory (x: number, y: number): Shape[] {
       .pipe(
         new Glow({ R: 255, G: 0, B: 0 }, 50)
           .delay(3000)
-          .fadeOut(1000)
+          .fadeOut(500)
       )
-      .pipe(new Fill({ R: 255, G: 200, B: 50 }))
+      .pipe(new Stroke({ R: 255, G: 0, B: 0}, 3))
+      .pipe(
+        new Fill({ R: 255, G: 200, B: 50 })
+          .delay(3000)
+      )
       .pipe(new Scroll())
   ];
 }

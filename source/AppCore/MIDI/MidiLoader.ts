@@ -20,15 +20,17 @@ export default class MidiLoader {
     const chunkReader: ChunkReader = new ChunkReader(data);
     const sequence: Sequence = new Sequence(file.name);
     let ticksPerBeat: number;
+    let channelIndex: number = 0;
 
     for (const chunk of chunkReader.chunks()) {
       switch (chunk.type) {
         case ChunkType.HEADER:
           ticksPerBeat = MidiLoader._parseHeaderChunk(chunk).ticksPerBeat;
+
           break;
         case ChunkType.TRACK:
           const eventReader: EventReader = new EventReader(chunk.data);
-          const channel: Channel = new Channel();
+          const channel: Channel = new Channel(channelIndex);
           let runningTicks: number = 0;
 
           for (const event of eventReader.events()) {
@@ -56,6 +58,8 @@ export default class MidiLoader {
 
           if (channel.size > 0) {
             sequence.addChannel(channel);
+
+            channelIndex++;
           }
 
           break;

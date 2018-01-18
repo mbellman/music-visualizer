@@ -2,6 +2,7 @@ import Canvas from 'Graphics/Canvas';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 
 export default abstract class Effect {
+  protected shape: Shape;
   private _delay: number = 0;
   private _startTime: number = Date.now();
 
@@ -21,6 +22,10 @@ export default abstract class Effect {
 
   public isDelaying (): boolean {
     return this.delayedAge === 0;
+  }
+
+  public track (shape: Shape): void {
+    this.shape = shape;
   }
 
   public abstract update (canvas: Canvas, shape: Shape, dt: number, tempo: number): void;
