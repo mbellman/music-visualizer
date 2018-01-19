@@ -14,6 +14,10 @@ export default class Sequence {
     this._channels.push(channel);
   }
 
+  public getChannel (index: number): Channel {
+    return this._channels[index];
+  }
+
   public * channels (): IterableIterator<Channel> {
     for (const channel of this._channels) {
       yield channel;

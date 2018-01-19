@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: [
-    path.resolve('./source/index.ts')
+    path.resolve('./source/index.tsx')
   ],
   module: {
     loaders: [
@@ -14,7 +14,11 @@ module.exports = {
           { loader: 'less-loader' }
         ]
       },
-      { test: /\.ts/, loader: 'ts-loader' }
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'ts-loader'
+      },
     ]
   },
   output: {
@@ -22,7 +26,7 @@ module.exports = {
     path: path.resolve('./build')
   },
   resolve: {
-    extensions: ['.js', '.ts', '.less'],
+    extensions: ['.js', '.ts', '.tsx', '.less'],
     modules: ['source', 'node_modules']
   }
 };

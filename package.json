@@ -10,6 +10,7 @@
 		"friendly-errors-webpack-plugin": "^1.6.1",
 		"less": "^2.7.2",
 		"less-loader": "^4.0.5",
+		"preact": "^8.2.7",
 		"style-loader": "^0.18.2",
 		"ts-loader": "^2.3.3",
 		"typescript": "next",

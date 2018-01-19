@@ -3,6 +3,8 @@
 		"baseUrl": "./source",
 		"downlevelIteration": true,
 		"experimentalDecorators": true,
+		"jsx": "react",
+		"jsxFactory": "h",
 		"lib": [
 			"dom",
 			"es2015"
@@ -13,7 +15,7 @@
 		"target": "es5"
 	},
 	"include": [
-		"source/**/*.ts"
+		"source/index.tsx"
 	],
 	"exclude": [
 		"node_modules"

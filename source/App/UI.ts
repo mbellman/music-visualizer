@@ -1,12 +1,13 @@
 import 'App/Style.less';
-import AudioBank from 'AppCore/AudioBank';
+import AudioBank from 'App/State/AudioBank';
+import Channel from 'AppCore/MIDI/Channel';
 import MidiLoader from 'AppCore/MIDI/MidiLoader';
 import Sequence from 'AppCore/MIDI/Sequence';
+import SequenceOptions from 'App/State/SequenceOptions';
 import Visualizer from 'AppCore/Visualization/Visualizer';
 import { $ } from 'Base/Core';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { Query } from 'Base/DOM/Query';
-import Channel from 'AppCore/MIDI/Channel';
 
 export function main (): void {
   /**
@@ -29,17 +30,18 @@ export function main (): void {
   const $fileInput: Query = $('input#file-input');
   const $options: Query = $('.options');
   const $visualizer: Query = $('.visualizer');
-  const $visualizerCanvas: Query = $('.visualizer > canvas');
 
   /**
    * Variables
    */
-  const visualizer: Visualizer = new Visualizer($visualizerCanvas[0] as HTMLCanvasElement);
+  let activeSequence: Sequence;
+  const sequenceOptionsMap: Map<Sequence, SequenceOptions> = new Map();
+  const visualizer: Visualizer = new Visualizer($visualizer.find('canvas')[0] as HTMLCanvasElement);
 
   /**
-   * Various UI methods
+   * UI methods
    */
-  function addChannelOptions (channel: Channel): void {
+  function renderChannelOptions (channel: Channel): void {
     $options.find('.channels')
       .append(`
         <div class="channel" id="channel-${channel.id}">
@@ -51,7 +53,7 @@ export function main (): void {
           </div>
 
           <label>Shape:</label>
-          <select id="${channel.id}">
+          <select class="shape-selector" id="${channel.id}">
             <option value="Bar">Bar</option>
             <option value="Ball">Ball</option>
           </select>
@@ -61,22 +63,26 @@ export function main (): void {
       `);
   }
 
-  function showOptions (): void {
-    $options.show();
-    $visualizer.hide();
-  }
+  function renderSequenceOptions (sequence: Sequence): void {
+    activeSequence = sequence;
 
-  function loadSequenceOptions (sequence: Sequence): void {
+    sequenceOptionsMap.set(sequence, new SequenceOptions(sequence));
+
     $options.html(`
       <h3 class="sequence-title">${sequence.name}</h3>
       <div class="channels"></div>
     `);
 
     for (const channel of sequence.channels()) {
-      addChannelOptions(channel);
+      renderChannelOptions(channel);
     }
 
-    showOptions();
+    showSequenceOptions();
+  }
+
+  function showSequenceOptions (): void {
+    $options.show();
+    $visualizer.hide();
   }
 
   function showVisualizer (): void {
@@ -87,18 +93,18 @@ export function main (): void {
   /**
    * Event handlers
    */
-  function onFileInputChange (): void {
+  function onChangeFileInput (): void {
 
   }
 
-  async function onFileDrop (event: DragEvent): Promise<void> {
-    const file: File = event.dataTransfer.files[0];
+  async function onDropFile (e: DragEvent): Promise<void> {
+    const file: File = e.dataTransfer.files[0];
     const extension: string = file.name.split('.').pop();
 
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
 
-      loadSequenceOptions(sequence);
+      renderSequenceOptions(sequence);
       // visualizer.visualize(sequence);
     } else {
       await AudioBank.uploadFile(file);
@@ -107,12 +113,20 @@ export function main (): void {
     }
   }
 
+  function onChangeShape (e: UIEvent): void {
+    const target: Element = e.target as Element;
+    // const selectedChannel: Channel = activeSequence.getChannel($(target).index());
+    // const activeSequenceOptions: SequenceOptions = sequenceOptionsMap.get(activeSequence);
+  }
+
   /**
    * Event bindings
    */
   $app
-    .on('drop', onFileDrop)
+    .on('drop', onDropFile)
     .on('drop dragover', (e) => e.preventDefault());
+
+  $app.on('change', 'select.shape-selector', onChangeShape);
 
   /**
    * Initialization

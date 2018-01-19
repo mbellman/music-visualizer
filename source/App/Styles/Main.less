@@ -1,0 +1,46 @@
+h1, h2, h3, h4, h5, p {
+  margin: 0;
+}
+
+select {
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+body {
+  background-color: #0f001d;
+
+  input#file-input {
+    display: none;
+  }
+
+  .app {
+    background-color: #6300c0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5) inset;
+    color: white;
+    cursor: default;
+    font-family: Arial;
+    height: 650px;
+    left: 50%;
+    margin: -325px 0 0 -600px;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    width: 1200px;
+
+    > div {
+      background-color: black;
+      border-radius: 7px;
+      box-sizing: border-box;
+      height: ~"calc(100% - 10px)";
+      left: 5px;
+      padding: 10px;
+      position: relative;
+      top: 5px;
+      width: ~"calc(100% - 10px)";
+    }
+  }
+}

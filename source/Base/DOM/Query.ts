@@ -68,8 +68,27 @@ export class Query {
     return this;
   }
 
-  public on (event: string, listener: UIEventListener): this {
-    this._on(this._eventToEventArray(event), listener);
+  public on (event: string, listener: UIEventListener): this;
+  public on (event: string, selector: string, listener: UIEventListener): this;
+
+  public on (event: string, arg2: string | UIEventListener, arg3?: UIEventListener): this {
+    const events: string[] = this._eventToEventArray(event);
+
+    if (arguments.length === 2) {
+      // Event binding
+      this._on(events, arg2 as UIEventListener);
+    } else {
+      // Event delegation
+      const targetedEventHandler: UIEventListener = (e: UIEvent) => {
+        const target: Element = e.target as Element;
+
+        if (target.matches(arg2 as string)) {
+          arg3(e);
+        }
+      };
+
+      this._on(events, targetedEventHandler);
+    }
 
     return this;
   }

@@ -150,10 +150,10 @@ export default class Visualizer {
    * canvas on every even frame.
    */
   private _render30fps (dt: number): void {
-    const isFinalRender: boolean = this._frame % 2 === 0;
+    const isFullRenderStep: boolean = this._frame % 2 === 0;
     const midpoint: number = Math.floor(this._visualizerNotes.length / 2);
-    const startIndex: number = isFinalRender ? midpoint : 0;
-    const endIndex: number = isFinalRender ? this._visualizerNotes.length : midpoint;
+    const startIndex: number = isFullRenderStep ? midpoint : 0;
+    const endIndex: number = isFullRenderStep ? this._visualizerNotes.length : midpoint;
 
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
@@ -161,7 +161,7 @@ export default class Visualizer {
       visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._speedFactor);
     }
 
-    if (isFinalRender) {
+    if (isFullRenderStep) {
       this._canvas.clear();
       this._canvas.image(this._bufferCanvas.element, 0, 0);
       this._bufferCanvas.clear();
