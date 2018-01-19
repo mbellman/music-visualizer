@@ -12,16 +12,16 @@ enum ViewType {
 }
 
 interface IMainState {
-  activeSequence: number;
+  activeSequenceIndex: number;
   sequences: Sequence[];
   view: ViewType;
 }
 
 export default class Main extends Component<any, IMainState> {
   public state: IMainState = {
-    activeSequence: 0,
+    activeSequenceIndex: -1,
     sequences: [],
-    view: ViewType.VISUALIZATION
+    view: ViewType.OPTIONS
   };
 
   public constructor () {
@@ -30,16 +30,18 @@ export default class Main extends Component<any, IMainState> {
     Utils.bindAll(this, '_onDropFile');
   }
 
-  public render (): JSX.Element {
-    const activeSequence: Sequence = this.state.sequences[this.state.sequences.length - 1];
+  public get activeSequence (): Sequence {
+    return this.state.sequences[this.state.activeSequenceIndex];
+  }
 
+  public render (): JSX.Element {
     return (
       <div className="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         {
           this.state.view === ViewType.OPTIONS ?
-            <Options sequence={ activeSequence } />
+            <Options sequence={ this.activeSequence } />
           :
-            <Visualization sequence={ activeSequence } />
+            <Visualization sequence={ this.activeSequence } />
         }
       </div>
     );
@@ -47,6 +49,7 @@ export default class Main extends Component<any, IMainState> {
 
   private _addSequence (sequence: Sequence): void {
     this.setState({
+      activeSequenceIndex: this.state.activeSequenceIndex + 1,
       sequences: [ ...this.state.sequences, sequence ]
     });
   }

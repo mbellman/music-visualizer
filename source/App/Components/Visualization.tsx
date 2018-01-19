@@ -1,3 +1,4 @@
+import 'App/Styles/Visualization.less';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Visualizer from 'AppCore/Visualization/Visualizer';
 import { h, Component } from 'preact';
@@ -14,7 +15,7 @@ export default class Visualization extends Component<IVisualizationProps, any> {
     const canvas: HTMLCanvasElement = this.base.querySelector('canvas');
     const visualizer: Visualizer = new Visualizer(canvas);
 
-    visualizer.setSize(1190, 640);
+    visualizer.setSize(canvas.clientWidth, canvas.clientHeight);
     visualizer.define('Bar', barFactory);
     visualizer.define('Ball', ballFactory);
 
@@ -33,7 +34,7 @@ export default class Visualization extends Component<IVisualizationProps, any> {
 
   public render (): JSX.Element {
     return (
-      <div className="visualizer">
+      <div className="visualization">
         <canvas></canvas>
       </div>
     );

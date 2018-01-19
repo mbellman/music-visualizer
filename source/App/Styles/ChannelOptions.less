@@ -1,0 +1,38 @@
+@import './Helpers.less';
+
+.channels {
+  .channel {
+    border-radius: 4px;
+    opacity: 0.4;
+    padding: 5px;
+    .transition(all, 0.1s);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    canvas.preview {
+      border: 1px solid #fff;
+      float: left;
+      height: 50px;
+      width: 80px;
+    }
+
+    .title {
+      color: #bbb;
+      display: inline-block;
+      margin: 0 5px 5px;
+    }
+
+    label {
+      color: #888;
+      font-size: 15px;
+      margin: 0 8px;
+    }
+
+    select {
+      background: #335;
+      color: #aaa;
+    }
+  }
+}

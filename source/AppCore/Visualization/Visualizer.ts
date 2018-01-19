@@ -91,7 +91,11 @@ export default class Visualizer {
   public stop (): void {
     this._canvas.clear();
 
+    this._currentBeat = 0;
+    this._frame = 0;
+    this._garbageCollectionCounter = 0;
     this._isRunning = false;
+    this._visualizerNotes.length = 0;
   }
 
   public visualize (sequence: Sequence): void {
