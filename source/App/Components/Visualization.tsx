@@ -1,11 +1,13 @@
 import 'App/Styles/Visualization.less';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Visualizer from 'AppCore/Visualization/Visualizer';
-import { h, Component } from 'preact';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
+import { h, Component } from 'preact';
+import { ISequenceCustomization } from 'App/State/Types';
 
 interface IVisualizationProps {
   sequence: Sequence;
+  sequenceCustomization: ISequenceCustomization;
 }
 
 export default class Visualization extends Component<IVisualizationProps, any> {

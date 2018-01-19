@@ -1,6 +1,6 @@
 import EventManager from 'Base/EventManager';
 
-export { Callback, IConstructor, IHashMap } from 'Base/Types';
+export { Callback, IConstructor, IHashMap, Partial } from 'Base/Types';
 export { EventManager };
 export { Implementation, Override } from 'Base/Decorators';
 export { default as $ } from 'Base/DOM/Query';

@@ -1,13 +1,15 @@
-import 'App/Styles/ChannelOptions.less';
+import 'App/Styles/ChannelCustomizer.less';
 import Canvas from 'Graphics/Canvas';
 import Channel from 'AppCore/MIDI/Channel';
 import { h, Component } from 'preact';
+import { IChannelCustomization } from 'App/State/Types';
 
-interface IChannelOptionsProps {
+interface IChannelCustomizerProps {
   channel: Channel;
+  // channelCustomization: IChannelCustomization;
 }
 
-export default class ChannelOptions extends Component<IChannelOptionsProps, any> {
+export default class ChannelCustomizer extends Component<IChannelCustomizerProps, any> {
   private _previewCanvas: Canvas;
 
   public componentDidMount (): void {
@@ -22,7 +24,7 @@ export default class ChannelOptions extends Component<IChannelOptionsProps, any>
 
   public render (): JSX.Element {
     return (
-      <div class="channel" id={ `channel-${this.props.channel.id}` }>
+      <div class="channel" id={ 'channel-' + this.props.channel.id }>
         <canvas class="preview"></canvas>
 
         <div>

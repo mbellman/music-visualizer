@@ -37,9 +37,25 @@ body {
       box-sizing: border-box;
       height: ~"calc(100% - 10px)";
       left: 5px;
+      overflow: hidden;
       position: relative;
       top: 5px;
       width: ~"calc(100% - 10px)";
+    }
+
+    .drop {
+      .box {
+        flex-direction: column;
+        background-color: #080808;
+        border: 2px dashed #666;
+        border-radius: 10px;
+        margin: 200px auto;
+        padding: 75px 50px;
+        position: relative;
+        text-align: center;
+        text-shadow: 0 1px 5px #000;
+        width: 30%;
+      }
     }
   }
 }
