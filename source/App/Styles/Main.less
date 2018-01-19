@@ -11,18 +11,14 @@ select {
 
 body {
   background-color: #0f001d;
-
-  input#file-input {
-    display: none;
-  }
+  color: white;
+  font-family: Arial;
 
   .app {
     background-color: #6300c0;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.5) inset;
-    color: white;
     cursor: default;
-    font-family: Arial;
     height: 650px;
     left: 50%;
     margin: -325px 0 0 -600px;
@@ -30,6 +26,10 @@ body {
     position: absolute;
     top: 50%;
     width: 1200px;
+
+    > input {
+      display: none;
+    }
 
     > div {
       background-color: black;
