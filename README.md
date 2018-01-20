@@ -21,7 +21,7 @@ To-do:
 * Add an active tracks list
 
 **Code cleanup**
-* Convert Store/Bank stuff to redux actions/reducers
+* Alphabetize imports by path, not module name
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Clean up the formulas used in note spawning (Visualizer._runNoteSpawnCheck())
 * Remove Sequence/Channel/Note stuff from MIDI directory

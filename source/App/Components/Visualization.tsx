@@ -3,11 +3,11 @@ import Sequence from 'AppCore/MIDI/Sequence';
 import Visualizer from 'AppCore/Visualization/Visualizer';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { h, Component } from 'preact';
-import { ISequenceCustomization } from 'App/State/Types';
+import { ICustomizer } from 'App/State/Types';
 
 interface IVisualizationProps {
   sequence: Sequence;
-  sequenceCustomization: ISequenceCustomization;
+  customizer: ICustomizer;
 }
 
 export default class Visualization extends Component<IVisualizationProps, any> {
@@ -36,7 +36,7 @@ export default class Visualization extends Component<IVisualizationProps, any> {
 
   public render (): JSX.Element {
     return (
-      <div className="visualization">
+      <div class="visualization">
         <canvas></canvas>
       </div>
     );

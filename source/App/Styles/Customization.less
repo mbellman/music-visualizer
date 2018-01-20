@@ -1,0 +1,51 @@
+@import './Helpers.less';
+
+.customization {
+  background-color: black;
+  overflow: hidden;
+  padding: 10px;
+
+  .sequence-title {
+    display: inline-block;
+    margin: 0 0 15px;
+  }
+
+  label {
+    color: #888;
+    font-size: 15px;
+    margin: 0 8px;
+  }
+
+  input, select {
+    background-color: #335;
+    border: 0;
+    color: #fff;
+    margin-right: 10px;
+    padding: 5px;
+    .transition(background-color, 0.1s);
+
+    &:hover, &:focus {
+      background-color: #446;
+    }
+
+    &[type="text"] {
+      box-shadow: 0 0 0 1px #557 inset;
+    }
+
+    &[type="button"] {
+      border-bottom: 2px solid #112;
+      box-shadow: 0 0 0 1px #446;
+      cursor: pointer;
+    }
+  }
+
+  .options {
+    float: right;
+
+    input {
+      border-radius: 2px;
+      padding: 8px;
+      width: 100px;
+    }
+  }
+}

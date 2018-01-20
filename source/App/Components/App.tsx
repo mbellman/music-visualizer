@@ -1,12 +1,13 @@
 import 'App/Styles/App.less';
+import Manager from 'App/State/Manager';
 import MidiLoader from 'AppCore/MIDI/MidiLoader';
-import MusicBank from 'App/State/MusicBank';
 import Sequence from 'AppCore/MIDI/Sequence';
-import SequenceCustomizer from 'App/Components/SequenceCustomizer';
+import Customization from 'App/Components/Customization';
 import Store from 'App/State/Store';
 import Visualization from 'App/Components/Visualization';
+import { ActionTypes } from 'App/State/ActionTypes';
 import { h, Component } from 'preact';
-import { IAppState, IMusicTrack, ViewMode } from 'App/State/Types';
+import { IAppState, ViewMode } from 'App/State/Types';
 import { Utils } from 'Base/Core';
 
 export default class App extends Component<any, IAppState> {
@@ -20,23 +21,24 @@ export default class App extends Component<any, IAppState> {
   }
 
   public render (): JSX.Element {
-    const isCustomizerMode: boolean = this.state.viewMode === ViewMode.CUSTOMIZER;
-    const currentMusicTrack: IMusicTrack = MusicBank.getCurrentMusicTrack();
+    const { selectedPlaylistTrack, viewMode } = this.state;
+    const hasSequence: boolean = !!selectedPlaylistTrack.sequence;
+    const isCustomizerMode: boolean = viewMode === ViewMode.CUSTOMIZER;
 
     return (
-      <div className="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
+      <div class="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         {
-          currentMusicTrack.sequence ?
+          hasSequence ?
             isCustomizerMode ?
-              <SequenceCustomizer musicTrack={ currentMusicTrack } />
+              <Customization playlistTrack={ selectedPlaylistTrack } />
             :
               <Visualization
-                sequence={ currentMusicTrack.sequence }
-                sequenceCustomization={ currentMusicTrack.sequenceCustomization }
+                sequence={ selectedPlaylistTrack.sequence }
+                customizer={ selectedPlaylistTrack.customizer }
               />
           :
-            <div className="drop">
-              <div className="box">Drag and drop a file here!</div>
+            <div class="drop">
+              <div class="box">Drag and drop a file here!</div>
             </div>
         }
       </div>
@@ -51,8 +53,15 @@ export default class App extends Component<any, IAppState> {
 
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
+      const { selectedPlaylistTrack } = Store.getState();
 
-      MusicBank.addSequence(sequence);
+      Store.dispatch({
+        type: ActionTypes.UPDATE_SELECTED_TRACK,
+        track: {
+          ...selectedPlaylistTrack,
+          sequence
+        }
+      });
     } else {
       // await AudioBank.uploadFile(file);
 
