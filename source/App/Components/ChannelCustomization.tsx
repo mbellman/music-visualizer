@@ -9,7 +9,7 @@ interface IChannelCustomizationProps {
   channelCustomizer: IChannelCustomizer;
 }
 
-export default class ChannelSettings extends Component<IChannelCustomizationProps, any> {
+export default class ChannelCustomization extends Component<IChannelCustomizationProps, any> {
   private _previewCanvas: Canvas;
 
   public componentDidMount (): void {
@@ -26,7 +26,7 @@ export default class ChannelSettings extends Component<IChannelCustomizationProp
     const { channel } = this.props;
 
     return (
-      <div class="channel" id={ 'channel-' + channel.id }>
+      <div class="channel" id={ `${channel.id}` }>
         <canvas class="preview"></canvas>
 
         <div>

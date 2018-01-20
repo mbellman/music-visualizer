@@ -8,11 +8,11 @@ import { IPlaylistTrack, ICustomizer, ViewMode } from 'App/State/Types';
 import { h, Component } from 'preact';
 import { Utils, Partial } from 'Base/Core';
 
-interface ISettingsProps {
+interface ICustomizationProps {
   playlistTrack: IPlaylistTrack;
 }
 
-export default class Customization extends Component<ISettingsProps, any> {
+export default class Customization extends Component<ICustomizationProps, any> {
   public constructor () {
     super();
 
