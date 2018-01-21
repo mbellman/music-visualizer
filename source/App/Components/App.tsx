@@ -1,10 +1,11 @@
 import 'App/Styles/App.less';
+import DropMessage from 'App/Components/DropMessage';
 import Manager from 'App/State/Manager';
 import MidiLoader from 'AppCore/MIDI/MidiLoader';
 import Sequence from 'AppCore/MIDI/Sequence';
-import Customization from 'App/Components/Customization';
+import Editor from 'App/Components/Editor';
 import Store from 'App/State/Store';
-import Visualization from 'App/Components/Visualization';
+import Player from 'App/Components/Player';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { h, Component } from 'preact';
 import { IAppState, ViewMode } from 'App/State/Types';
@@ -22,27 +23,37 @@ export default class App extends Component<any, IAppState> {
 
   public render (): JSX.Element {
     const { selectedPlaylistTrack, viewMode } = this.state;
-    const hasSequence: boolean = !!selectedPlaylistTrack.sequence;
-    const isCustomizerMode: boolean = viewMode === ViewMode.CUSTOMIZER;
+    const { audioFile, customizer, sequence } = selectedPlaylistTrack;
 
     return (
       <div class="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         {
-          hasSequence ?
-            isCustomizerMode ?
-              <Customization playlistTrack={ selectedPlaylistTrack } />
+          !!sequence ?
+            viewMode === ViewMode.EDITOR ?
+              <Editor playlistTrack={ selectedPlaylistTrack } />
             :
-              <Visualization
-                sequence={ selectedPlaylistTrack.sequence }
-                customizer={ selectedPlaylistTrack.customizer }
+              <Player
+                audioFile={ audioFile }
+                customizer={ customizer }
+                sequence={ sequence }
               />
           :
-            <div class="drop">
-              <div class="box">Drag and drop a file here!</div>
-            </div>
+            <DropMessage />
         }
       </div>
     );
+  }
+
+  private _setSequence (sequence: Sequence): void {
+    Store.dispatch({
+      type: ActionTypes.CHANGE_SEQUENCE,
+      payload: sequence
+    });
+
+    Store.dispatch({
+      type: ActionTypes.CHANGE_CUSTOMIZER_TEMPO,
+      payload: sequence.tempo
+    });
   }
 
   private async _onDropFile (e: DragEvent): Promise<void> {
@@ -53,15 +64,8 @@ export default class App extends Component<any, IAppState> {
 
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
-      const { selectedPlaylistTrack } = Store.getState();
 
-      Store.dispatch({
-        type: ActionTypes.UPDATE_SELECTED_TRACK,
-        track: {
-          ...selectedPlaylistTrack,
-          sequence
-        }
-      });
+      this._setSequence(sequence);
     } else {
       // await AudioBank.uploadFile(file);
 

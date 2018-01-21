@@ -1,16 +1,18 @@
-import 'App/Styles/Visualization.less';
+import 'App/Styles/Player.less';
+import AudioFile from 'Audio/AudioFile';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Visualizer from 'AppCore/Visualization/Visualizer';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { h, Component } from 'preact';
 import { ICustomizer } from 'App/State/Types';
 
-interface IVisualizationProps {
-  sequence: Sequence;
+interface IPlayerProps {
+  audioFile: AudioFile;
   customizer: ICustomizer;
+  sequence: Sequence;
 }
 
-export default class Visualization extends Component<IVisualizationProps, any> {
+export default class Player extends Component<IPlayerProps, any> {
   private _visualizer: Visualizer;
 
   public componentDidMount (): void {
@@ -27,18 +29,20 @@ export default class Visualization extends Component<IVisualizationProps, any> {
     });
 
     this._visualizer = visualizer;
-  }
 
-  public componentDidUpdate (): void {
-    this._visualizer.stop();
-    this._visualizer.visualize(this.props.sequence);
+    this._play();
   }
 
   public render (): JSX.Element {
     return (
-      <div class="visualization">
+      <div class="player">
         <canvas></canvas>
       </div>
     );
+  }
+
+  private _play (): void {
+    this._visualizer.stop();
+    this._visualizer.visualize(this.props.sequence);
   }
 }

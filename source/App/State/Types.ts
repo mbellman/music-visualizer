@@ -12,6 +12,7 @@ interface ISpawn<T> {
 
 export interface IAction {
   type: ActionTypes;
+  payload?: any;
   [key: string]: any;
 }
 
@@ -51,6 +52,6 @@ export interface ISelectedPlaylistTrack extends IPlaylistTrack {
 }
 
 export enum ViewMode {
-  CUSTOMIZER,
-  VISUALIZATION
+  EDITOR,
+  PLAYER
 }

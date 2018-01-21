@@ -21,8 +21,6 @@ To-do:
 * Add an active tracks list
 
 **Code cleanup**
-* Remove Reducers -> cycleTracks() since changeTrack() already handles index wrapping now
-* Write Manager methods for customizer updates
 * Alphabetize imports by path, not module name
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Clean up the formulas used in note spawning (Visualizer._runNoteSpawnCheck())

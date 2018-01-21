@@ -11,12 +11,10 @@ export default class Manager {
     const url: string = URL.createObjectURL(blob);
     const audioFile: AudioFile = new AudioFile(url, file.name);
 
-    /*
     Store.dispatch({
-      type: ActionTypes.SET_AUDIO_FILE,
+      type: ActionTypes.CHANGE_AUDIO_FILE,
       audioFile
     });
-    */
 
     URL.revokeObjectURL(url);
   }
