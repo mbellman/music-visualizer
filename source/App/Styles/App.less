@@ -1,5 +1,40 @@
+@import 'Helpers.less';
+
 h1, h2, h3, h4, h5, p {
   margin: 0;
+}
+
+label {
+  color: #888;
+  font-size: 15px;
+  margin-right: 5px;
+}
+
+input, select {
+  background-color: #335;
+  border-radius: 2px;
+  border: 0;
+  color: #fff;
+  margin-right: 10px;
+  padding: 5px;
+  .transition(background-color, 0.1s);
+
+  &:hover, &:focus {
+    background-color: #446;
+  }
+
+  &[type="text"] {
+    box-shadow: 0 0 0 1px #668 inset;
+    padding: 8px;
+  }
+
+  &[type="button"] {
+    border-bottom: 2px solid #112;
+    box-shadow: 0 0 0 1px #446;
+    cursor: pointer;
+    padding: 8px 30px;
+    text-shadow: 0 -1px 0 #000;
+  }
 }
 
 select {

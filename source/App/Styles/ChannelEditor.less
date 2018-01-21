@@ -1,26 +1,41 @@
 @import './Helpers.less';
 
 .channel-editor {
+  background-color: #000;
   border-radius: 4px;
-  opacity: 0.5;
-  padding: 5px;
-  .transition(all, 0.1s);
+  box-shadow: 0 0 2px 0 #fff;
+  margin: 10px 0;
+  overflow: hidden;
 
-  &:hover {
-    opacity: 1;
+  .channel-editor-header {
+    background-color: #112;
+    margin: 0;
+    padding: 5px;
+
+    .channel-title {
+      color: #aaa;
+      display: inline-block;
+      margin-right: 10px;
+    }
   }
 
-  canvas.preview {
-    border: 1px solid #fff;
-    float: left;
-    height: 50px;
-    margin-right: 5px;
-    width: 80px;
-  }
+  .channel-editor-body {
+    padding: 10px;
 
-  .channel-title {
-    color: #bbb;
-    display: inline-block;
-    margin: 0 5px 5px;
+    > div:not(:last-child) {
+      margin-bottom: 10px;
+    }
+
+    canvas.preview {
+      border: 1px solid #aaa;
+      float: left;
+      height: 50px;
+      margin: 5px 20px 0 0;
+      width: 80px;
+    }
+
+    input[type="text"] {
+      background-color: #112;
+    }
   }
 }

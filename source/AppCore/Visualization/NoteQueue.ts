@@ -9,9 +9,8 @@ export default class NoteQueue {
   }
 
   /**
-   * Returns all notes up to a specified note delay limit
-   * measured in quarter-notes, removing them and shifting
-   * the queue forward.
+   * Returns all notes up to a specified note delay limit,
+   * removing them and shifting the queue forward.
    */
   public take (delay: number): Note[] {
     const notes: Note[] = [];

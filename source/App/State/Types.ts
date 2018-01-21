@@ -2,13 +2,9 @@ import AudioFile from 'Audio/AudioFile';
 import Effect from 'AppCore/Visualization/Effects/Effect';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import Sequence from 'AppCore/MIDI/Sequence';
+import { IBar, IBall } from 'App/State/VisualizationTypes';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { IConstructor, IHashMap } from 'Base/Core';
-
-interface ISpawn<T> {
-  args: any[];
-  constructor: IConstructor<T>;
-}
 
 export interface IAction {
   type: ActionTypes;
@@ -23,7 +19,6 @@ export interface IAppState {
 }
 
 export interface IChannelCustomizer {
-  shapeSpawns: IShapeSpawn[];
 }
 
 export interface ICustomizer {
@@ -31,14 +26,6 @@ export interface ICustomizer {
   focusDelay: number;
   scrollSpeed: number;
   tempo: number;
-}
-
-export interface IEffectSpawn extends ISpawn<Effect> {
-  isDelayed: boolean;
-}
-
-export interface IShapeSpawn extends ISpawn<Shape> {
-  effectSpawns: IEffectSpawn[];
 }
 
 export interface IPlaylistTrack {

@@ -1,5 +1,5 @@
 import 'App/Styles/EditorHeader.less';
-import EditorHeaderField from 'App/Components/EditorHeaderField';
+import EditorHeaderField from 'App/Components/Editor/EditorHeaderField';
 import Store from 'App/State/Store';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { ICustomizer, ViewMode } from 'App/State/Types';
@@ -55,12 +55,12 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
           })
         }
 
-        <input class="play-button" type="button" onClick={ this._playVisualization } value="Play" />
+        <input class="play-button" type="button" onClick={ this._showVisualizer } value="Play" />
       </div>
     );
   }
 
-  private _playVisualization (): void {
+  private _showVisualizer (): void {
     Store.dispatch({
       type: ActionTypes.CHANGE_VIEW,
       payload: ViewMode.PLAYER

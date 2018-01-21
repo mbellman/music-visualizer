@@ -3,7 +3,7 @@ import DropMessage from 'App/Components/DropMessage';
 import Manager from 'App/State/Manager';
 import MidiLoader from 'AppCore/MIDI/MidiLoader';
 import Sequence from 'AppCore/MIDI/Sequence';
-import Editor from 'App/Components/Editor';
+import Editor from 'App/Components/Editor/Editor';
 import Store from 'App/State/Store';
 import Player from 'App/Components/Player';
 import { ActionTypes } from 'App/State/ActionTypes';
