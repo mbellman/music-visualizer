@@ -4,6 +4,7 @@ import Store from 'App/State/Store';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { ICustomizer, ViewMode } from 'App/State/Types';
 import { h, Component } from 'preact';
+import { Override } from 'Base/Core';
 
 interface IEditorHeaderFieldBuilder {
   actionType: ActionTypes;
@@ -16,24 +17,7 @@ interface IEditorHeaderProps {
 }
 
 export default class EditorHeader extends Component<IEditorHeaderProps, any> {
-  private _editorHeaderFieldBuilders: IEditorHeaderFieldBuilder[] = [
-    {
-      actionType: ActionTypes.CHANGE_CUSTOMIZER_TEMPO,
-      customizerProp: 'tempo',
-      label: 'Tempo'
-    },
-    {
-      actionType: ActionTypes.CHANGE_CUSTOMIZER_SCROLL_SPEED,
-      customizerProp: 'scrollSpeed',
-      label: 'Scroll speed'
-    },
-    {
-      actionType: ActionTypes.CHANGE_CUSTOMIZER_FOCUS_DELAY,
-      customizerProp: 'focusDelay',
-      label: 'Focus delay'
-    }
-  ];
-
+  @Override
   public render (): JSX.Element {
     const { customizer, sequence } = this.props.playlistTrack;
 
@@ -41,19 +25,23 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
       <div class="editor-header">
         <h3 class="sequence-title">{ sequence.name }</h3>
 
-        {
-          this._editorHeaderFieldBuilders.map((builder: IEditorHeaderFieldBuilder) => {
-            const { actionType, label, customizerProp } = builder;
+        <EditorHeaderField
+          actionType={ ActionTypes.CHANGE_CUSTOMIZER_TEMPO }
+          label="Tempo"
+          value={ customizer.tempo.toString() }
+        />
 
-            return (
-              <EditorHeaderField
-                actionType={ actionType }
-                label={ label }
-                value={ customizer[customizerProp].toString() }
-              />
-            );
-          })
-        }
+        <EditorHeaderField
+          actionType={ ActionTypes.CHANGE_CUSTOMIZER_SCROLL_SPEED }
+          label="Scroll speed"
+          value={ customizer.scrollSpeed.toString() }
+        />
+
+        <EditorHeaderField
+          actionType={ ActionTypes.CHANGE_CUSTOMIZER_SCROLL_SPEED }
+          label="Focus delay"
+          value={ customizer.focusDelay.toString() }
+        />
 
         <input class="play-button" type="button" onClick={ this._showVisualizer } value="Play" />
       </div>

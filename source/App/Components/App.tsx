@@ -9,7 +9,7 @@ import Player from 'App/Components/Player';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { h, Component } from 'preact';
 import { IAppState, ViewMode } from 'App/State/Types';
-import { Utils } from 'Base/Core';
+import { Override, Utils } from 'Base/Core';
 
 export default class App extends Component<any, IAppState> {
   public state: IAppState = Store.getState();
@@ -21,6 +21,7 @@ export default class App extends Component<any, IAppState> {
     Store.subscribe(this._onStoreUpdate);
   }
 
+  @Override
   public render (): JSX.Element {
     const { selectedPlaylistTrack, viewMode } = this.state;
     const { audioFile, customizer, sequence } = selectedPlaylistTrack;

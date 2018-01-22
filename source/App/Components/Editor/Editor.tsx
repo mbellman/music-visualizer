@@ -7,13 +7,14 @@ import Store from 'App/State/Store';
 import { ActionTypes } from 'App/State/ActionTypes';
 import { IPlaylistTrack, ICustomizer, ViewMode } from 'App/State/Types';
 import { h, Component } from 'preact';
-import { Utils, Partial } from 'Base/Core';
+import { Override, Partial, Utils } from 'Base/Core';
 
 interface IEditorProps {
   playlistTrack: IPlaylistTrack;
 }
 
 export default class Editor extends Component<IEditorProps, any> {
+  @Override
   public render (): JSX.Element {
     const { customizer, sequence } = this.props.playlistTrack;
 

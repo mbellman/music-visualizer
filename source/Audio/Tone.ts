@@ -1,5 +1,5 @@
-import AudioCore from 'audio/AudioCore';
-import ISound from 'audio/ISound';
+import AudioCore from 'Audio/AudioCore';
+import ISound from 'Audio/ISound';
 
 export default class Tone implements ISound {
   public play (): void {

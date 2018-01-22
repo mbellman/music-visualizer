@@ -1,6 +1,6 @@
-import AudioCore from 'audio/AudioCore';
+import AudioCore from 'Audio/AudioCore';
 import FileLoader from 'AppCore/FileLoader';
-import ISound from 'audio/ISound';
+import ISound from 'Audio/ISound';
 import { EventManager, Utils } from 'Base/Core';
 import { AudioEvent, SoundState } from 'Audio/Constants';
 

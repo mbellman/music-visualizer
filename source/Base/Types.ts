@@ -1,7 +1,7 @@
 export type Callback<T, U = any> = (...value: T[]) => U;
 
 export interface IConstructor<T> {
-  new (): T;
+  new (...args: any[]): T;
 }
 
 export interface IHashMap<V> {

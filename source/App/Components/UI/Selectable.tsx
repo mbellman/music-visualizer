@@ -27,15 +27,23 @@ export default abstract class Selectable<T extends ISelectableProps> extends Com
     });
   }
 
-  protected onClick (e: UIEvent): void {
-    this.setState({
-      isSelected: !this.state.isSelected
-    });
+  public get selected (): boolean {
+    return this.state.isSelected;
+  }
 
-    if (this.state.isSelected && !!this.props.onSelect) {
-      this.props.onSelect();
-    } else if (!this.state.isSelected && !!this.props.onUnselect) {
-      this.props.onUnselect();
+  public set selected (isSelected: boolean) {
+    const { onSelect, onUnselect } = this.props;
+
+    this.setState({ isSelected });
+
+    if (isSelected && onSelect) {
+      onSelect(this);
+    } else if (!isSelected && onUnselect) {
+      onUnselect(this);
     }
+  }
+
+  protected onClick (e: UIEvent): void {
+    this.selected = !this.state.isSelected;
   }
 }

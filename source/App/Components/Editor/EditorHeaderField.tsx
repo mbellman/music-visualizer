@@ -1,7 +1,7 @@
 import 'App/Styles/EditorHeaderField.less';
 import Store from 'App/State/Store';
 import { h, Component } from 'preact';
-import { Utils } from 'Base/Core';
+import { Override, Utils } from 'Base/Core';
 import { ActionTypes } from 'App/State/ActionTypes';
 
 interface IEditorHeaderFieldProps {
@@ -17,6 +17,7 @@ export default class EditorHeaderField extends Component<IEditorHeaderFieldProps
     Utils.bindAll(this, '_onKeyUp');
   }
 
+  @Override
   public render (): JSX.Element {
     return (
       <span>

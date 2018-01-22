@@ -5,6 +5,7 @@ import Visualizer from 'AppCore/Visualization/Visualizer';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { h, Component } from 'preact';
 import { ICustomizer } from 'App/State/Types';
+import { Implementation, Override } from 'Base/Core';
 
 interface IPlayerProps {
   audioFile: AudioFile;
@@ -15,6 +16,7 @@ interface IPlayerProps {
 export default class Player extends Component<IPlayerProps, any> {
   private _visualizer: Visualizer;
 
+  @Implementation
   public componentDidMount (): void {
     const canvas: HTMLCanvasElement = this.base.querySelector('canvas');
     const visualizer: Visualizer = new Visualizer(canvas);
@@ -33,6 +35,7 @@ export default class Player extends Component<IPlayerProps, any> {
     this._play();
   }
 
+  @Override
   public render (): JSX.Element {
     return (
       <div class="player">

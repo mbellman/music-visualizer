@@ -4,8 +4,10 @@ import Channel from 'AppCore/MIDI/Channel';
 import Checkbox from 'App/Components/UI/Checkbox';
 import ColorField from 'App/Components/UI/ColorField';
 import SelectableButton from 'App/Components/UI/SelectableButton';
+import MultiSelectable from 'App/Components/UI/MultiSelectable';
 import { h, Component } from 'preact';
 import { IChannelCustomizer } from 'App/State/Types';
+import { Implementation, Override } from 'Base/Core';
 
 interface IChannelEditorProps {
   channel: Channel;
@@ -15,16 +17,19 @@ interface IChannelEditorProps {
 export default class ChannelEditor extends Component<IChannelEditorProps, any> {
   private _previewCanvas: Canvas;
 
+  @Implementation
   public componentDidMount (): void {
     this._previewCanvas = new Canvas(this.base.querySelector('canvas'));
 
     this._renderNotePreview();
   }
 
+  @Implementation
   public componentDidUpdate (): void {
     this._renderNotePreview();
   }
 
+  @Override
   public render (): JSX.Element {
     const { channel, channelCustomizer } = this.props;
 
@@ -40,14 +45,17 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
 
           <div>
             <label>Shape:</label>
-            <SelectableButton value="Bar" selected />
-            <SelectableButton value="Ball" />
+            <MultiSelectable>
+              <SelectableButton value="Bar" selected />
+              <SelectableButton value="Ball" />
+            </MultiSelectable>
           </div>
 
           <div>
             <Checkbox
-              onSelect={ this._onCheckFill }
-              onUnselect={ this._onUncheckFill }
+              name="Fill"
+              onSelect={ this._onCheckEffect }
+              onUnselect={ this._onUncheckEffect }
               selected
             />
             <label>Fill:</label>
@@ -58,12 +66,12 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
     );
   }
 
-  private _onCheckFill (): void {
-    console.log('Fill!');
+  private _onCheckEffect (checkbox: Checkbox): void {
+    console.log(checkbox);
   }
 
-  private _onUncheckFill (): void {
-    console.log('No fill!');
+  private _onUncheckEffect (checkbox: Checkbox): void {
+    console.log(checkbox);
   }
 
   private _renderNotePreview (): void {

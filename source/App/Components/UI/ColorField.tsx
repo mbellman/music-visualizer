@@ -1,6 +1,6 @@
 import 'App/Styles/UI/ColorField.less';
 import { h, Component } from 'preact';
-import { Callback } from 'Base/Core';
+import { Callback, Override } from 'Base/Core';
 
 interface IColorFieldProps {
   value?: string;
@@ -8,6 +8,7 @@ interface IColorFieldProps {
 }
 
 export default class ColorField extends Component<IColorFieldProps, any> {
+  @Override
   public render (): JSX.Element {
     return (
       <div class="color-field">

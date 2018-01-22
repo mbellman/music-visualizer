@@ -16,10 +16,8 @@ To-do:
 * Rendering optimizations
 
 **UI**
-* Add remaining effects options in channel editors
-* Limit to one shape per channel for now
 * Render preview notes in each channel editor
-* Allow channel shape picker to include multiple shapes
+* Add remaining effects options in channel editors
 * Add an active tracks list
 
 **Code cleanup**

@@ -11,11 +11,12 @@
   padding: 4px;
   .transition(all, 0.2s);
 
-  &:hover, &.selected {
-    box-shadow: 0 0 0 1px #fff;
+  &:hover {
+    box-shadow: 0 0 0 1px #fff !important;
   }
 
   &.selected {
     background-color: #ccc;
+    box-shadow: 0 0 0 1px #ccc;
   }
 }
