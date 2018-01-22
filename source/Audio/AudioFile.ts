@@ -1,7 +1,7 @@
 import AudioCore from 'Audio/AudioCore';
 import FileLoader from 'AppCore/FileLoader';
 import ISound from 'Audio/ISound';
-import { EventManager, Utils } from 'Base/Core';
+import { Bind, EventManager, Utils } from 'Base/Core';
 import { AudioEvent, SoundState } from 'Audio/Constants';
 
 export default class AudioFile implements ISound {
@@ -15,8 +15,6 @@ export default class AudioFile implements ISound {
   private _url: string;
 
   public constructor (url: string, name: string) {
-    Utils.bindAll(this, 'play', '_onEnded');
-
     this._url = url;
     this._name = name;
 
@@ -31,6 +29,7 @@ export default class AudioFile implements ISound {
     return this._state === SoundState.SOUND_PLAYING;
   }
 
+  @Bind
   public play (): void {
     if (!this._isLoaded) {
       this._events.on(AudioEvent.LOADED, this.play);
@@ -59,6 +58,7 @@ export default class AudioFile implements ISound {
     this._state = SoundState.SOUND_STOPPED;
   }
 
+  @Bind
   private _onEnded (): void {
     this._state = SoundState.SOUND_STOPPED;
   }

@@ -1,6 +1,6 @@
 import Selectable from 'App/Components/UI/Selectable';
 import { h, cloneElement, Component } from 'preact';
-import { Callback, IConstructor, Override, Utils } from 'Base/Core';
+import { Bind, Callback, IConstructor, Override, Utils } from 'Base/Core';
 
 interface IMultiSelectableProps {
   max?: number;
@@ -9,12 +9,6 @@ interface IMultiSelectableProps {
 
 export default class MultiSelectable extends Component<IMultiSelectableProps, any> {
   private _selectables: Selectable<any>[] = [];
-
-  public constructor (props: any) {
-    super();
-
-    Utils.bindAll(this, '_addSelectable', '_isPreselected', '_onClickSelectable');
-  }
 
   public get totalSelected (): number {
     return this._selectables.filter((selectable: Selectable<any>) => {
@@ -32,8 +26,8 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
           this.props.children.map((child: JSX.Element) => {
             return cloneElement(child, {
               ref: this._addSelectable,
-              onSelect: this._onClickSelectable,
-              onUnselect: this._onClickSelectable
+              onSelect: this._onToggleSelectable,
+              onUnselect: this._onToggleSelectable
             });
           })
         }
@@ -41,6 +35,7 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
     );
   }
 
+  @Bind
   private _addSelectable (selectable: Selectable<any>): void {
     this._selectables.push(selectable);
   }
@@ -58,13 +53,16 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
     });
   }
 
-  private _onClickSelectable (selectable: Selectable<any>): void {
+  @Bind
+  private _onToggleSelectable (selectable: Selectable<any>): void {
     const { props, totalSelected } = this;
     const { max, onChange } = props;
     const isChangeAllowed: boolean = totalSelected > 0 && totalSelected <= (max || 1);
 
     if (isChangeAllowed) {
-      onChange();
+      if (onChange) {
+        onChange();
+      }
     } else {
       if (!max && totalSelected > 1) {
         this._silentlyDeselectAll();

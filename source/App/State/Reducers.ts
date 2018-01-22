@@ -1,5 +1,5 @@
-import { ActionTypes } from 'App/State/ActionTypes';
-import { IAction, IAppState, ViewMode, ICustomizer, IPlaylistTrack } from 'App/State/Types';
+import { ActionTypes, IAction, IShapeAction } from 'App/State/Actions';
+import { IAppState, ViewMode, ICustomizer, IPlaylistTrack } from 'App/State/Types';
 import { Utils } from 'Base/Core';
 
 const initialState: IAppState = {
@@ -17,6 +17,12 @@ const initialState: IAppState = {
   },
   viewMode: ViewMode.EDITOR
 };
+
+/*
+function addCustomizerShape (state: IAppState, action: IShapeAction): IAppState {
+
+}
+*/
 
 function changeCustomizerProp (state: IAppState, prop: keyof ICustomizer, value: string): IAppState {
   const { customizer } = state.selectedPlaylistTrack;
@@ -71,7 +77,7 @@ function syncSelectedPlaylistTrack (state: IAppState): IAppState {
   };
 }
 
-export default function appReducer (state: IAppState = initialState, action: IAction): IAppState {
+export function appReducer (state: IAppState = initialState, action: IAction): IAppState {
   switch (action.type) {
     case ActionTypes.CHANGE_AUDIO_FILE:
       return changeSelectedPlaylistTrackProp(state, 'audioFile', action.payload);

@@ -2,7 +2,7 @@ import AudioFile from 'Audio/AudioFile';
 import FileLoader from 'AppCore/FileLoader';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Store from 'App/State/Store';
-import { ActionTypes } from 'App/State/ActionTypes';
+import { ActionTypes } from 'App/State/Actions';
 import {  } from 'App/State/Types';
 
 export default class Manager {

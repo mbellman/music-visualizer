@@ -1,13 +1,14 @@
 import 'App/Styles/ChannelEditor.less';
 import Canvas from 'Graphics/Canvas';
 import Channel from 'AppCore/MIDI/Channel';
-import Checkbox from 'App/Components/UI/Checkbox';
-import ColorField from 'App/Components/UI/ColorField';
-import SelectableButton from 'App/Components/UI/SelectableButton';
+import FillEditor from 'App/Components/Editor/EffectEditors/FillEditor';
 import MultiSelectable from 'App/Components/UI/MultiSelectable';
+import SelectableButton from 'App/Components/UI/SelectableButton';
+import StrokeEditor from 'App/Components/Editor/EffectEditors/StrokeEditor';
 import { h, Component } from 'preact';
 import { IChannelCustomizer } from 'App/State/Types';
-import { Implementation, Override } from 'Base/Core';
+import { Bind, Implementation, Override } from 'Base/Core';
+import { IFill, IStroke } from 'App/State/VisualizationTypes';
 
 interface IChannelEditorProps {
   channel: Channel;
@@ -51,27 +52,21 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
             </MultiSelectable>
           </div>
 
-          <div>
-            <Checkbox
-              name="Fill"
-              onSelect={ this._onCheckEffect }
-              onUnselect={ this._onUncheckEffect }
-              selected
-            />
-            <label>Fill:</label>
-            <ColorField value="00f" />
-          </div>
+          <FillEditor onChange={ this._onChangeFill } selected />
+          <StrokeEditor onChange={ this._onChangeStroke } />
         </div>
       </div>
     );
   }
 
-  private _onCheckEffect (checkbox: Checkbox): void {
-    console.log(checkbox);
+  @Bind
+  private _onChangeFill (fill: IFill): void {
+    console.log(fill);
   }
 
-  private _onUncheckEffect (checkbox: Checkbox): void {
-    console.log(checkbox);
+  @Bind
+  private _onChangeStroke (stroke: IStroke): void {
+    console.log(stroke);
   }
 
   private _renderNotePreview (): void {

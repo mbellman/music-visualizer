@@ -5,7 +5,7 @@ import NoteQueue from 'AppCore/Visualization/NoteQueue';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
-import { Map, Utils } from 'Base/Core';
+import { Bind, Map, Utils } from 'Base/Core';
 
 type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 
@@ -37,8 +37,6 @@ export default class Visualizer {
   private _visualizerNotes: VisualizerNote[] = [];
 
   public constructor (element: HTMLCanvasElement) {
-    Utils.bindAll(this, '_tick');
-
     this._canvas = new Canvas(element);
   }
 
@@ -186,6 +184,7 @@ export default class Visualizer {
     this._runNoteSpawnCheck();
   }
 
+  @Bind
   private _tick (): void {
     if (!this._isRunning) {
       return;

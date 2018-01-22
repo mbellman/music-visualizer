@@ -4,7 +4,7 @@ import { IColor } from 'Graphics/Types';
  * Shapes
  * ------
  */
-interface IShape {
+export interface IShape {
   x: number;
   y: number;
 }
@@ -22,10 +22,21 @@ export interface IBall extends IShape {
  * Effects
  * -------
  */
-interface IEffect {
-  color: IColor;
+export interface IEffect {
+  isDelayed: boolean;
+  isSelected: boolean;
 }
 
-export interface IGlow extends IEffect {
+export interface IColorableEffect extends IEffect {
+  color: string;
+}
+
+export interface IFill extends IColorableEffect {}
+
+export interface IGlow extends IColorableEffect {
   blur: number;
+}
+
+export interface IStroke extends IColorableEffect {
+  width: number;
 }

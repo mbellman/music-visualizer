@@ -1,6 +1,6 @@
 import 'App/Styles/UI/ColorField.less';
 import { h, Component } from 'preact';
-import { Callback, Override } from 'Base/Core';
+import { Bind, Callback, Override, Utils } from 'Base/Core';
 
 interface IColorFieldProps {
   value?: string;
@@ -13,16 +13,24 @@ export default class ColorField extends Component<IColorFieldProps, any> {
     return (
       <div class="color-field">
         <label>#</label>
-        <input type="text" maxLength={ 6 } value={ this.props.value } />
+        <input
+          type="text"
+          onKeyUp={ this._onKeyUpInput }
+          size={ 2 }
+          maxLength={ 6 }
+          value={ this.props.value }
+        />
       </div>
     );
   }
 
-  private _onKeyUp (e: UIEvent): void {
-    const target: HTMLInputElement = e.target as HTMLInputElement;
+  @Bind
+  private _onKeyUpInput (e: UIEvent): void {
+    const { value } = e.target as HTMLInputElement;
+    const { onChange } = this.props;
 
-    if (this.props.onChange) {
-      this.props.onChange(target.value);
+    if (onChange) {
+      onChange(value);
     }
   }
 }

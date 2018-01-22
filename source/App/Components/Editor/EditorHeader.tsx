@@ -1,16 +1,10 @@
 import 'App/Styles/EditorHeader.less';
 import EditorHeaderField from 'App/Components/Editor/EditorHeaderField';
 import Store from 'App/State/Store';
-import { ActionTypes } from 'App/State/ActionTypes';
+import { ActionTypes } from 'App/State/Actions';
 import { ICustomizer, ViewMode } from 'App/State/Types';
 import { h, Component } from 'preact';
 import { Override } from 'Base/Core';
-
-interface IEditorHeaderFieldBuilder {
-  actionType: ActionTypes;
-  customizerProp: keyof ICustomizer;
-  label: string;
-}
 
 interface IEditorHeaderProps {
   playlistTrack: any;
@@ -39,7 +33,7 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
 
         <EditorHeaderField
           actionType={ ActionTypes.CHANGE_CUSTOMIZER_SCROLL_SPEED }
-          label="Focus delay"
+          label="Active note delay"
           value={ customizer.focusDelay.toString() }
         />
 

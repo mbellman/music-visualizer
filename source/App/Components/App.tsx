@@ -6,10 +6,10 @@ import Sequence from 'AppCore/MIDI/Sequence';
 import Editor from 'App/Components/Editor/Editor';
 import Store from 'App/State/Store';
 import Player from 'App/Components/Player';
-import { ActionTypes } from 'App/State/ActionTypes';
+import { ActionTypes } from 'App/State/Actions';
 import { h, Component } from 'preact';
 import { IAppState, ViewMode } from 'App/State/Types';
-import { Override, Utils } from 'Base/Core';
+import { Bind, Override, Utils } from 'Base/Core';
 
 export default class App extends Component<any, IAppState> {
   public state: IAppState = Store.getState();
@@ -17,7 +17,6 @@ export default class App extends Component<any, IAppState> {
   public constructor () {
     super();
 
-    Utils.bindAll(this, '_onDropFile', '_onStoreUpdate');
     Store.subscribe(this._onStoreUpdate);
   }
 
@@ -57,6 +56,7 @@ export default class App extends Component<any, IAppState> {
     });
   }
 
+  @Bind
   private async _onDropFile (e: DragEvent): Promise<void> {
     e.preventDefault();
 
@@ -78,6 +78,7 @@ export default class App extends Component<any, IAppState> {
     e.preventDefault();
   }
 
+  @Bind
   private _onStoreUpdate (): void {
     this.setState(Store.getState());
   }

@@ -1,8 +1,8 @@
 import 'App/Styles/EditorHeaderField.less';
 import Store from 'App/State/Store';
 import { h, Component } from 'preact';
-import { Override, Utils } from 'Base/Core';
-import { ActionTypes } from 'App/State/ActionTypes';
+import { Bind, Override, Utils } from 'Base/Core';
+import { ActionTypes } from 'App/State/Actions';
 
 interface IEditorHeaderFieldProps {
   actionType: ActionTypes;
@@ -11,12 +11,6 @@ interface IEditorHeaderFieldProps {
 }
 
 export default class EditorHeaderField extends Component<IEditorHeaderFieldProps, any> {
-  public constructor () {
-    super();
-
-    Utils.bindAll(this, '_onKeyUp');
-  }
-
   @Override
   public render (): JSX.Element {
     return (
@@ -32,6 +26,7 @@ export default class EditorHeaderField extends Component<IEditorHeaderFieldProps
     );
   }
 
+  @Bind
   private _onKeyUp (e: KeyboardEvent): void {
     const target: HTMLInputElement = e.target as HTMLInputElement;
 

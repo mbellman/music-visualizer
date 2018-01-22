@@ -4,10 +4,10 @@ import ChannelEditor from 'App/Components/Editor/ChannelEditor';
 import EditorHeader from 'App/Components/Editor/EditorHeader';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Store from 'App/State/Store';
-import { ActionTypes } from 'App/State/ActionTypes';
+import { ActionTypes } from 'App/State/Actions';
 import { IPlaylistTrack, ICustomizer, ViewMode } from 'App/State/Types';
 import { h, Component } from 'preact';
-import { Override, Partial, Utils } from 'Base/Core';
+import { Override } from 'Base/Core';
 
 interface IEditorProps {
   playlistTrack: IPlaylistTrack;
