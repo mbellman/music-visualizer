@@ -1,6 +1,7 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from 'AppCore/MIDI/Sequence';
-import { IConstructor, IHashMap } from 'Base/Core';
+import { IShapeTemplate, IEffectTemplate } from 'App/State/VisualizationTypes';
+import { Extension } from 'Base/Core';
 
 export interface IAppState {
   playlist: IPlaylistTrack[];
@@ -9,6 +10,7 @@ export interface IAppState {
 }
 
 export interface IChannelCustomizer {
+  shapeCustomizer: IShapeCustomizer;
 }
 
 export interface ICustomizer {
@@ -26,6 +28,11 @@ export interface IPlaylistTrack {
 
 export interface ISelectedPlaylistTrack extends IPlaylistTrack {
   index: number;
+}
+
+export interface IShapeCustomizer {
+  shapeTemplate: IShapeTemplate;
+  effectTemplates: Extension<IEffectTemplate>[];
 }
 
 export enum ViewMode {

@@ -1,3 +1,8 @@
+import { Constructor } from "Base/Types";
+
+type ClassDecorator<T> = (constructor: Constructor<T>) => any;
+type MethodDecorator = (target: any, method: string, descriptor: PropertyDescriptor) => any;
+
 interface IClassTaxonomy {
   prototype: any;
   name: string;
@@ -14,22 +19,6 @@ function getClassTaxonomy (target: any): IClassTaxonomy {
     name,
     parent
   };
-}
-
-export function Implementation (target: any, method: string): void {
-  const taxonomy: IClassTaxonomy = getClassTaxonomy(target);
-
-  if (!!taxonomy.prototype[method]) {
-    console.warn(`Invalid @Implements: Method '${method}' on class ${taxonomy.name} already exists on base class ${taxonomy.parent}!`);
-  }
-}
-
-export function Override (target: any, method: string): void {
-  const taxonomy: IClassTaxonomy = getClassTaxonomy(target);
-
-  if (!taxonomy.prototype[method]) {
-    console.warn(`Invalid @Override: Method '${method}' on class ${taxonomy.name} does not exist on base class ${taxonomy.parent}!`);
-  }
 }
 
 /**
@@ -52,4 +41,38 @@ export function Bind (target: any, method: string, descriptor: PropertyDescripto
       return boundMethod;
     }
   };
+}
+
+export function Implementation (target: any, method: string): void {
+  const taxonomy: IClassTaxonomy = getClassTaxonomy(target);
+
+  if (!!taxonomy.prototype[method]) {
+    console.warn(`Invalid @Implements: Method '${method}' on class ${taxonomy.name} already exists on base class ${taxonomy.parent}!`);
+  }
+}
+
+export function Mix <T>(...mixins: any[]): ClassDecorator<T> {
+  return (constructor: Constructor<T>) => {
+    mixins.forEach((mixin: any) => {
+      Object.keys(mixin).forEach((key: string) => {
+        constructor.prototype[key] = function () {
+          try {
+            mixin[key].apply(this, arguments);
+          } catch (e) {
+            console.warn(`Invalid @Mix: Error in mixin '${key}' on target class '${constructor.name}':`);
+
+            throw e;
+          }
+        };
+      });
+    });
+  };
+}
+
+export function Override (target: any, method: string): void {
+  const taxonomy: IClassTaxonomy = getClassTaxonomy(target);
+
+  if (!taxonomy.prototype[method]) {
+    console.warn(`Invalid @Override: Method '${method}' on class ${taxonomy.name} does not exist on base class ${taxonomy.parent}!`);
+  }
 }

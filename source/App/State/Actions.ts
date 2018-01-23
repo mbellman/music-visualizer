@@ -1,4 +1,4 @@
-import { IEffect, IShape } from 'App/State/VisualizationTypes';
+import { IEffectTemplate, IShapeTemplate } from 'App/State/VisualizationTypes';
 
 export enum ActionTypes {
   ADD_CHANNEL_SHAPE,
@@ -27,9 +27,9 @@ export interface IChannelAction extends IAction {
 }
 
 export interface IEffectAction extends IChannelAction {
-  effect: IEffect;
+  effect: IEffectTemplate;
 }
 
 export interface IShapeAction extends IChannelAction {
-  shape: IShape;
+  shape: IShapeTemplate;
 }

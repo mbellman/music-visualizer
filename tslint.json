@@ -2,6 +2,7 @@
   "extends": "tslint:recommended",
   "rules": {
     "array-type": [ false ],
+    "ban-types": false,
     "max-classes-per-file": [ false ],
     "max-line-length": [ false ],
     "member-ordering": [ false ],

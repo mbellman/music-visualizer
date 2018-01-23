@@ -1,14 +1,17 @@
 import ColorField from 'App/Components/UI/ColorField';
-import EffectEditor, { IEffectEditorProps } from 'App/Components/Editor/EffectEditors/EffectEditor';
-import { IStroke } from 'App/State/VisualizationTypes';
+import EffectEditor, { IEffectEditorState } from 'App/Components/Extensible/EffectEditor';
+import { Effects, IStrokeTemplate } from 'App/State/VisualizationTypes';
 import { h, Component } from 'preact';
 import { Bind, Implementation } from 'Base/Core';
 
-export default class StrokeEditor extends EffectEditor<IStroke> {
+interface IStrokeEditorState extends IEffectEditorState, IStrokeTemplate {}
+
+export default class StrokeEditor extends EffectEditor<IStrokeEditorState> {
   public static readonly DEFAULT_COLOR: string = '00f';
   public static readonly DEFAULT_WIDTH: number = 2;
 
-  public state: IStroke = {
+  public state: IStrokeEditorState = {
+    type: Effects.STROKE,
     color: StrokeEditor.DEFAULT_COLOR,
     isDelayed: false,
     isSelected: this.props.selected,

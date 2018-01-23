@@ -1,13 +1,16 @@
 import ColorField from 'App/Components/UI/ColorField';
-import EffectEditor, { IEffectEditorProps } from 'App/Components/Editor/EffectEditors/EffectEditor';
-import { IFill } from 'App/State/VisualizationTypes';
+import EffectEditor, { IEffectEditorProps, IEffectEditorState } from 'App/Components/Extensible/EffectEditor';
+import { Effects, IFillTemplate } from 'App/State/VisualizationTypes';
 import { h, Component } from 'preact';
 import { Bind, Implementation } from 'Base/Core';
 
-export default class FillEditor extends EffectEditor<IFill> {
+interface IFillEditorState extends IEffectEditorState, IFillTemplate {}
+
+export default class FillEditor extends EffectEditor<IFillEditorState> {
   public static readonly DEFAULT_COLOR: string = '00f';
 
-  public state: IFill = {
+  public state: IFillEditorState = {
+    type: Effects.FILL,
     color: FillEditor.DEFAULT_COLOR,
     isDelayed: false,
     isSelected: this.props.selected
@@ -15,7 +18,7 @@ export default class FillEditor extends EffectEditor<IFill> {
 
   @Implementation
   protected renderContents (): JSX.Element {
-    const { color, isSelected } = this.state;
+    const { color } = this.state;
 
     return (
       <span>

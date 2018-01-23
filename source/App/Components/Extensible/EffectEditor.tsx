@@ -1,28 +1,29 @@
 import SelectableButton from 'App/Components/UI/SelectableButton';
 import SelectableBox from 'App/Components/UI/SelectableBox';
-import { ISelectableProps } from 'App/Components/UI/Selectable';
-import { IEffect } from 'App/State/VisualizationTypes';
+import { IEffectTemplate } from 'App/State/VisualizationTypes';
 import { h, Component } from 'preact';
 import { Bind, Callback, Override } from 'Base/Core';
+import ChangeDispatcher, { IChangeDispatcherProps } from 'App/Components/Extensible/ChangeDispatcher';
 
-export interface IEffectEditorProps<T extends IEffect = IEffect> {
-  onChange?: Callback<T>;
-  onDelay?: Callback<any>;
-  onSelect?: Callback<any>;
-  onUndelay?: Callback<any>;
-  onUnselect?: Callback<any>;
+export interface IEffectEditorProps<T extends IEffectEditorState> extends IChangeDispatcherProps<T> {
+  delayed?: boolean;
   selected?: boolean;
 }
 
-export default abstract class EffectEditor<T extends IEffect = IEffect> extends Component<IEffectEditorProps<T>, T> {
+export interface IEffectEditorState {
+  isDelayed: boolean;
+  isSelected: boolean;
+}
+
+export default abstract class EffectEditor<S extends IEffectEditorState> extends ChangeDispatcher<IEffectEditorProps<S>, S> {
   @Override
   public render (): JSX.Element {
     return (
-      <div class="effect-editor">
+      <div class={ `effect-editor ${this.state.isSelected ? 'selected' : ''}` }>
         <SelectableBox
           onSelect={ this._onSelect }
           onUnselect={ this._onUnselect }
-          selected={ this.props.selected }
+          selected={ this.state.isSelected }
         />
 
         { this.renderContents() }
@@ -31,20 +32,13 @@ export default abstract class EffectEditor<T extends IEffect = IEffect> extends 
           value="Delay"
           onSelect={ this._onDelay }
           onUnselect={ this._onUndelay }
+          selected={ this.state.isDelayed }
         />
       </div>
     );
   }
 
-  protected dispatchChange <K extends keyof T>(state: Pick<T, K>): void {
-    const { onChange } = this.props;
-
-    this.setState(state);
-
-    if (onChange) {
-      onChange(this.state);
-    }
-  }
+  protected abstract renderContents (): JSX.Element;
 
   @Bind
   private _onDelay (): void {
@@ -65,6 +59,4 @@ export default abstract class EffectEditor<T extends IEffect = IEffect> extends 
   private _onUnselect (): void {
     this.dispatchChange({ isSelected: false });
   }
-
-  protected abstract renderContents (): JSX.Element;
 }

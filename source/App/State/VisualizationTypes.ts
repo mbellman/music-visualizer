@@ -4,39 +4,47 @@ import { IColor } from 'Graphics/Types';
  * Shapes
  * ------
  */
-export interface IShape {
-  x: number;
-  y: number;
+export enum Shapes {
+  BAR,
+  BALL
 }
 
-export interface IBar extends IShape {
-  width: number;
-  height: number;
-}
-
-export interface IBall extends IShape {
-  radius: number;
+export interface IShapeTemplate {
+  type: Shapes;
+  size: number;
 }
 
 /**
  * Effects
  * -------
  */
-export interface IEffect {
-  isDelayed: boolean;
-  isSelected: boolean;
+export enum Effects {
+  FILL,
+  STROKE,
+  GLOW
 }
 
-export interface IColorableEffect extends IEffect {
+export interface IEffectTemplate {
+  type: Effects;
+  isDelayed: boolean;
+}
+
+export interface IColorableEffectTemplate extends IEffectTemplate {
   color: string;
 }
 
-export interface IFill extends IColorableEffect {}
-
-export interface IGlow extends IColorableEffect {
-  blur: number;
+export interface IFillTemplate extends IColorableEffectTemplate {
+  type: Effects.FILL;
 }
 
-export interface IStroke extends IColorableEffect {
+export interface IGlowTemplate extends IColorableEffectTemplate {
+  type: Effects.GLOW;
+  blur: number;
+  fadeIn?: number;
+  fadeOut?: number;
+}
+
+export interface IStrokeTemplate extends IColorableEffectTemplate {
+  type: Effects.STROKE;
   width: number;
 }

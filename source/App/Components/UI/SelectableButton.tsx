@@ -1,10 +1,9 @@
 import 'App/Styles/UI/SelectableButton.less';
-import Selectable, { ISelectableProps } from 'App/Components/UI/Selectable';
+import Selectable, { ISelectableProps } from 'App/Components/Extensible/Selectable';
 import { Callback, Override } from 'Base/Core';
 import { h } from 'preact';
 
 interface ISelectableButtonProps extends ISelectableProps {
-  name?: string;
   value: string;
 }
 

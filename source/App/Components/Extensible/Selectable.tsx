@@ -1,22 +1,23 @@
 import { h, Component } from 'preact';
 import { Bind, Callback, Utils } from 'Base/Core';
 
-interface ISelectableState {
-  isSelected: boolean;
-}
-
 export interface ISelectableProps {
+  name?: string;
   onSelect?: Callback<any>;
   onUnselect?: Callback<any>;
   selected?: boolean;
 }
 
-export default abstract class Selectable<T extends ISelectableProps> extends Component<T, ISelectableState> {
+export interface ISelectableState {
+  isSelected: boolean;
+}
+
+export default abstract class Selectable<P extends ISelectableProps> extends Component<P, ISelectableState> {
   public state: ISelectableState = {
     isSelected: false
   };
 
-  public constructor (props: T) {
+  public constructor (props: P) {
     super();
 
     this.setState({
