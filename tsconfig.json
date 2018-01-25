@@ -12,6 +12,13 @@
 		"module": "commonjs",
 		"noEmitOnError": true,
 		"noImplicitAny": true,
+		"paths": {
+			"@base": ["Base/Core"],
+			"@core/*": ["AppCore/*"],
+			"@components/*": ["App/Components/*"],
+			"@state/*": ["App/State/*"],
+			"@styles/*": ["App/Styles/*"]
+		},
 		"target": "es5"
 	},
 	"include": [

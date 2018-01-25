@@ -14,16 +14,8 @@ export interface ISelectableState {
 
 export default abstract class Selectable<P extends ISelectableProps> extends Component<P, ISelectableState> {
   public state: ISelectableState = {
-    isSelected: false
+    isSelected: !!this.props.selected
   };
-
-  public constructor (props: P) {
-    super();
-
-    this.setState({
-      isSelected: !!props.selected
-    });
-  }
 
   public get selected (): boolean {
     return this.state.isSelected;

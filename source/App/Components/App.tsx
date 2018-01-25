@@ -1,59 +1,62 @@
-import 'App/Styles/App.less';
-import DropMessage from 'App/Components/DropMessage';
-import Manager from 'App/State/Manager';
-import MidiLoader from 'AppCore/MIDI/MidiLoader';
-import Sequence from 'AppCore/MIDI/Sequence';
-import Editor from 'App/Components/Editor/Editor';
-import Store from 'App/State/Store';
-import Player from 'App/Components/Player';
-import { ActionTypes } from 'App/State/Actions';
+import '@styles/App.less';
+
+import { IAppState } from '@state/Types';
 import { h, Component } from 'preact';
-import { IAppState, ViewMode } from 'App/State/Types';
-import { Bind, Override, Utils } from 'Base/Core';
+import { Bind, Override } from '@base';
+import { ViewMode } from '@state/Types';
+import { ActionTypes, IAction } from '@state/ActionTypes';
+import Sequence from '@core/MIDI/Sequence';
+import MidiLoader from '@core/MIDI/MidiLoader';
+import { ActionCreators } from 'App/State/ActionCreators';
+import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
+import DropMessage from '@components/DropMessage';
+import Editor from '@components/Editor';
+import Player from '@components/Player';
+import { Connect } from '@components/Decorators';
 
-export default class App extends Component<any, IAppState> {
-  public state: IAppState = Store.getState();
+interface IAppProps {
+  sequence?: Sequence;
+  viewMode?: ViewMode;
+  changeSequence?: ActionCreator<IAction>;
+}
 
-  public constructor () {
-    super();
+function mapStateToProps (state: IAppState): IAppProps {
+  const { selectedPlaylistTrack, viewMode } = state;
+  const { sequence } = selectedPlaylistTrack;
 
-    Store.subscribe(this._onStoreUpdate);
-  }
+  return {
+    sequence,
+    viewMode
+  };
+}
 
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): Partial<IAppProps> {
+  const { changeSequence } = ActionCreators;
+
+  return bindActionCreators({
+    changeSequence
+  }, dispatch);
+}
+
+@Connect(mapStateToProps, mapDispatchToProps)
+export default class App extends Component<IAppProps, any> {
   @Override
   public render (): JSX.Element {
-    const { selectedPlaylistTrack, viewMode } = this.state;
-    const { audioFile, customizer, sequence } = selectedPlaylistTrack;
+    const { sequence, viewMode } = this.props;
 
     return (
       <div class="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         {
           !!sequence ?
             viewMode === ViewMode.EDITOR ?
-              <Editor playlistTrack={ selectedPlaylistTrack } />
+              <Editor sequence={ sequence } />
             :
-              <Player
-                audioFile={ audioFile }
-                customizer={ customizer }
-                sequence={ sequence }
-              />
+              <Player />
           :
             <DropMessage />
         }
       </div>
     );
-  }
-
-  private _setSequence (sequence: Sequence): void {
-    Store.dispatch({
-      type: ActionTypes.CHANGE_SEQUENCE,
-      payload: sequence
-    });
-
-    Store.dispatch({
-      type: ActionTypes.CHANGE_CUSTOMIZER_TEMPO,
-      payload: sequence.tempo
-    });
   }
 
   @Bind
@@ -66,7 +69,7 @@ export default class App extends Component<any, IAppState> {
     if (extension === 'mid') {
       const sequence: Sequence = await MidiLoader.fileToSequence(file);
 
-      this._setSequence(sequence);
+      this.props.changeSequence(sequence);
     } else {
       // await AudioBank.uploadFile(file);
 
@@ -76,10 +79,5 @@ export default class App extends Component<any, IAppState> {
 
   private _onDragOverFile (e: DragEvent): void {
     e.preventDefault();
-  }
-
-  @Bind
-  private _onStoreUpdate (): void {
-    this.setState(Store.getState());
   }
 }

@@ -1,30 +1,14 @@
-import { ActionTypes, IAction, IShapeAction } from 'App/State/Actions';
-import { IAppState, ViewMode, ICustomizer, IPlaylistTrack } from 'App/State/Types';
-import { Utils } from 'Base/Core';
+import { ActionTypes, IAction, IShapeAction, ICustomizerSettingsAction } from '@state/ActionTypes';
+import { IAppState, ViewMode, ICustomizer, IPlaylistTrack, ICustomizerSettings } from '@state/Types';
+import { Utils } from '@base';
+import { initialState, initialCustomizerState, initialChannelCustomizerState } from '@state/Initializers';
+import Sequence from '@core/MIDI/Sequence';
 
-const initialState: IAppState = {
-  playlist: [],
-  selectedPlaylistTrack: {
-    audioFile: null,
-    index: 0,
-    sequence: null,
-    customizer: {
-      channels: [],
-      focusDelay: 1000,
-      scrollSpeed: 100,
-      tempo: 0
-    }
-  },
-  viewMode: ViewMode.EDITOR
-};
-
-/*
-function addCustomizerShape (state: IAppState, action: IShapeAction): IAppState {
-
-}
-*/
-
-function changeCustomizerProp (state: IAppState, prop: keyof ICustomizer, value: string): IAppState {
+function changeCustomizerProp <K extends keyof ICustomizer>(
+  state: IAppState,
+  prop: K,
+  value: ICustomizer[K]
+): IAppState {
   const { customizer } = state.selectedPlaylistTrack;
 
   return changeSelectedPlaylistTrackProp(state, 'customizer', {
@@ -33,7 +17,11 @@ function changeCustomizerProp (state: IAppState, prop: keyof ICustomizer, value:
   });
 }
 
-function changeSelectedPlaylistTrackProp (state: IAppState, prop: keyof IPlaylistTrack, value: any): IAppState {
+function changeSelectedPlaylistTrackProp <K extends keyof IPlaylistTrack>(
+  state: IAppState,
+  prop: K,
+  value: IPlaylistTrack[K]
+): IAppState {
   return {
     ...state,
     selectedPlaylistTrack: {
@@ -43,7 +31,24 @@ function changeSelectedPlaylistTrackProp (state: IAppState, prop: keyof IPlaylis
   };
 }
 
-function jumpToPlaylistTrack (state: IAppState, index: number): IAppState {
+function changeSequence (
+  state: IAppState,
+  sequence: Sequence
+): IAppState {
+  const { tempo } = sequence;
+
+  state = changeSelectedPlaylistTrackProp(state, 'sequence', sequence);
+  state = changeSelectedPlaylistTrackProp(state, 'customizer', initialCustomizerState);
+  state = changeCustomizerProp(state, 'channels', [ ...sequence.channels() ].map(channel => initialChannelCustomizerState));
+  state = setCustomizerSettings(state, { tempo });
+
+  return state;
+}
+
+function jumpToPlaylistTrack (
+  state: IAppState,
+  index: number
+): IAppState {
   state = syncSelectedPlaylistTrack(state);
   index = Utils.wrap(index, 0, state.playlist.length - 1);
 
@@ -60,13 +65,27 @@ function jumpToPlaylistTrack (state: IAppState, index: number): IAppState {
   };
 }
 
-function syncSelectedPlaylistTrack (state: IAppState): IAppState {
+function setCustomizerSettings (
+  state: IAppState,
+  updatedSettings: Partial<ICustomizerSettings>
+): IAppState {
+  const { settings } = state.selectedPlaylistTrack.customizer;
+
+  return changeCustomizerProp(state, 'settings', {
+    ...settings,
+    ...updatedSettings
+  });
+}
+
+function syncSelectedPlaylistTrack (
+  state: IAppState
+): IAppState {
   const { audioFile, customizer, index, sequence } = state.selectedPlaylistTrack;
 
   return {
     ...state,
     playlist: [
-      ...state.playlist.slice(0, index - 1),
+      ...state.playlist.slice(0, index),
       {
         audioFile,
         customizer,
@@ -81,14 +100,8 @@ export function appReducer (state: IAppState = initialState, action: IAction): I
   switch (action.type) {
     case ActionTypes.CHANGE_AUDIO_FILE:
       return changeSelectedPlaylistTrackProp(state, 'audioFile', action.payload);
-    case ActionTypes.CHANGE_CUSTOMIZER_FOCUS_DELAY:
-      return changeCustomizerProp(state, 'focusDelay', action.payload);
-    case ActionTypes.CHANGE_CUSTOMIZER_SCROLL_SPEED:
-      return changeCustomizerProp(state, 'scrollSpeed', action.payload);
     case ActionTypes.CHANGE_SEQUENCE:
-      return changeSelectedPlaylistTrackProp(state, 'sequence', action.payload);
-    case ActionTypes.CHANGE_CUSTOMIZER_TEMPO:
-      return changeCustomizerProp(state, 'tempo', action.payload);
+      return changeSequence(state, action.payload);
     case ActionTypes.CHANGE_VIEW:
       return {
         ...state,
@@ -100,6 +113,11 @@ export function appReducer (state: IAppState = initialState, action: IAction): I
       return jumpToPlaylistTrack(state, state.selectedPlaylistTrack.index + 1);
     case ActionTypes.PREVIOUS_PLAYLIST_TRACK:
       return jumpToPlaylistTrack(state, state.selectedPlaylistTrack.index - 1);
+    case ActionTypes.RESET_CUSTOMIZER:
+      return changeSelectedPlaylistTrackProp(state, 'customizer', initialCustomizerState);
+    case ActionTypes.SET_CUSTOMIZER_SETTINGS:
+      const { type, ...settings } = action as ICustomizerSettingsAction;
+      return setCustomizerSettings(state, settings);
     case ActionTypes.SYNC_SELECTED_PLAYLIST_TRACK:
       return syncSelectedPlaylistTrack(state);
     default:

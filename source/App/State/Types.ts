@@ -9,17 +9,6 @@ export interface IAppState {
   viewMode: ViewMode;
 }
 
-export interface IChannelCustomizer {
-  shapeCustomizer: IShapeCustomizer;
-}
-
-export interface ICustomizer {
-  channels: IChannelCustomizer[];
-  focusDelay: number;
-  scrollSpeed: number;
-  tempo: number;
-}
-
 export interface IPlaylistTrack {
   audioFile: AudioFile;
   customizer: ICustomizer;
@@ -30,12 +19,27 @@ export interface ISelectedPlaylistTrack extends IPlaylistTrack {
   index: number;
 }
 
-export interface IShapeCustomizer {
-  shapeTemplate: IShapeTemplate;
-  effectTemplates: Extension<IEffectTemplate>[];
-}
-
 export enum ViewMode {
   EDITOR,
   PLAYER
+}
+
+export interface ICustomizer {
+  channels: IChannelCustomizer[];
+  settings: ICustomizerSettings;
+}
+
+export interface IChannelCustomizer {
+  shapeCustomizer: IShapeCustomizer;
+}
+
+export interface ICustomizerSettings {
+  focusDelay: number;
+  scrollSpeed: number;
+  tempo: number;
+}
+
+export interface IShapeCustomizer {
+  shapeTemplate: IShapeTemplate;
+  effectTemplates: Extension<IEffectTemplate>[];
 }

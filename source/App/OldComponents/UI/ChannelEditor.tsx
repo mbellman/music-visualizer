@@ -1,9 +1,9 @@
 import 'App/Styles/ChannelEditor.less';
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Channel from 'AppCore/MIDI/Channel';
-import FillEditor from 'App/Components/Editor/EffectEditors/FillEditor';
-import ShapeEditor from 'App/Components/Editor/ShapeEditor';
-import StrokeEditor from 'App/Components/Editor/EffectEditors/StrokeEditor';
+import FillEditor from 'App/Components/UI/FillEditor';
+import ShapeEditor from 'App/Components/UI/ShapeEditor';
+import StrokeEditor from 'App/Components/UI/StrokeEditor';
 import { h, Component } from 'preact';
 import { IChannelCustomizer } from 'App/State/Types';
 import { Bind, Implementation, Override } from 'Base/Core';

@@ -1,7 +1,7 @@
 import 'App/Styles/Editor.less';
 import Channel from 'AppCore/MIDI/Channel';
-import ChannelEditor from 'App/Components/Editor/ChannelEditor';
-import EditorHeader from 'App/Components/Editor/EditorHeader';
+import ChannelEditor from 'App/Components/UI/ChannelEditor';
+import EditorHeader from 'App/Components/UI/EditorHeader';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Store from 'App/State/Store';
 import { ActionTypes } from 'App/State/Actions';
@@ -27,6 +27,7 @@ export default class Editor extends Component<IEditorProps, any> {
             [ ...sequence.channels() ].map((channel: Channel, index: number) => {
               return (
                 <ChannelEditor
+                  key={ Math.random() }
                   channel={ channel }
                   channelCustomizer={ customizer.channels[index] }
                 />

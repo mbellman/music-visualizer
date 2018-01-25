@@ -1,19 +1,19 @@
-import MultiSelectable, { ISelectedItem } from 'App/Components/UI/MultiSelectable';
-import SelectableButton from 'App/Components/UI/SelectableButton';
+import MultiSelectable, { ISelectedItem } from 'App/Components/Toolkit/MultiSelectable';
+import SelectableButton from 'App/Components/Toolkit/SelectableButton';
 import { h, Component } from 'preact';
 import { Bind, IHashMap, Override } from 'Base/Core';
 import { IShapeTemplate, Shapes } from 'App/State/VisualizationTypes';
-import ChangeDispatcher, { IChangeDispatcherProps } from 'App/Components/Extensible/ChangeDispatcher';
+import Changeable, { IChangeableProps } from 'App/Components/Toolkit/Changeable';
 
 interface IShapeOption {
   name: string;
   type: Shapes;
 }
 
-interface IShapeEditorProps extends IChangeDispatcherProps<IShapeEditorState> {}
+interface IShapeEditorProps extends IChangeableProps<IShapeEditorState> {}
 interface IShapeEditorState extends IShapeTemplate {}
 
-export default class ShapeEditor extends ChangeDispatcher<IShapeEditorProps, IShapeEditorState> {
+class ShapeEditor extends Component<IShapeEditorProps, IShapeEditorState> {
   public static readonly DEFAULT_SHAPE: Shapes = Shapes.BAR;
 
   public static readonly SHAPE_OPTIONS: IShapeOption[] = [
@@ -37,7 +37,7 @@ export default class ShapeEditor extends ChangeDispatcher<IShapeEditorProps, ISh
     return (
       <span>
         <label>Shape:</label>
-        <MultiSelectable onChange={ this._onSelectShape }>
+        <MultiSelectable onChange={ this.props.onChange }>
           { this._renderShapeButtons() }
         </MultiSelectable>
       </span>
@@ -61,6 +61,8 @@ export default class ShapeEditor extends ChangeDispatcher<IShapeEditorProps, ISh
   private _onSelectShape (selected: ISelectedItem[]): void {
     const { type } = ShapeEditor.SHAPE_OPTIONS[selected[0].index];
 
-    this.dispatchChange({ type });
+    this.props.onChange({ type });
   }
 }
+
+export default Changeable<IShapeEditorProps, IShapeEditorState>(ShapeEditor);

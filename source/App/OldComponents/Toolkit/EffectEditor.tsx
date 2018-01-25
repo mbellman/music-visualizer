@@ -15,26 +15,34 @@ export interface IEffectEditorState {
   isSelected: boolean;
 }
 
+
+export default class EffectEditor extends Component<any, any> {
+
+}
+
+/*
 export default abstract class EffectEditor<S extends IEffectEditorState> extends ChangeDispatcher<IEffectEditorProps<S>, S> {
   @Override
   public render (): JSX.Element {
     return (
-      <div class={ `effect-editor ${this.state.isSelected ? 'selected' : ''}` }>
-        <SelectableBox
-          onSelect={ this._onSelect }
-          onUnselect={ this._onUnselect }
-          selected={ this.state.isSelected }
-        />
+      <Changeable >
+        <div class={ `effect-editor ${this.state.isSelected ? 'selected' : ''}` }>
+          <SelectableBox
+            onSelect={ this._onSelect }
+            onUnselect={ this._onUnselect }
+            selected={ this.state.isSelected }
+          />
 
-        { this.renderContents() }
+          { this.renderContents() }
 
-        <SelectableButton
-          value="Delay"
-          onSelect={ this._onDelay }
-          onUnselect={ this._onUndelay }
-          selected={ this.state.isDelayed }
-        />
-      </div>
+          <SelectableButton
+            value="Delay"
+            onSelect={ this._onDelay }
+            onUnselect={ this._onUndelay }
+            selected={ this.state.isDelayed }
+          />
+        </div>
+      </Changeable>
     );
   }
 
@@ -60,3 +68,4 @@ export default abstract class EffectEditor<S extends IEffectEditorState> extends
     this.dispatchChange({ isSelected: false });
   }
 }
+*/

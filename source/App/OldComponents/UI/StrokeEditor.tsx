@@ -13,14 +13,14 @@ export default class StrokeEditor extends EffectEditor<IStrokeEditorState> {
   public state: IStrokeEditorState = {
     type: Effects.STROKE,
     color: StrokeEditor.DEFAULT_COLOR,
-    isDelayed: false,
+    isDelayed: this.props.delayed,
     isSelected: this.props.selected,
     width: StrokeEditor.DEFAULT_WIDTH
   };
 
   @Implementation
   protected renderContents (): JSX.Element {
-    const { color, isSelected, width } = this.state;
+    const { color, width } = this.state;
 
     return (
       <span>

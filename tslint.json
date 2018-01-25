@@ -2,6 +2,7 @@
   "extends": "tslint:recommended",
   "rules": {
     "array-type": [ false ],
+    "arrow-parens": false,
     "ban-types": false,
     "max-classes-per-file": [ false ],
     "max-line-length": [ false ],
@@ -13,6 +14,7 @@
     "no-empty-interface": false,
     "no-namespace": [ false ],
     "object-literal-sort-keys": [ false ],
+    "one-line": false,
     "ordered-imports": [ false ],
     "quotemark": [ false ],
     "radix": false,

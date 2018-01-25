@@ -1,4 +1,5 @@
 const path = require('path');
+const TsconfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -26,6 +27,9 @@ module.exports = {
     path: path.resolve('./build')
   },
   resolve: {
+    plugins: [
+      new TsconfigPathsWebpackPlugin()
+    ],
     extensions: ['.js', '.ts', '.tsx', '.less'],
     modules: ['source', 'node_modules']
   }

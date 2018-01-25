@@ -1,31 +1,18 @@
-import '@styles/Player.less';
-
+import 'App/Styles/Player.less';
 import AudioFile from 'Audio/AudioFile';
-import Sequence from '@core/MIDI/Sequence';
-import Visualizer from '@core/Visualization/Visualizer';
+import Sequence from 'AppCore/MIDI/Sequence';
+import Visualizer from 'AppCore/Visualization/Visualizer';
 import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { h, Component } from 'preact';
-import { ICustomizer, IAppState } from '@state/Types';
-import { Implementation, Override } from '@base';
-import { Connect } from '@components/Decorators';
+import { ICustomizer } from 'App/State/Types';
+import { Implementation, Override } from 'Base/Core';
 
 interface IPlayerProps {
-  audioFile?: AudioFile;
-  customizer?: ICustomizer;
-  sequence?: Sequence;
+  audioFile: AudioFile;
+  customizer: ICustomizer;
+  sequence: Sequence;
 }
 
-function mapStateToProps (state: IAppState): IPlayerProps {
-  const { audioFile, customizer, sequence } = state.selectedPlaylistTrack;
-
-  return {
-    audioFile,
-    customizer,
-    sequence
-  };
-}
-
-@Connect(mapStateToProps)
 export default class Player extends Component<IPlayerProps, any> {
   private _visualizer: Visualizer;
 

@@ -12,7 +12,7 @@ export default class FillEditor extends EffectEditor<IFillEditorState> {
   public state: IFillEditorState = {
     type: Effects.FILL,
     color: FillEditor.DEFAULT_COLOR,
-    isDelayed: false,
+    isDelayed: this.props.delayed,
     isSelected: this.props.selected
   };
 
@@ -21,10 +21,10 @@ export default class FillEditor extends EffectEditor<IFillEditorState> {
     const { color } = this.state;
 
     return (
-      <span>
+      <Changeable>
         <label>Fill:</label>
         <ColorField value={ color } onChange={ this._onChangeColor } />
-      </span>
+      </Changeable>
     );
   }
 

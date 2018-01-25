@@ -1,6 +1,10 @@
-import Selectable from 'App/Components/Extensible/Selectable';
+import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
 import { h, cloneElement, Component } from 'preact';
 import { Bind, Callback, Override, Utils } from 'Base/Core';
+
+interface IEnhancedSelectableProps extends ISelectableProps {
+  index: number;
+}
 
 interface IMultiSelectableProps {
   max?: number;
@@ -13,13 +17,13 @@ export interface ISelectedItem {
 }
 
 export default class MultiSelectable extends Component<IMultiSelectableProps, any> {
-  private _selectables: Selectable<any>[] = [];
+  private _selectables: Selectable[] = [];
 
   public get selected (): ISelectedItem[] {
     return this._selectables
-      .filter((selectable: Selectable<any>) => selectable.selected)
-      .map((selectable: Selectable<any>) => {
-        const { index, name } = selectable.props;
+      .filter(({ selected }) => selected)
+      .map(({ props }) => {
+        const { index, name } = props as IEnhancedSelectableProps;
 
         return { index, name };
       });
@@ -34,7 +38,7 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
         {
           this.props.children.map((child: JSX.Element, index: number) => {
             return cloneElement(child, {
-              ref: this._addSelectable,
+              selectableRef: this._addSelectable,
               onSelect: this._onToggleSelectable,
               onUnselect: this._onToggleSelectable,
               index
@@ -46,7 +50,7 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
   }
 
   @Bind
-  private _addSelectable (selectable: Selectable<any>): void {
+  private _addSelectable (selectable: Selectable): void {
     this._selectables.push(selectable);
   }
 
@@ -56,7 +60,7 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
    * any onUnselect handlers.
    */
   private _silentlyDeselectAll (): void {
-    this._selectables.forEach((selectable: Selectable<any>) => {
+    this._selectables.forEach((selectable: Selectable) => {
       selectable.setState({
         isSelected: false
       });
@@ -64,7 +68,7 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
   }
 
   @Bind
-  private _onToggleSelectable (selectable: Selectable<any>): void {
+  private _onToggleSelectable (selectable: Selectable): void {
     const { props, selected } = this;
     const { max, onChange } = props;
     const isChangeAllowed: boolean = selected.length > 0 && selected.length <= (max || 1);
