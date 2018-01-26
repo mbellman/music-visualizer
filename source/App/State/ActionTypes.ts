@@ -2,9 +2,9 @@ import { IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
 import { ICustomizer, ICustomizerSettings } from '@state/Types';
 
 export enum ActionTypes {
-  ADD_CHANNEL_SHAPE,
   ADD_CHANNEL_EFFECT,
   CHANGE_AUDIO_FILE,
+  CHANGE_SHAPE,
   CHANGE_SEQUENCE,
   CHANGE_VIEW,
   JUMP_TO_PLAYLIST_TRACK,

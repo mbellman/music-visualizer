@@ -7,27 +7,34 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { AnyComponent } from 'preact';
 import { ActionCreators } from '@state/ActionCreators';
 
+interface ICustomizerSettingFieldPropsFromState {
+  className?: string;
+  name?: keyof ICustomizerSettings;
+  value?: number;
+}
+
 interface ICustomizerSettingFieldProps extends INumberFieldProps {
   setting: keyof ICustomizerSettings;
 }
 
-function mapStateToProps (state: IAppState, props: ICustomizerSettingFieldProps): Partial<ICustomizerSettingFieldProps> {
-  const { settings } = state.selectedPlaylistTrack.customizer;
-  const { setting: name } = props;
+function mapStateToProps ({ selectedPlaylistTrack }: IAppState, { setting }: ICustomizerSettingFieldProps): ICustomizerSettingFieldPropsFromState {
+  const { settings } = selectedPlaylistTrack.customizer;
 
   return {
     className: 'customizer-setting-field',
-    name,
-    value: settings[name]
+    name: setting,
+    value: settings[setting]
   };
 }
 
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, props: ICustomizerSettingFieldProps): Partial<ICustomizerSettingFieldProps> {
+  const { setCustomizerSettings } = ActionCreators;
+
   return {
     onChange: (e: KeyboardEvent) => {
       const { name, value } = e.target as HTMLInputElement;
 
-      dispatch(ActionCreators.setCustomizerSettings({
+      dispatch(setCustomizerSettings({
         [name]: value
       }));
     }

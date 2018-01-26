@@ -2,36 +2,37 @@ import '@styles/ChannelEditor.less';
 
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Channel from '@core/MIDI/Channel';
-/*
 import FillEditor from '@components/FillEditor';
-import StrokeEditor from '@components/StrokeEditor';
-*/
+// import StrokeEditor from '@components/StrokeEditor';
 import { h, Component } from 'preact';
-import { IChannelCustomizer, IAppState } from '@state/Types';
+import { IAppState } from '@state/Types';
 import { Bind, Implementation, Override } from '@base';
 import { Effects, IFillTemplate, IStrokeTemplate, IEffectTemplate, IShapeTemplate, Shapes } from '@state/VisualizationTypes';
 import Sequence from '@core/MIDI/Sequence';
-import { Connect } from '@components/Decorators';
+import { Connect } from '@components/Toolkit/Decorators';
 import ShapeEditor from '@components/ShapeEditor';
+import { Selectors } from '@state/Selectors';
 
-interface IChannelEditorProps {
-  index: number;
+interface IChannelEditorPropsFromState {
   channel?: Channel;
-  customizer?: IChannelCustomizer;
+  shape?: Shapes;
 }
 
-interface IChannelEditorState extends IChannelCustomizer {}
+interface IChannelEditorProps extends IChannelEditorPropsFromState {
+  index: number;
+}
 
-function mapStateToProps (state: IAppState, props: IChannelEditorProps): Partial<IChannelEditorProps> {
-  const { sequence } = state.selectedPlaylistTrack;
+function mapStateToProps (state: IAppState, { index }: IChannelEditorProps): IChannelEditorPropsFromState {
+  const { sequence, customizer } = state.selectedPlaylistTrack;
 
   return {
-    channel: sequence.getChannel(props.index)
+    channel: sequence.getChannel(index),
+    shape: Selectors.getShapeTemplate(state, index).type
   };
 }
 
 @Connect(mapStateToProps)
-export default class ChannelEditor extends Component<IChannelEditorProps, IChannelEditorState> {
+export default class ChannelEditor extends Component<IChannelEditorProps, any> {
   private _previewCanvas: Canvas;
 
   @Implementation
@@ -64,22 +65,14 @@ export default class ChannelEditor extends Component<IChannelEditorProps, IChann
           <div>
             <ShapeEditor channelIndex={ index } />
           </div>
+
+          <FillEditor channelIndex={ index } />
         </div>
       </div>
     );
   }
 
-  @Bind
-  private _onChangeShape (shapeTemplate: IShapeTemplate): void {
-    console.log(shapeTemplate);
-  }
-
-  @Bind
-  private _onChangeEffect (effectTemplate: IEffectTemplate): void {
-    console.log(effectTemplate);
-  }
-
   private _renderNotePreview (): void {
-
+    console.log(this.props.shape);
   }
 }

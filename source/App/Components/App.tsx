@@ -2,7 +2,7 @@ import '@styles/App.less';
 
 import { IAppState } from '@state/Types';
 import { h, Component } from 'preact';
-import { Bind, Override } from '@base';
+import { Bind, Method, Override } from '@base';
 import { ViewMode } from '@state/Types';
 import { ActionTypes, IAction } from '@state/ActionTypes';
 import Sequence from '@core/MIDI/Sequence';
@@ -12,15 +12,23 @@ import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
 import DropMessage from '@components/DropMessage';
 import Editor from '@components/Editor';
 import Player from '@components/Player';
-import { Connect } from '@components/Decorators';
+import { Connect } from '@components/Toolkit/Decorators';
+import AudioFile from 'Audio/AudioFile';
+import FileLoader from '@core/FileLoader';
 
-interface IAppProps {
+interface IAppPropsFromState {
   sequence?: Sequence;
   viewMode?: ViewMode;
-  changeSequence?: ActionCreator<IAction>;
 }
 
-function mapStateToProps (state: IAppState): IAppProps {
+interface IAppPropsFromDispatch {
+  changeAudioFile?: Method<AudioFile>;
+  changeSequence?: Method<Sequence>;
+}
+
+interface IAppProps extends IAppPropsFromState, IAppPropsFromDispatch {}
+
+function mapStateToProps (state: IAppState): IAppPropsFromState {
   const { selectedPlaylistTrack, viewMode } = state;
   const { sequence } = selectedPlaylistTrack;
 
@@ -30,10 +38,11 @@ function mapStateToProps (state: IAppState): IAppProps {
   };
 }
 
-function mapDispatchToProps (dispatch: Dispatch<IAppState>): Partial<IAppProps> {
-  const { changeSequence } = ActionCreators;
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): IAppPropsFromDispatch {
+  const { changeAudioFile, changeSequence } = ActionCreators;
 
   return bindActionCreators({
+    changeAudioFile,
     changeSequence
   }, dispatch);
 }
@@ -71,9 +80,13 @@ export default class App extends Component<IAppProps, any> {
 
       this.props.changeSequence(sequence);
     } else {
-      // await AudioBank.uploadFile(file);
+      const blob: Blob = await FileLoader.fileToBlob(file);
+      const url: string = URL.createObjectURL(blob);
+      const audioFile: AudioFile = new AudioFile(url, file.name);
 
-      // AudioBank.playAudioFile(0);
+      this.props.changeAudioFile(audioFile);
+
+      URL.revokeObjectURL(url);
     }
   }
 

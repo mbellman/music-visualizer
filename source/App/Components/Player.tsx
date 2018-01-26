@@ -7,7 +7,7 @@ import { barFactory, ballFactory } from 'App/ShapeFactories';
 import { h, Component } from 'preact';
 import { ICustomizer, IAppState } from '@state/Types';
 import { Implementation, Override } from '@base';
-import { Connect } from '@components/Decorators';
+import { Connect } from '@components/Toolkit/Decorators';
 
 interface IPlayerProps {
   audioFile?: AudioFile;

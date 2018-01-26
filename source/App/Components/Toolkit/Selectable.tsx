@@ -4,8 +4,7 @@ import { Bind, Callback, Implementation, Override } from '@base';
 export interface ISelectableProps {
   className?: string;
   name?: string;
-  onSelect?: Callback<Selectable>;
-  onUnselect?: Callback<Selectable>;
+  onChange?: Callback<Selectable>;
   selected?: boolean;
   selectableRef?: Callback<Selectable>;
 }
@@ -14,6 +13,24 @@ export interface ISelectableState {
   isSelected: boolean;
 }
 
+/**
+ * A component which can be toggled between selected and unselected states on
+ * mouse click. The intended usage is composition by a wrapper component, ex:
+ *
+ *  class SelectableWrapper extends Component<any, any> {
+ *    public render (): JSX.Element {
+ *      return (
+ *        <Selectable className='custom-class' { ...this.props }>
+ *          ...
+ *        </Selectable>
+ *      );
+ *    }
+ *  }
+ *
+ * This eliminates the need to extend Selectable, but requires that { ...props }
+ * are funneled into the composed Selectable so Selectable props can be used on
+ * wrapper components too.
+ */
 export default class Selectable extends Component<ISelectableProps, ISelectableState> {
   public state: ISelectableState = {
     isSelected: !!this.props.selected
@@ -23,18 +40,28 @@ export default class Selectable extends Component<ISelectableProps, ISelectableS
     return this.state.isSelected;
   }
 
-  public set selected (isSelected: boolean) {
-    const { onSelect, onUnselect } = this.props;
+  public set selected (newSelectedState: boolean) {
+    const { isSelected } = this.state;
+    const { onChange } = this.props;
 
-    this.setState({ isSelected });
+    if (isSelected === newSelectedState) {
+      return;
+    }
 
-    if (isSelected && onSelect) {
-      onSelect(this);
-    } else if (!isSelected && onUnselect) {
-      onUnselect(this);
+    this.setState({
+      isSelected: newSelectedState
+    });
+
+    if (onChange) {
+      onChange(this);
     }
   }
 
+  /**
+   * Here a 'selectableRef' function funneled through a wrapper component from
+   * a grandparent or higher-level component can get called to yield a reference
+   * to the Selectable instance.
+   */
   @Implementation
   public componentWillMount (): void {
     const { selectableRef } = this.props;

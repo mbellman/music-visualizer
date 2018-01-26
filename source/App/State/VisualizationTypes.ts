@@ -27,6 +27,7 @@ export enum Effects {
 export interface IEffectTemplate {
   type: Effects;
   isDelayed: boolean;
+  [key: string]: any;
 }
 
 export interface IColorableEffectTemplate extends IEffectTemplate {

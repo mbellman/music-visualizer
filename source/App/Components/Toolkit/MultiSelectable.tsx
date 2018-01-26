@@ -6,14 +6,14 @@ interface IEnhancedSelectableProps extends ISelectableProps {
   index: number;
 }
 
-interface IMultiSelectableProps {
-  max?: number;
-  onChange?: Callback<ISelectedItem[]>;
-}
-
 export interface ISelectedItem {
   index: number;
   name: string;
+}
+
+export interface IMultiSelectableProps {
+  max?: number;
+  onChange?: Callback<ISelectedItem[]>;
 }
 
 export default class MultiSelectable extends Component<IMultiSelectableProps, any> {
@@ -31,16 +31,13 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
 
   @Override
   public render (): JSX.Element {
-    this._selectables.length = 0;
-
     return (
       <span>
         {
           this.props.children.map((child: JSX.Element, index: number) => {
             return cloneElement(child, {
               selectableRef: this._addSelectable,
-              onSelect: this._onToggleSelectable,
-              onUnselect: this._onToggleSelectable,
+              onChange: this._onChangeSelectable,
               index
             });
           })
@@ -54,21 +51,8 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
     this._selectables.push(selectable);
   }
 
-  /**
-   * "Silently" deselects all child Selectables via setState()
-   * rather than the 'selected' setter, which avoids triggering
-   * any onUnselect handlers.
-   */
-  private _silentlyDeselectAll (): void {
-    this._selectables.forEach((selectable: Selectable) => {
-      selectable.setState({
-        isSelected: false
-      });
-    });
-  }
-
   @Bind
-  private _onToggleSelectable (selectable: Selectable): void {
+  private _onChangeSelectable (selectable: Selectable): void {
     const { props, selected } = this;
     const { max, onChange } = props;
     const isChangeAllowed: boolean = selected.length > 0 && selected.length <= (max || 1);
@@ -84,5 +68,18 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
 
       selectable.selected = !selectable.selected;
     }
+  }
+
+  /**
+   * "Silently" deselects all child Selectables via setState()
+   * rather than the 'selected' setter, which avoids triggering
+   * any onUnselect handlers.
+   */
+  private _silentlyDeselectAll (): void {
+    this._selectables.forEach((selectable: Selectable) => {
+      selectable.setState({
+        isSelected: false
+      });
+    });
   }
 }

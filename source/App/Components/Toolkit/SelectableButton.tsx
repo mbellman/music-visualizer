@@ -1,10 +1,7 @@
 import '@styles/Toolkit/SelectableButton.less';
 
 import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
-import { Callback, Override } from '@base';
-import { h, Component, AnyComponent } from 'preact';
-import { connect } from 'preact-redux';
-import { Dispatch } from 'redux';
+import { h } from 'preact';
 
 interface ISelectableButtonProps extends ISelectableProps {
   value: string;

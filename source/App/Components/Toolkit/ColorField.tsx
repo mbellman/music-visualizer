@@ -1,9 +1,9 @@
-import '@styles/Stateless/ColorField.less';
+import '@styles/Toolkit/ColorField.less';
 
 import { h, Component } from 'preact';
-import { Bind, Callback, Override, Utils } from '@core';
+import { Bind, Callback, Override, Utils } from '@base';
 
-interface IColorFieldProps {
+export interface IColorFieldProps {
   value?: string;
   onChange?: Callback<string>;
 }

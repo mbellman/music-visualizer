@@ -1,29 +1,28 @@
-import { IAppState, ICustomizer, ViewMode, IChannelCustomizer } from '@state/Types';
-import { Effects, Shapes } from '@state/VisualizationTypes';
+import { IAppState, ICustomizer, ViewMode } from '@state/Types';
+import { Effects, Shapes, IShapeTemplate, IEffectTemplate } from '@state/VisualizationTypes';
+import { Extension } from '@base';
 
-export const initialChannelCustomizerState: IChannelCustomizer = {
-  shapeCustomizer: {
-    shapeTemplate: {
-      type: Shapes.BAR,
-      size: 20
-    },
-    effectTemplates: [
-      {
-        type: Effects.FILL,
-        color: '00f',
-        isDelayed: false
-      }
-    ]
-  }
+export const initialShapeTemplate: IShapeTemplate = {
+  type: Shapes.BAR,
+  size: 20
 };
 
+export const initialEffectTemplates: Extension<IEffectTemplate>[] = [
+  {
+    type: Effects.FILL,
+    color: '00f',
+    isDelayed: false
+  }
+];
+
 export const initialCustomizerState: ICustomizer = {
-  channels: [],
   settings: {
     focusDelay: 1000,
     scrollSpeed: 100,
     tempo: 0
-  }
+  },
+  shapeTemplates: {},
+  effectTemplates: {}
 };
 
 export const initialState: IAppState = {

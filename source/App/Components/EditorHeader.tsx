@@ -5,7 +5,7 @@ import { ActionTypes, IAction } from '@state/ActionTypes';
 import { ICustomizer, ViewMode, IAppState } from '@state/Types';
 import { h, Component } from 'preact';
 import { Bind, Override } from 'Base/Core';
-import { Connect } from '@components/Decorators';
+import { Connect } from '@components/Toolkit/Decorators';
 import { ActionCreators } from '@state/ActionCreators';
 import { Dispatch, bindActionCreators, ActionCreator } from 'redux';
 import Sequence from '@core/MIDI/Sequence';

@@ -1,0 +1,22 @@
+@import '../Helpers.less';
+
+.effect-editor {
+  background-color: #00000a;
+  border: 0;
+  border-top: 1px solid #112;
+  border-bottom: 1px solid #112;
+  border-radius: 4px;
+  box-shadow: 0 0 2px 0 #666 inset;
+  display: inline-block;
+  margin: 0 10px 0 0;
+  opacity: 0.6;
+  padding: 5px;
+  .transition(all, 0.1s);
+
+  &.selected {
+    background-color: #001;
+    border-color: #05f;
+    box-shadow: 0 0 4px 0 #05f;
+    opacity: 1;
+  }
+}
