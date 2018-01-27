@@ -1,18 +1,24 @@
 import ColorField from '@components/Toolkit/ColorField';
 import EffectEditor, { IEffectEditorProps } from '@components/Toolkit/EffectEditor';
-import { Effects, IFillTemplate } from 'App/State/VisualizationTypes';
+import { EffectTypes, IFillTemplate } from '@state/VisualizationTypes';
 import { h, Component } from 'preact';
-import { Bind, Callback, Override } from 'Base/Core';
+import { Bind, Callback, Override } from '@base';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
+import { Dispatch } from 'redux';
+import Selectable from '@components/Toolkit/Selectable';
+import { connect } from 'preact-redux';
+import { ActionCreators } from '@state/ActionCreators';
 
 interface IFillEditorPropsFromState {
   color?: string;
-  selected?: boolean;
+  isSelected?: boolean;
 }
 
 interface IFillEditorPropsFromDispatch {
   onChangeColor?: Callback<string>;
+  onChangeSelected?: Callback<Selectable>;
+  onChangeDelayed?: Callback<Selectable>;
 }
 
 interface IFillEditorProps extends IFillEditorPropsFromState, IFillEditorPropsFromDispatch, IEffectEditorProps {
@@ -20,24 +26,42 @@ interface IFillEditorProps extends IFillEditorPropsFromState, IFillEditorPropsFr
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: IFillEditorProps): IFillEditorPropsFromState {
-  const fillTemplate: IFillTemplate = Selectors.getEffectTemplate(state, channelIndex, Effects.FILL) as IFillTemplate;
+  const { color, isSelected } = Selectors.getEffectTemplate(state, channelIndex, EffectTypes.FILL) as IFillTemplate;
 
   return {
-    color: fillTemplate ? fillTemplate.color : '00f',
-    selected: !!fillTemplate
+    color,
+    isSelected
   };
 }
 
-export default class FillEditor extends Component<IFillEditorProps, any> {
-  @Override
-  public render (): JSX.Element {
-    const { color, onChangeColor } = this.props;
+function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IFillEditorProps): IFillEditorPropsFromDispatch {
+  const { setEffectTemplateProps } = ActionCreators;
 
+  return {
+    onChangeColor: (color: string) => {
+      dispatch(setEffectTemplateProps(channelIndex, EffectTypes.FILL, { color }));
+    },
+    onChangeSelected: ({ selected }: Selectable) => {
+      dispatch(setEffectTemplateProps(channelIndex, EffectTypes.FILL, { isSelected: selected }));
+    },
+    onChangeDelayed: ({ selected }: Selectable) => {
+      dispatch(setEffectTemplateProps(channelIndex, EffectTypes.FILL, { isDelayed: selected }));
+    }
+  };
+}
+
+const FillEditor = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  ({ color, onChangeColor, ...props }: IFillEditorProps): JSX.Element => {
     return (
-      <EffectEditor>
+      <EffectEditor { ...props }>
         <label>Fill:</label>
         <ColorField value={ color } onChange={ onChangeColor } />
       </EffectEditor>
     );
   }
-}
+);
+
+export default FillEditor;

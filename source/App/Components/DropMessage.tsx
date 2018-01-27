@@ -1,7 +1,6 @@
 import '@styles/DropMessage.less';
 
 import { h, Component } from 'preact';
-import { Override } from 'Base/Core';
 
 const DropMessage = () => {
   return (

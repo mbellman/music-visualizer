@@ -7,30 +7,30 @@ import SelectableButton from '@components/Toolkit/SelectableButton';
 import Selectable from '@components/Toolkit/Selectable';
 
 export interface IEffectEditorProps {
-  delayed?: boolean;
-  selected?: boolean;
-  onChangeSelect?: Callback<Selectable>;
-  onChangeDelay?: Callback<Selectable>;
+  isDelayed?: boolean;
+  isSelected?: boolean;
+  onChangeSelected?: Callback<Selectable>;
+  onChangeDelayed?: Callback<Selectable>;
 }
 
 export default class EffectEditor extends Component<IEffectEditorProps, any> {
   @Override
   public render (): JSX.Element {
-    const { delayed, onChangeSelect, onChangeDelay, selected } = this.props;
+    const { isDelayed, onChangeSelected, onChangeDelayed, isSelected } = this.props;
 
     return (
-      <div class={ `effect-editor ${selected ? 'selected' : ''}` }>
+      <div class={ `effect-editor ${isSelected ? 'selected' : ''}` }>
         <SelectableBox
-          onChange={ onChangeSelect }
-          selected={ selected }
+          onChange={ onChangeSelected }
+          selected={ isSelected }
         />
 
           { this.props.children }
 
         <SelectableButton
           value="Delay"
-          onChange={ onChangeDelay }
-          selected={ delayed }
+          onChange={ onChangeDelayed }
+          selected={ isDelayed }
         />
       </div>
     );

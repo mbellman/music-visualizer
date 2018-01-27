@@ -1,10 +1,10 @@
-import { ActionTypes, IAction, IShapeAction, ICustomizerSettingsAction, IChannelAction } from '@state/ActionTypes';
-import { IAppState, ViewMode, ICustomizer, IPlaylistTrack, ICustomizerSettings, ShapeTemplateHashMap, EffectTemplatesHashMap } from '@state/Types';
-import { Utils } from '@base';
-import { initialState, initialCustomizerState, initialShapeTemplate, initialEffectTemplates } from '@state/Initializers';
+import { ActionTypes, IAction, ICustomizerSettingsAction, IShapeAction, IEffectAction } from '@state/ActionTypes';
+import { IAppState, ViewMode, ICustomizer, IPlaylistTrack, ICustomizerSettings } from '@state/Types';
+import { Extension, Utils } from '@base';
+import { initialState, initialCustomizerState, initialShapeTemplate, initialFillTemplate, initialStrokeTemplate, initialGlowTemplate } from '@state/Initializers';
 import Sequence from '@core/MIDI/Sequence';
-import { Shapes, IShapeTemplate, IEffectTemplate } from '@state/VisualizationTypes';
-import { IHashMap } from 'Base/Types';
+import { IShapeTemplate, EffectTypes, IEffectTemplate } from '@state/VisualizationTypes';
+import { Selectors } from '@state/Selectors';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {
   const { customizer } = state.selectedPlaylistTrack;
@@ -27,44 +27,20 @@ function changeSelectedPlaylistTrackProp <K extends keyof IPlaylistTrack>(state:
 
 function changeSequence (state: IAppState, sequence: Sequence): IAppState {
   const { tempo } = sequence;
-  const shapeTemplates: ShapeTemplateHashMap = {};
-  const effectTemplates: EffectTemplatesHashMap = {};
+  const customizerState = initialCustomizerState;
 
   [ ...sequence.channels() ].forEach((channel, index) => {
-    shapeTemplates[index] = initialShapeTemplate;
-    effectTemplates[index] = initialEffectTemplates;
+    customizerState.shapes[index] = initialShapeTemplate;
+    customizerState.effects.fills[index] = initialFillTemplate;
+    customizerState.effects.strokes[index] = initialStrokeTemplate;
+    customizerState.effects.glows[index] = initialGlowTemplate;
   });
 
   state = changeSelectedPlaylistTrackProp(state, 'sequence', sequence);
-  state = changeSelectedPlaylistTrackProp(state, 'customizer', initialCustomizerState);
-  state = changeCustomizerProp(state, 'shapeTemplates', shapeTemplates);
-  state = changeCustomizerProp(state, 'effectTemplates', effectTemplates);
+  state = changeSelectedPlaylistTrackProp(state, 'customizer', customizerState);
   state = setCustomizerSettings(state, { tempo });
 
   return state;
-}
-
-function changeShape (state: IAppState, channelIndex: number, shape: Shapes): IAppState {
-  const { selectedPlaylistTrack } = state;
-  const { customizer } = selectedPlaylistTrack;
-  const { shapeTemplates } = customizer;
-
-  return {
-    ...state,
-    selectedPlaylistTrack: {
-      ...selectedPlaylistTrack,
-      customizer: {
-        ...customizer,
-        shapeTemplates: {
-          ...shapeTemplates,
-          [channelIndex]: {
-            type: shape,
-            size: 20
-          }
-        }
-      }
-    }
-  };
 }
 
 function jumpToPlaylistTrack (state: IAppState, index: number): IAppState {
@@ -93,6 +69,36 @@ function setCustomizerSettings (state: IAppState, updatedSettings: Partial<ICust
   });
 }
 
+function setEffectTemplateProps (state: IAppState, channelIndex: number, effectType: EffectTypes, updatedEffect: Partial<Extension<IEffectTemplate>>): IAppState {
+  const { effects } = state.selectedPlaylistTrack.customizer;
+  const effectProp = Selectors.EFFECT_TYPE_TO_CUSTOMIZER_PROP[effectType];
+  const effect = effects[effectProp][channelIndex];
+
+  return changeCustomizerProp(state, 'effects', {
+    ...effects,
+    [effectProp]: {
+      ...effects[effectProp],
+      [channelIndex]: {
+        ...effect,
+        ...updatedEffect
+      }
+    }
+  });
+}
+
+function setShapeTemplateProps (state: IAppState, channelIndex: number, updatedShape: Partial<IShapeTemplate>): IAppState {
+  const { shapes } = state.selectedPlaylistTrack.customizer;
+  const shape = shapes[channelIndex];
+
+  return changeCustomizerProp(state, 'shapes', {
+    ...shapes,
+    [channelIndex]: {
+      ...shape,
+      ...updatedShape
+    }
+  });
+}
+
 function syncSelectedPlaylistTrack (state: IAppState): IAppState {
   const { audioFile, customizer, index, sequence } = state.selectedPlaylistTrack;
 
@@ -112,34 +118,50 @@ function syncSelectedPlaylistTrack (state: IAppState): IAppState {
 
 export function appReducer (state: IAppState = initialState, action: IAction): IAppState {
   switch (action.type) {
-    case ActionTypes.CHANGE_AUDIO_FILE:
+    case ActionTypes.CHANGE_AUDIO_FILE: {
       return changeSelectedPlaylistTrackProp(state, 'audioFile', action.payload);
-    case ActionTypes.CHANGE_SHAPE:
-      const { index, payload } = action as IChannelAction;
-
-      return changeShape(state, index, payload);
-    case ActionTypes.CHANGE_SEQUENCE:
+    }
+    case ActionTypes.CHANGE_SEQUENCE: {
       return changeSequence(state, action.payload);
-    case ActionTypes.CHANGE_VIEW:
+    }
+    case ActionTypes.CHANGE_VIEW: {
       return {
         ...state,
         viewMode: action.payload
       };
-    case ActionTypes.JUMP_TO_PLAYLIST_TRACK:
+    }
+    case ActionTypes.JUMP_TO_PLAYLIST_TRACK: {
       return jumpToPlaylistTrack(state, action.payload);
-    case ActionTypes.NEXT_PLAYLIST_TRACK:
+    }
+    case ActionTypes.NEXT_PLAYLIST_TRACK: {
       return jumpToPlaylistTrack(state, state.selectedPlaylistTrack.index + 1);
-    case ActionTypes.PREVIOUS_PLAYLIST_TRACK:
+    }
+    case ActionTypes.PREVIOUS_PLAYLIST_TRACK: {
       return jumpToPlaylistTrack(state, state.selectedPlaylistTrack.index - 1);
-    case ActionTypes.RESET_CUSTOMIZER:
+    }
+    case ActionTypes.RESET_CUSTOMIZER: {
       return changeSelectedPlaylistTrackProp(state, 'customizer', initialCustomizerState);
-    case ActionTypes.SET_CUSTOMIZER_SETTINGS:
+    }
+    case ActionTypes.SET_CUSTOMIZER_SETTINGS: {
       const { type, ...settings } = action as ICustomizerSettingsAction;
 
       return setCustomizerSettings(state, settings);
-    case ActionTypes.SYNC_SELECTED_PLAYLIST_TRACK:
+    }
+    case ActionTypes.SET_EFFECT_TEMPLATE_PROPS: {
+      const { index, type, effectType, ...props } = action as IEffectAction;
+
+      return setEffectTemplateProps(state, index, effectType, props);
+    }
+    case ActionTypes.SET_SHAPE_TEMPLATE_PROPS: {
+      const { index, type, ...props } = action as IShapeAction;
+
+      return setShapeTemplateProps(state, index, props);
+    }
+    case ActionTypes.SYNC_SELECTED_PLAYLIST_TRACK: {
       return syncSelectedPlaylistTrack(state);
-    default:
+    }
+    default: {
       return state;
+    }
   }
 }

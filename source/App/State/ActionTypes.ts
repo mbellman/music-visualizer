@@ -2,9 +2,7 @@ import { IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
 import { ICustomizer, ICustomizerSettings } from '@state/Types';
 
 export enum ActionTypes {
-  ADD_CHANNEL_EFFECT,
   CHANGE_AUDIO_FILE,
-  CHANGE_SHAPE,
   CHANGE_SEQUENCE,
   CHANGE_VIEW,
   JUMP_TO_PLAYLIST_TRACK,
@@ -12,6 +10,8 @@ export enum ActionTypes {
   PREVIOUS_PLAYLIST_TRACK,
   RESET_CUSTOMIZER,
   SET_CUSTOMIZER_SETTINGS,
+  SET_EFFECT_TEMPLATE_PROPS,
+  SET_SHAPE_TEMPLATE_PROPS,
   SYNC_SELECTED_PLAYLIST_TRACK
 }
 
@@ -20,7 +20,7 @@ export interface IAction {
   payload?: any;
 }
 
-export interface ICustomizerSettingsAction extends Partial<ICustomizerSettings> {
+export interface ICustomizerSettingsAction extends IAction, Partial<ICustomizerSettings> {
   type: ActionTypes.SET_CUSTOMIZER_SETTINGS;
 }
 
@@ -28,10 +28,5 @@ export interface IChannelAction extends IAction {
   index: number;
 }
 
-export interface IEffectAction extends IChannelAction {
-  effectTemplate: IEffectTemplate;
-}
-
-export interface IShapeAction extends IChannelAction {
-  shapeTemplate: IShapeTemplate;
-}
+export type IShapeAction = IChannelAction & Partial<IShapeTemplate>;
+export type IEffectAction = IChannelAction & Partial<IEffectTemplate>;

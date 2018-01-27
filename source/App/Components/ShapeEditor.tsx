@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 import { IAppState } from '@state/Types';
-import { IShapeTemplate, Shapes } from '@state/VisualizationTypes';
+import { IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
 import { Bind, Callback, Override } from '@base';
 import { Connect } from '@components/Toolkit/Decorators';
 import MultiSelectable, { ISelectedItem } from '@components/Toolkit/MultiSelectable';
@@ -10,16 +10,17 @@ import { ActionCreators } from '@state/ActionCreators';
 import { Selectors } from '@state/Selectors';
 
 interface IShapeOption {
-  type: Shapes;
+  type: ShapeTypes;
   name: string;
 }
 
 interface IShapeEditorPropsFromState {
-  selectedShapeTemplate?: IShapeTemplate;
+  shapeType?: ShapeTypes;
+  size?: number;
 }
 
 interface IShapeEditorPropsFromDispatch {
-  onChange?: Callback<Shapes>;
+  onChangeShape?: Callback<ShapeTypes>;
 }
 
 interface IShapeEditorProps extends IShapeEditorPropsFromState, IShapeEditorPropsFromDispatch {
@@ -27,17 +28,20 @@ interface IShapeEditorProps extends IShapeEditorPropsFromState, IShapeEditorProp
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: IShapeEditorProps): IShapeEditorPropsFromState {
+  const { shapeType, size } = Selectors.getShapeTemplate(state, channelIndex);
+
   return {
-    selectedShapeTemplate: Selectors.getShapeTemplate(state, channelIndex)
+    shapeType,
+    size
   };
 }
 
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IShapeEditorProps): IShapeEditorPropsFromDispatch {
   return {
-    onChange: (shape: Shapes) => {
-      const { changeShape } = ActionCreators;
+    onChangeShape: (shapeType: ShapeTypes) => {
+      const { setShapeTemplateProps } = ActionCreators;
 
-      dispatch(changeShape(channelIndex, shape));
+      dispatch(setShapeTemplateProps(channelIndex, { shapeType }));
     }
   };
 }
@@ -46,11 +50,11 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IS
 export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   public static readonly SHAPE_OPTIONS: IShapeOption[] = [
     {
-      type: Shapes.BAR,
+      type: ShapeTypes.BAR,
       name: 'Bar'
     },
     {
-      type: Shapes.BALL,
+      type: ShapeTypes.BALL,
       name: 'Ball'
     }
   ];
@@ -68,7 +72,7 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   }
 
   private _renderShapeButtons (): JSX.Element[] {
-    const { type: selectedShapeType } = this.props.selectedShapeTemplate;
+    const { shapeType } = this.props;
 
     return ShapeEditor.SHAPE_OPTIONS.map((shapeOption: IShapeOption) => {
       const { name, type } = shapeOption;
@@ -76,7 +80,7 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
       return (
         <SelectableButton
           value={ name }
-          selected={ type === selectedShapeType }
+          selected={ type === shapeType }
         />
       );
     });
@@ -86,6 +90,6 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   private _onChangeShape (selected: ISelectedItem[]): void {
     const { type } = ShapeEditor.SHAPE_OPTIONS[selected[0].index];
 
-    this.props.onChange(type);
+    this.props.onChangeShape(type);
   }
 }

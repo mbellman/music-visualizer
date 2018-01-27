@@ -4,13 +4,13 @@ import { IColor } from 'Graphics/Types';
  * Shapes
  * ------
  */
-export enum Shapes {
+export enum ShapeTypes {
   BAR,
   BALL
 }
 
 export interface IShapeTemplate {
-  type: Shapes;
+  shapeType: ShapeTypes;
   size: number;
 }
 
@@ -18,16 +18,16 @@ export interface IShapeTemplate {
  * Effects
  * -------
  */
-export enum Effects {
+export enum EffectTypes {
   FILL,
   STROKE,
   GLOW
 }
 
 export interface IEffectTemplate {
-  type: Effects;
+  effectType: EffectTypes;
+  isSelected: boolean;
   isDelayed: boolean;
-  [key: string]: any;
 }
 
 export interface IColorableEffectTemplate extends IEffectTemplate {
@@ -35,17 +35,17 @@ export interface IColorableEffectTemplate extends IEffectTemplate {
 }
 
 export interface IFillTemplate extends IColorableEffectTemplate {
-  type: Effects.FILL;
-}
-
-export interface IGlowTemplate extends IColorableEffectTemplate {
-  type: Effects.GLOW;
-  blur: number;
-  fadeIn?: number;
-  fadeOut?: number;
+  effectType: EffectTypes.FILL;
 }
 
 export interface IStrokeTemplate extends IColorableEffectTemplate {
-  type: Effects.STROKE;
+  effectType: EffectTypes.STROKE;
   width: number;
+}
+
+export interface IGlowTemplate extends IColorableEffectTemplate {
+  effectType: EffectTypes.GLOW;
+  blur: number;
+  fadeIn?: number;
+  fadeOut?: number;
 }

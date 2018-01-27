@@ -6,8 +6,8 @@ import FillEditor from '@components/FillEditor';
 // import StrokeEditor from '@components/StrokeEditor';
 import { h, Component } from 'preact';
 import { IAppState } from '@state/Types';
-import { Bind, Implementation, Override } from '@base';
-import { Effects, IFillTemplate, IStrokeTemplate, IEffectTemplate, IShapeTemplate, Shapes } from '@state/VisualizationTypes';
+import { Bind, Extension, Implementation, Override } from '@base';
+import { IFillTemplate, IStrokeTemplate, IEffectTemplate, IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
 import Sequence from '@core/MIDI/Sequence';
 import { Connect } from '@components/Toolkit/Decorators';
 import ShapeEditor from '@components/ShapeEditor';
@@ -15,7 +15,8 @@ import { Selectors } from '@state/Selectors';
 
 interface IChannelEditorPropsFromState {
   channel?: Channel;
-  shape?: Shapes;
+  shapeTemplate?: IShapeTemplate;
+  effectTemplates?: Extension<IEffectTemplate>[];
 }
 
 interface IChannelEditorProps extends IChannelEditorPropsFromState {
@@ -23,11 +24,12 @@ interface IChannelEditorProps extends IChannelEditorPropsFromState {
 }
 
 function mapStateToProps (state: IAppState, { index }: IChannelEditorProps): IChannelEditorPropsFromState {
-  const { sequence, customizer } = state.selectedPlaylistTrack;
+  const { sequence } = state.selectedPlaylistTrack;
 
   return {
     channel: sequence.getChannel(index),
-    shape: Selectors.getShapeTemplate(state, index).type
+    shapeTemplate: Selectors.getShapeTemplate(state, index),
+    effectTemplates: Selectors.getEffectTemplates(state, index)
   };
 }
 
@@ -72,7 +74,28 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
     );
   }
 
+  private _renderNoteEffects (): void {
+    const { color } = this.props.effectTemplates[0] as IFillTemplate;
+
+    this._previewCanvas.set(DrawSetting.FILL_COLOR, `#${color}`).fill();
+  }
+
   private _renderNotePreview (): void {
-    console.log(this.props.shape);
+    this._previewCanvas.clear();
+    this._renderNoteShape();
+    this._renderNoteEffects();
+  }
+
+  private _renderNoteShape (): void {
+    const { shapeType, size } = this.props.shapeTemplate;
+
+    switch (shapeType) {
+      case ShapeTypes.BAR:
+        this._previewCanvas.rectangle(10, 18, 60, size);
+        break;
+      case ShapeTypes.BALL:
+        this._previewCanvas.circle(40, 30, size);
+        break;
+    }
   }
 }
