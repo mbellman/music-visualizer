@@ -1,13 +1,12 @@
-import '@styles/Player.less';
-
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import Visualizer from '@core/Visualization/Visualizer';
-import { barFactory, ballFactory } from 'App/ShapeFactories';
-import { h, Component } from 'preact';
-import { ICustomizer, IAppState } from '@state/Types';
-import { Implementation, Override } from '@base';
+import { ballFactory, barFactory } from 'App/ShapeFactories';
+import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
+import { IAppState, ICustomizer } from '@state/Types';
+import { Implementation, Override } from '@base';
+import '@styles/Player.less';
 
 interface IPlayerProps {
   audioFile?: AudioFile;

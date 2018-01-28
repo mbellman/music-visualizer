@@ -1,5 +1,5 @@
-import { h, Component } from 'preact';
 import { Bind, Callback, Override } from '@base';
+import { Component, h } from 'preact';
 
 export interface IFieldProps {
   onChange?: Callback<string>;

@@ -3,7 +3,7 @@ import ElementDataManager from 'Base/DOM/ElementDataManager';
 import EventManager from 'Base/EventManager';
 import MultiMap from 'Base/Polyfills/MultiMap';
 import { Callback } from 'Base/Types';
-import { UIEventListener, IRegisteredElement } from 'Base/DOM/Types';
+import { IRegisteredElement, UIEventListener } from 'Base/DOM/Types';
 import { Utils } from 'Base/Utils';
 
 export class Query {

@@ -1,12 +1,11 @@
-import '@styles/CustomizerSettingField.less';
-
 import NumberField, { INumberFieldProps } from '@components/Toolkit/NumberField';
+import { ActionCreators } from '@state/ActionCreators';
+import { AnyComponent } from 'preact';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Callback } from '@base';
 import { connect } from 'preact-redux';
 import { IAppState, ICustomizer, ICustomizerSettings } from '@state/Types';
-import { Dispatch, bindActionCreators } from 'redux';
-import { AnyComponent } from 'preact';
-import { ActionCreators } from '@state/ActionCreators';
-import { Callback } from '@base';
+import '@styles/CustomizerSettingField.less';
 
 interface ICustomizerSettingFieldPropsFromState {
   className?: string;

@@ -1,16 +1,15 @@
-import '@styles/Toolkit/EffectEditor.less';
-
-import { h, Component } from 'preact';
-import { Bind, Callback, Override } from '@base';
+import Selectable from '@components/Toolkit/Selectable';
 import SelectableBox from '@components/Toolkit/SelectableBox';
 import SelectableButton from '@components/Toolkit/SelectableButton';
-import Selectable from '@components/Toolkit/Selectable';
-import { Connect } from '@components/Toolkit/Decorators';
-import { IAppState } from '@state/Types';
-import { EffectTypes } from '@state/VisualizationTypes';
-import { Dispatch } from 'redux';
 import { ActionCreators } from '@state/ActionCreators';
+import { Bind, Callback, Override } from '@base';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { Dispatch } from 'redux';
+import { EffectTypes } from '@state/VisualizationTypes';
+import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
+import '@styles/Toolkit/EffectEditor.less';
 
 export interface IEffectEditorPropsFromState {
   isSelected?: boolean;

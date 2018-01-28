@@ -1,6 +1,6 @@
-import { IAppState, IEffectsCustomizer } from '@state/Types';
-import { IShapeTemplate, IEffectTemplate, EffectTypes } from '@state/VisualizationTypes';
+import { EffectTypes, IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
 import { Extension, IHashMap } from '@base';
+import { IAppState, IEffectsCustomizer } from '@state/Types';
 
 export namespace Selectors {
   export const EFFECT_TYPE_TO_CUSTOMIZER_PROP: IHashMap<keyof IEffectsCustomizer> = {

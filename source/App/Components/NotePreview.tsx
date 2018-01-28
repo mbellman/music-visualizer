@@ -1,12 +1,11 @@
-import '@styles/NotePreview.less';
-
-import { h, Component } from 'preact';
-import { Extension, Implementation, Override } from '@base';
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
+import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
+import { EffectTypes, IEffectTemplate, IFillTemplate, IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
+import { Extension, Implementation, Override } from '@base';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
-import { ShapeTypes, EffectTypes, IFillTemplate, IShapeTemplate, IEffectTemplate } from '@state/VisualizationTypes';
+import '@styles/NotePreview.less';
 
 interface INotePreviewPropsFromState {
   shapeTemplate: IShapeTemplate;

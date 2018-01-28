@@ -1,7 +1,6 @@
-import '@styles/Toolkit/SelectableBox.less';
-
 import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
 import { h } from 'preact';
+import '@styles/Toolkit/SelectableBox.less';
 
 interface ISelectableBoxProps extends ISelectableProps {}
 

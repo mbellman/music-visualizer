@@ -1,5 +1,5 @@
-import { IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
 import { ICustomizer, ICustomizerSettings } from '@state/Types';
+import { IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
 
 export enum ActionTypes {
   CHANGE_AUDIO_FILE,

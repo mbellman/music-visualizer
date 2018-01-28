@@ -1,8 +1,8 @@
 import AudioCore from 'Audio/AudioCore';
 import FileLoader from 'AppCore/FileLoader';
 import ISound from 'Audio/ISound';
-import { Bind, EventManager, Utils } from 'Base/Core';
 import { AudioEvent, SoundState } from 'Audio/Constants';
+import { Bind, EventManager, Utils } from 'Base/Core';
 
 export default class AudioFile implements ISound {
   private _analyserNode: AnalyserNode;

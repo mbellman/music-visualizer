@@ -1,6 +1,6 @@
 import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
-import { h, cloneElement, Component } from 'preact';
 import { Bind, Callback, Override, Utils } from 'Base/Core';
+import { cloneElement, Component, h } from 'preact';
 
 interface IEnhancedSelectableProps extends ISelectableProps {
   index: number;

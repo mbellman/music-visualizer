@@ -1,8 +1,5 @@
 import Stream from 'AppCore/MIDI/Decoder/Stream';
-import {
-  EventType, IMetaEvent, IMetaEventData, IMidiEvent, IMidiEventData,
-  ISysexEvent, ISysexEventData, MetaEventType, MidiEventType, SysexEventType
-} from 'AppCore/MIDI/Types';
+import { EventType, IMetaEvent, IMetaEventData, IMidiEvent, IMidiEventData, ISysexEvent, ISysexEventData, MetaEventType, MidiEventType, SysexEventType } from 'AppCore/MIDI/Types';
 
 /**
  * Adapted from:

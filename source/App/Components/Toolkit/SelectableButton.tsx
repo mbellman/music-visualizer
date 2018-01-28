@@ -1,7 +1,6 @@
-import '@styles/Toolkit/SelectableButton.less';
-
 import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
 import { h } from 'preact';
+import '@styles/Toolkit/SelectableButton.less';
 
 interface ISelectableButtonProps extends ISelectableProps {
   value: string;

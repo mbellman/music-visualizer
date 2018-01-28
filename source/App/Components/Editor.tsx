@@ -1,13 +1,12 @@
-import '@styles/Editor.less';
-
 import Channel from '@core/MIDI/Channel';
-import Sequence from '@core/MIDI/Sequence';
-import { ActionTypes } from '@state/ActionTypes';
-import { IPlaylistTrack, ICustomizer, ViewMode } from '@state/Types';
-import { h, Component } from 'preact';
-import { Override } from 'Base/Core';
 import ChannelEditor from '@components/ChannelEditor';
 import EditorHeader from '@components/EditorHeader';
+import Sequence from '@core/MIDI/Sequence';
+import { ActionTypes } from '@state/ActionTypes';
+import { Component, h } from 'preact';
+import { ICustomizer, IPlaylistTrack, ViewMode } from '@state/Types';
+import { Override } from 'Base/Core';
+import '@styles/Editor.less';
 
 interface IEditorProps {
   sequence: Sequence;

@@ -1,14 +1,13 @@
-import '@styles/EditorHeader.less';
-
 import CustomizerSettingField from '@components/CustomizerSettingField';
-import { ActionTypes, IAction } from '@state/ActionTypes';
-import { ICustomizer, ViewMode, IAppState } from '@state/Types';
-import { h, Component } from 'preact';
-import { Bind, Override } from 'Base/Core';
-import { Connect } from '@components/Toolkit/Decorators';
-import { ActionCreators } from '@state/ActionCreators';
-import { Dispatch, bindActionCreators, ActionCreator } from 'redux';
 import Sequence from '@core/MIDI/Sequence';
+import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
+import { ActionCreators } from '@state/ActionCreators';
+import { ActionTypes, IAction } from '@state/ActionTypes';
+import { Bind, Override } from 'Base/Core';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { IAppState, ICustomizer, ViewMode } from '@state/Types';
+import '@styles/EditorHeader.less';
 
 interface IEditorHeaderPropsFromState {
   sequence?: Sequence;

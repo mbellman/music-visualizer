@@ -1,13 +1,13 @@
 import ColorField from '@components/Toolkit/ColorField';
 import EffectEditor, { IEffectEditorProps } from '@components/Toolkit/EffectEditor';
-import { EffectTypes, IFillTemplate } from '@state/VisualizationTypes';
-import { h, Component } from 'preact';
+import { ActionCreators } from '@state/ActionCreators';
 import { Callback, Override } from '@base';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { Dispatch } from 'redux';
+import { EffectTypes, IFillTemplate } from '@state/VisualizationTypes';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
-import { Dispatch } from 'redux';
-import { ActionCreators } from '@state/ActionCreators';
-import { Connect } from '@components/Toolkit/Decorators';
 
 interface IFillEditorPropsFromState {
   color?: string;

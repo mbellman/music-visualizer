@@ -1,6 +1,5 @@
+import { Component, h } from 'preact';
 import '@styles/DropMessage.less';
-
-import { h, Component } from 'preact';
 
 const DropMessage = () => {
   return (

@@ -1,6 +1,6 @@
-import { h, Component } from 'preact';
-import { Bind, Callback, Override } from '@base';
 import Field from '@components/Toolkit/Field';
+import { Bind, Callback, Override } from '@base';
+import { Component, h } from 'preact';
 
 export interface INumberFieldProps {
   label: string;

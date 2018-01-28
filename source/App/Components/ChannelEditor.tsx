@@ -1,18 +1,17 @@
-import '@styles/ChannelEditor.less';
-
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Channel from '@core/MIDI/Channel';
 import FillEditor from '@components/FillEditor';
-import StrokeEditor from '@components/StrokeEditor';
-import { h, Component } from 'preact';
-import { IAppState } from '@state/Types';
-import { Bind, Extension, Implementation, Override } from '@base';
-import { IFillTemplate, IStrokeTemplate, IEffectTemplate, IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
-import Sequence from '@core/MIDI/Sequence';
-import { Connect } from '@components/Toolkit/Decorators';
-import ShapeEditor from '@components/ShapeEditor';
-import { Selectors } from '@state/Selectors';
 import NotePreview from '@components/NotePreview';
+import Sequence from '@core/MIDI/Sequence';
+import ShapeEditor from '@components/ShapeEditor';
+import StrokeEditor from '@components/StrokeEditor';
+import { Bind, Extension, Implementation, Override } from '@base';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { IAppState } from '@state/Types';
+import { IEffectTemplate, IFillTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@state/VisualizationTypes';
+import { Selectors } from '@state/Selectors';
+import '@styles/ChannelEditor.less';
 
 interface IChannelEditorPropsFromState {
   channel?: Channel;
@@ -45,9 +44,7 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
 
         <div className="channel-editor-body">
           <NotePreview channelIndex={ index } />
-
           <ShapeEditor channelIndex={ index } />
-
           <FillEditor channelIndex={ index } />
           <StrokeEditor channelIndex={ index } />
         </div>

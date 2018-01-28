@@ -1,5 +1,5 @@
-import { h, Component } from 'preact';
 import { Bind, Callback, Implementation, Override } from '@base';
+import { Component, h } from 'preact';
 
 export interface ISelectableProps {
   className?: string;

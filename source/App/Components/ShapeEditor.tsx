@@ -1,15 +1,14 @@
-import '@styles/ShapeEditor.less';
-
-import { h, Component } from 'preact';
-import { IAppState } from '@state/Types';
-import { IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
-import { Bind, Callback, Override } from '@base';
-import { Connect } from '@components/Toolkit/Decorators';
 import MultiSelectable, { ISelectedItem } from '@components/Toolkit/MultiSelectable';
 import SelectableButton from '@components/Toolkit/SelectableButton';
-import { Dispatch } from 'redux';
 import { ActionCreators } from '@state/ActionCreators';
+import { Bind, Callback, Override } from '@base';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { Dispatch } from 'redux';
+import { IAppState } from '@state/Types';
+import { IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
 import { Selectors } from '@state/Selectors';
+import '@styles/ShapeEditor.less';
 
 interface IShapeOption {
   type: ShapeTypes;

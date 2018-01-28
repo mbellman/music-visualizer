@@ -1,6 +1,6 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
-import { IShapeTemplate, IFillTemplate, IStrokeTemplate, IGlowTemplate, EffectTypes } from '@state/VisualizationTypes';
+import { EffectTypes, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate } from '@state/VisualizationTypes';
 import { Extension, IHashMap } from '@base';
 
 export interface IAppState {

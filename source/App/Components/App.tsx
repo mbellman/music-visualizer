@@ -1,20 +1,17 @@
-import '@styles/App.less';
-
-import { IAppState } from '@state/Types';
-import { h, Component } from 'preact';
-import { Bind, Method, Override } from '@base';
-import { ViewMode } from '@state/Types';
-import { ActionTypes, IAction } from '@state/ActionTypes';
-import Sequence from '@core/MIDI/Sequence';
-import MidiLoader from '@core/MIDI/MidiLoader';
-import { ActionCreators } from 'App/State/ActionCreators';
-import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
+import AudioFile from 'Audio/AudioFile';
 import DropMessage from '@components/DropMessage';
 import Editor from '@components/Editor';
-import Player from '@components/Player';
-import { Connect } from '@components/Toolkit/Decorators';
-import AudioFile from 'Audio/AudioFile';
 import FileLoader from '@core/FileLoader';
+import MidiLoader from '@core/MIDI/MidiLoader';
+import Player from '@components/Player';
+import Sequence from '@core/MIDI/Sequence';
+import { ActionCreators } from 'App/State/ActionCreators';
+import { Bind, Method, Override } from '@base';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { IAppState, ViewMode } from '@state/Types';
+import '@styles/App.less';
 
 interface IAppPropsFromState {
   sequence?: Sequence;

@@ -1,9 +1,9 @@
-import { ActionTypes, IAction, ICustomizerSettingsAction, IShapeAction, IEffectAction } from '@state/ActionTypes';
-import { IAppState, ViewMode, ICustomizer, IPlaylistTrack, ICustomizerSettings, IEffectsCustomizer } from '@state/Types';
-import { Extension, Utils } from '@base';
-import { initialState, initialCustomizerState, initialShapeTemplate, initialFillTemplate, initialStrokeTemplate, initialGlowTemplate } from '@state/Initializers';
 import Sequence from '@core/MIDI/Sequence';
-import { IShapeTemplate, EffectTypes, IEffectTemplate } from '@state/VisualizationTypes';
+import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
+import { EffectTypes, IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
+import { Extension, Utils } from '@base';
+import { IAppState, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IPlaylistTrack, ViewMode } from '@state/Types';
+import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
 import { Selectors } from '@state/Selectors';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {

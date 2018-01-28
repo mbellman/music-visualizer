@@ -1,14 +1,14 @@
 import ColorField from '@components/Toolkit/ColorField';
-import NumberField from '@components/Toolkit/NumberField';
 import EffectEditor, { IEffectEditorProps } from '@components/Toolkit/EffectEditor';
-import { EffectTypes, IStrokeTemplate } from '@state/VisualizationTypes';
-import { h, Component } from 'preact';
+import NumberField from '@components/Toolkit/NumberField';
+import { ActionCreators } from '@state/ActionCreators';
 import { Callback, Override } from '@base';
+import { Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
+import { Dispatch } from 'redux';
+import { EffectTypes, IStrokeTemplate } from '@state/VisualizationTypes';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
-import { Dispatch } from 'redux';
-import { ActionCreators } from '@state/ActionCreators';
-import { Connect } from '@components/Toolkit/Decorators';
 
 interface IStrokeEditorPropsFromState {
   color?: string;
