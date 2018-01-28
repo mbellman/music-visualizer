@@ -51,7 +51,7 @@ export default class Player extends Component<IPlayerProps, any> {
   @Override
   public render (): JSX.Element {
     return (
-      <div class="player">
+      <div className="player">
         <canvas></canvas>
       </div>
     );

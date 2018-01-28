@@ -54,7 +54,7 @@ export default class App extends Component<IAppProps, any> {
     const { sequence, viewMode } = this.props;
 
     return (
-      <div class="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
+      <div className="app" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         {
           !!sequence ?
             viewMode === ViewMode.EDITOR ?

@@ -2,11 +2,11 @@
 
 .effect-editor {
   background-color: #00000a;
-  border: 0;
-  border-top: 1px solid #112;
-  border-bottom: 1px solid #112;
   border-radius: 4px;
-  box-shadow: 0 0 2px 0 #666 inset;
+  border: 0;
+  border-top: 1px solid #555;
+  border-bottom: 1px solid #555;
+  box-shadow: 0 0 3px 0 #555 inset;
   display: inline-block;
   margin: 0 10px 0 0;
   opacity: 0.6;
@@ -15,8 +15,11 @@
 
   &.selected {
     background-color: #001;
-    border-color: #05a;
-    box-shadow: 0 0 4px 0 #05f;
+    border-color: #fff;
     opacity: 1;
+  }
+
+  input[type="number"] {
+    width: 40px;
   }
 }

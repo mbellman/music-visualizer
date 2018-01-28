@@ -1,37 +1,31 @@
 import '@styles/Toolkit/ColorField.less';
 
 import { h, Component } from 'preact';
-import { Bind, Callback, Override, Utils } from '@base';
+import { Callback } from '@base';
+import Field from '@components/Toolkit/Field';
 
 export interface IColorFieldProps {
+  label: string;
   value?: string;
   onChange?: Callback<string>;
 }
 
-export default class ColorField extends Component<IColorFieldProps, any> {
-  @Override
-  public render (): JSX.Element {
-    return (
-      <div class="color-field">
+const ColorField = ({ label, value, onChange, ...props }: IColorFieldProps): JSX.Element => {
+  return (
+    <span>
+      <label>{ label }:</label>
+      <span className="color-field">
         <label>#</label>
-        <input
+        <Field
           type="text"
-          onKeyUp={ this._onKeyUpInput }
+          value={ value }
           size={ 2 }
           maxLength={ 6 }
-          value={ this.props.value }
+          onChange={ onChange }
         />
-      </div>
-    );
-  }
+      </span>
+    </span>
+  );
+};
 
-  @Bind
-  private _onKeyUpInput (e: UIEvent): void {
-    const { value } = e.target as HTMLInputElement;
-    const { onChange } = this.props;
-
-    if (onChange) {
-      onChange(value);
-    }
-  }
-}
+export default ColorField;

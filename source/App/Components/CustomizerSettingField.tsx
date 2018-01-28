@@ -6,6 +6,7 @@ import { IAppState, ICustomizer, ICustomizerSettings } from '@state/Types';
 import { Dispatch, bindActionCreators } from 'redux';
 import { AnyComponent } from 'preact';
 import { ActionCreators } from '@state/ActionCreators';
+import { Callback } from '@base';
 
 interface ICustomizerSettingFieldPropsFromState {
   className?: string;
@@ -13,7 +14,12 @@ interface ICustomizerSettingFieldPropsFromState {
   value?: number;
 }
 
-interface ICustomizerSettingFieldProps extends INumberFieldProps {
+interface ICustomizerSettingFieldPropsFromDispatch {
+  onChange?: Callback<KeyboardEvent>;
+}
+
+interface ICustomizerSettingFieldProps extends ICustomizerSettingFieldPropsFromState, ICustomizerSettingFieldPropsFromDispatch {
+  label: string;
   setting: keyof ICustomizerSettings;
 }
 
@@ -27,7 +33,7 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState, { setting }: ICu
   };
 }
 
-function mapDispatchToProps (dispatch: Dispatch<IAppState>, props: ICustomizerSettingFieldProps): Partial<ICustomizerSettingFieldProps> {
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): ICustomizerSettingFieldPropsFromDispatch {
   const { setCustomizerSettings } = ActionCreators;
 
   return {

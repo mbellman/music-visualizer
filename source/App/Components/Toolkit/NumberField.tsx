@@ -1,27 +1,42 @@
-import { h } from 'preact';
-import { Callback } from '@base';
+import { h, Component } from 'preact';
+import { Bind, Callback, Override } from '@base';
+import Field from '@components/Toolkit/Field';
 
 export interface INumberFieldProps {
   label: string;
+  value?: number | string;
   className?: string;
   name?: string;
-  onChange?: Callback<KeyboardEvent>;
-  value?: number;
+  onChange?: Callback<number>;
+  [prop: string]: any;
 }
 
-const NumberField = ({ label, name, className, onChange, value }: INumberFieldProps) => {
-  return (
-    <span>
-      <label>{ label }:</label>
-      <input
-        class={ className }
-        name={ name }
-        type="number"
-        onKeyUp={ onChange }
-        value={ value.toString() }
-      />
-    </span>
-  );
-};
+export default class NumberField extends Component<INumberFieldProps, any> {
+  @Override
+  public render (): JSX.Element {
+    const { label, value, className, name, ref, onChange, ...props } = this.props;
 
-export default NumberField;
+    return (
+      <span>
+        <label>{ label }:</label>
+        <Field
+          type="number"
+          value={ value.toString() }
+          className={ className }
+          name={ name }
+          onChange={ this._onChangeField }
+          { ...props }
+        />
+      </span>
+    );
+  }
+
+  @Bind
+  private _onChangeField (value: string): void {
+    const { onChange } = this.props;
+
+    if (onChange) {
+      onChange(parseInt(value));
+    }
+  }
+}

@@ -17,7 +17,7 @@ export interface ISelectableState {
  * A component which can be toggled between selected and unselected states on
  * mouse click. The intended usage is composition by a wrapper component, ex:
  *
- *  class SelectableWrapper extends Component<any, any> {
+ *  class SelectableWrapper extends Component<ISelectableWrapperProps, any> {
  *    public render (): JSX.Element {
  *      return (
  *        <Selectable className='custom-class' { ...this.props }>
@@ -64,11 +64,16 @@ export default class Selectable extends Component<ISelectableProps, ISelectableS
    */
   @Implementation
   public componentWillMount (): void {
-    const { selectableRef } = this.props;
+    const { selected, selectableRef } = this.props;
 
     if (selectableRef) {
       selectableRef(this);
     }
+  }
+
+  @Implementation
+  public componentWillReceiveProps ({ selected }: ISelectableProps): void {
+    this.selected = selected;
   }
 
   @Override
@@ -78,7 +83,7 @@ export default class Selectable extends Component<ISelectableProps, ISelectableS
 
     return (
       <div
-        class={ `${className} ${isSelected ? ' selected' : ''}` }
+        className={ `${className} ${isSelected ? ' selected' : ''}` }
         onClick={ this.onClick }
       >
         { this.props.children }

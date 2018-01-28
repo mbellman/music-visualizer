@@ -19,10 +19,10 @@ export default class Editor extends Component<IEditorProps, any> {
     const { sequence } = this.props;
 
     return (
-      <div class="editor">
+      <div className="editor">
         <EditorHeader />
 
-        <div class="channel-editors">
+        <div className="channel-editors">
           {
             [ ...sequence.channels() ].map((channel: Channel, index: number) => {
               return <ChannelEditor index={ index } />;

@@ -10,18 +10,23 @@ import { ActionCreators } from '@state/ActionCreators';
 import { Dispatch, bindActionCreators, ActionCreator } from 'redux';
 import Sequence from '@core/MIDI/Sequence';
 
-interface IEditorHeaderProps {
+interface IEditorHeaderPropsFromState {
   sequence?: Sequence;
+}
+
+interface IEditorHeaderPropsFromDispatch {
   changeView?: ActionCreator<IAction>;
 }
 
-function mapStateToProps (state: IAppState): Partial<IEditorHeaderProps> {
+interface IEditorHeaderProps extends IEditorHeaderPropsFromState, IEditorHeaderPropsFromDispatch {}
+
+function mapStateToProps (state: IAppState): IEditorHeaderPropsFromState {
   const { sequence } = state.selectedPlaylistTrack;
 
   return { sequence };
 }
 
-function mapDispatchToProps (dispatch: Dispatch<IAppState>): Partial<IEditorHeaderProps> {
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): IEditorHeaderPropsFromDispatch {
   const { changeView } = ActionCreators;
 
   return bindActionCreators({
@@ -39,14 +44,14 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
     const { sequence } = this.props;
 
     return (
-      <div class="editor-header">
-        <h3 class="sequence-title">{ sequence.name }</h3>
+      <div className="editor-header">
+        <h3 className="sequence-title">{ sequence.name }</h3>
 
-        <CustomizerSettingField setting="tempo" label="Tempo" />
-        <CustomizerSettingField setting="focusDelay" label="Focus Delay" />
-        <CustomizerSettingField setting="scrollSpeed" label="Scroll speed" />
+        <CustomizerSettingField label="Tempo" setting="tempo" />
+        <CustomizerSettingField label="Focus Delay" setting="focusDelay" />
+        <CustomizerSettingField label="Scroll speed" setting="scrollSpeed" />
 
-        <input class="play-button" type="button" onClick={ this._showVisualizer } value="Play" />
+        <input className="play-button" type="button" onClick={ this._showVisualizer } value="Play" />
       </div>
     );
   }

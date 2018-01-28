@@ -1,3 +1,5 @@
+import '@styles/ShapeEditor.less';
+
 import { h, Component } from 'preact';
 import { IAppState } from '@state/Types';
 import { IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
@@ -62,12 +64,12 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   @Override
   public render (): JSX.Element {
     return (
-      <span>
+      <div className="shape-editor">
         <label>Shape:</label>
         <MultiSelectable onChange={ this._onChangeShape }>
           { this._renderShapeButtons() }
         </MultiSelectable>
-      </span>
+      </div>
     );
   }
 

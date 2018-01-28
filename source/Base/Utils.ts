@@ -17,6 +17,10 @@ export namespace Utils {
     return n < lowest ? lowest : highest;
   }
 
+  export function clone <T>(object: T): T {
+    return JSON.parse(JSON.stringify(object));
+  }
+
   export function random (lowest: number, highest: number): number {
     return lowest + Math.floor(Math.random() * (highest - lowest + 1));
   }
