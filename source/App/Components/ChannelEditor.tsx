@@ -9,7 +9,7 @@ import { Bind, Extension, Implementation, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { IAppState } from '@state/Types';
-import { IEffectTemplate, IFillTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@state/VisualizationTypes';
+import { IEffectTemplate, IFillTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Selectors } from '@state/Selectors';
 import '@styles/ChannelEditor.less';
 

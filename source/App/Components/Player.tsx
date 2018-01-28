@@ -4,7 +4,8 @@ import Visualizer from '@core/Visualization/Visualizer';
 import { ballFactory, barFactory } from 'App/ShapeFactories';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
-import { IAppState, ICustomizer } from '@state/Types';
+import { IAppState } from '@state/Types';
+import { ICustomizer } from '@core/Visualization/Types';
 import { Implementation, Override } from '@base';
 import '@styles/Player.less';
 
@@ -30,20 +31,7 @@ export default class Player extends Component<IPlayerProps, any> {
 
   @Implementation
   public componentDidMount (): void {
-    const canvas: HTMLCanvasElement = this.base.querySelector('canvas');
-    const visualizer: Visualizer = new Visualizer(canvas);
-
-    visualizer.setSize(canvas.clientWidth, canvas.clientHeight);
-    visualizer.define('Bar', barFactory);
-    visualizer.define('Ball', ballFactory);
-
-    visualizer.configure({
-      framerate: 60,
-      speed: 100
-    });
-
-    this._visualizer = visualizer;
-
+    this._setVisualizer();
     this._play();
   }
 
@@ -57,7 +45,25 @@ export default class Player extends Component<IPlayerProps, any> {
   }
 
   private _play (): void {
+    const { sequence, customizer } = this.props;
+
     this._visualizer.stop();
-    this._visualizer.visualize(this.props.sequence);
+    this._visualizer.visualize(sequence, customizer);
+  }
+
+  private _setVisualizer (): void {
+    const canvas: HTMLCanvasElement = this.base.querySelector('canvas');
+    const visualizer: Visualizer = new Visualizer(canvas);
+
+    visualizer.setSize(canvas.clientWidth, canvas.clientHeight);
+    visualizer.define('Bar', barFactory);
+    visualizer.define('Ball', ballFactory);
+
+    visualizer.configure({
+      framerate: 60,
+      speed: 100
+    });
+
+    this._visualizer = visualizer;
   }
 }

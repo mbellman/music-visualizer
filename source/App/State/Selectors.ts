@@ -1,6 +1,6 @@
-import { EffectTypes, IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
+import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension, IHashMap } from '@base';
-import { IAppState, IEffectsCustomizer } from '@state/Types';
+import { IAppState } from '@state/Types';
 
 export namespace Selectors {
   export const EFFECT_TYPE_TO_CUSTOMIZER_PROP: IHashMap<keyof IEffectsCustomizer> = {
@@ -24,9 +24,9 @@ export namespace Selectors {
 
   export function getEffectTemplates (state: IAppState, channelIndex: number): Extension<IEffectTemplate>[] {
     return [
+      EffectTypes.GLOW,
       EffectTypes.FILL,
-      EffectTypes.STROKE,
-      EffectTypes.GLOW
+      EffectTypes.STROKE
     ].map((effectType) => getEffectTemplate(state, channelIndex, effectType));
   }
 }

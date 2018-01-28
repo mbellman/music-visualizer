@@ -16,12 +16,10 @@ To-do:
 * Rendering optimizations
 
 **UI**
-* Render preview notes in each channel editor
 * Add remaining effects options in channel editors
 * Add an active tracks list
 
 **Code cleanup**
-* Alphabetize imports by path, not module name
 * Prune unused imports
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Clean up the formulas used in note spawning (Visualizer._runNoteSpawnCheck())

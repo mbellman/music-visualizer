@@ -5,7 +5,7 @@ import { Callback, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
-import { EffectTypes, IFillTemplate } from '@state/VisualizationTypes';
+import { EffectTypes, IFillTemplate } from '@core/Visualization/Types';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
 

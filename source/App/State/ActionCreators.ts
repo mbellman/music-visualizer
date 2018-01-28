@@ -1,9 +1,9 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, IChannelAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
-import { EffectTypes, IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
+import { EffectTypes, ICustomizerSettings, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension } from '@base';
-import { ICustomizerSettings, ViewMode } from '@state/Types';
+import { ViewMode } from '@state/Types';
 
 export namespace ActionCreators {
   export function changeAudioFile (audioFile: AudioFile): IAction {

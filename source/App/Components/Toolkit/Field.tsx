@@ -11,11 +11,11 @@ export default class Field extends Component<IFieldProps, any> {
   public render (): JSX.Element {
     const { onChange, ref, ...props } = this.props;
 
-    return <input onKeyUp={ this._onKeyUp } { ...props } />;
+    return <input onInput={ this._onInput } { ...props } />;
   }
 
   @Bind
-  private _onKeyUp (e: KeyboardEvent): void {
+  private _onInput (e: KeyboardEvent): void {
     const { value } = e.target as HTMLInputElement;
     const { onChange } = this.props;
 

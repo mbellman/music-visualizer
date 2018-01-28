@@ -1,4 +1,5 @@
 import { IColor } from 'Graphics/Types';
+import { IHashMap } from '@base';
 
 /**
  * Shapes
@@ -48,4 +49,26 @@ export interface IGlowTemplate extends IColorableEffectTemplate {
   blur: number;
   fadeIn?: number;
   fadeOut?: number;
+}
+
+/**
+ * Customizer types
+ * ----------------
+ */
+export interface ICustomizer {
+  settings: ICustomizerSettings;
+  shapes: IHashMap<IShapeTemplate>;
+  effects: IEffectsCustomizer;
+}
+
+export interface ICustomizerSettings {
+  focusDelay: number;
+  scrollSpeed: number;
+  tempo: number;
+}
+
+export interface IEffectsCustomizer {
+  fills: IHashMap<IFillTemplate>;
+  strokes: IHashMap<IStrokeTemplate>;
+  glows: IHashMap<IGlowTemplate>;
 }

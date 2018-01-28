@@ -1,6 +1,6 @@
-import { EffectTypes, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@state/VisualizationTypes';
+import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Extension, IHashMap } from '@base';
-import { IAppState, ICustomizer, ViewMode } from '@state/Types';
+import { IAppState, ViewMode } from '@state/Types';
 
 export const initialShapeTemplate: IShapeTemplate = {
   shapeType: ShapeTypes.BAR,

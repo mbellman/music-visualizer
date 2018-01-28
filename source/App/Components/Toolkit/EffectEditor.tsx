@@ -6,7 +6,7 @@ import { Bind, Callback, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
-import { EffectTypes } from '@state/VisualizationTypes';
+import { EffectTypes } from '@core/Visualization/Types';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
 import '@styles/Toolkit/EffectEditor.less';

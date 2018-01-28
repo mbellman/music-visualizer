@@ -1,6 +1,6 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
-import { EffectTypes, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate } from '@state/VisualizationTypes';
+import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate } from '@core/Visualization/Types';
 import { Extension, IHashMap } from '@base';
 
 export interface IAppState {
@@ -22,22 +22,4 @@ export interface ISelectedPlaylistTrack extends IPlaylistTrack {
 export enum ViewMode {
   EDITOR,
   PLAYER
-}
-
-export interface ICustomizer {
-  settings: ICustomizerSettings;
-  shapes: IHashMap<IShapeTemplate>;
-  effects: IEffectsCustomizer;
-}
-
-export interface ICustomizerSettings {
-  focusDelay: number;
-  scrollSpeed: number;
-  tempo: number;
-}
-
-export interface IEffectsCustomizer {
-  fills: IHashMap<IFillTemplate>;
-  strokes: IHashMap<IStrokeTemplate>;
-  glows: IHashMap<IGlowTemplate>;
 }

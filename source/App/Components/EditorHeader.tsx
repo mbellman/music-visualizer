@@ -6,7 +6,8 @@ import { ActionTypes, IAction } from '@state/ActionTypes';
 import { Bind, Override } from 'Base/Core';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
-import { IAppState, ICustomizer, ViewMode } from '@state/Types';
+import { IAppState, ViewMode } from '@state/Types';
+import { ICustomizer } from '@core/Visualization/Types';
 import '@styles/EditorHeader.less';
 
 interface IEditorHeaderPropsFromState {

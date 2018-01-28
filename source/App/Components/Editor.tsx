@@ -4,7 +4,8 @@ import EditorHeader from '@components/EditorHeader';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes } from '@state/ActionTypes';
 import { Component, h } from 'preact';
-import { ICustomizer, IPlaylistTrack, ViewMode } from '@state/Types';
+import { ICustomizer } from '@core/Visualization/Types';
+import { IPlaylistTrack, ViewMode } from '@state/Types';
 import { Override } from 'Base/Core';
 import '@styles/Editor.less';
 

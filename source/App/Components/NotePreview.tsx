@@ -1,15 +1,15 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
-import { EffectTypes, IEffectTemplate, IFillTemplate, IShapeTemplate, ShapeTypes } from '@state/VisualizationTypes';
+import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Extension, Implementation, Override } from '@base';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
 import '@styles/NotePreview.less';
 
 interface INotePreviewPropsFromState {
-  shapeTemplate: IShapeTemplate;
-  effectTemplates: Extension<IEffectTemplate>[];
+  shapeTemplate?: IShapeTemplate;
+  effectTemplates?: Extension<IEffectTemplate>[];
 }
 
 interface INotePreviewProps extends INotePreviewPropsFromState {
@@ -24,7 +24,7 @@ function mapStateToProps (state: IAppState, { channelIndex }: INotePreviewProps)
 }
 
 @Connect (mapStateToProps)
-export default class NotePreview extends Component<any, any> {
+export default class NotePreview extends Component<INotePreviewProps, any> {
   private _previewCanvas: Canvas;
 
   @Implementation
@@ -46,9 +46,45 @@ export default class NotePreview extends Component<any, any> {
   }
 
   private _renderNoteEffects (): void {
-    const { color } = this.props.effectTemplates[0] as IFillTemplate;
+    const { effectTemplates } = this.props;
 
-    this._previewCanvas.set(DrawSetting.FILL_COLOR, `#${color}`).fill();
+    effectTemplates.forEach((effectTemplate: Extension<IEffectTemplate>) => {
+      const { effectType } = effectTemplate;
+
+      switch (effectType) {
+        case EffectTypes.GLOW: {
+          const { color, blur, isSelected } = effectTemplate as IGlowTemplate;
+
+          if (isSelected) {
+            this._previewCanvas
+              .set(DrawSetting.GLOW_COLOR, `#${color}`)
+              .set(DrawSetting.GLOW_BLUR, blur);
+          }
+          break;
+        }
+        case EffectTypes.FILL: {
+          const { color, isSelected } = effectTemplate as IFillTemplate;
+
+          if (isSelected) {
+            this._previewCanvas
+              .set(DrawSetting.FILL_COLOR, `#${color}`)
+              .fill();
+          }
+          break;
+        }
+        case EffectTypes.STROKE: {
+          const { color, width, isSelected } = effectTemplate as IStrokeTemplate;
+
+          if (isSelected) {
+            this._previewCanvas
+              .set(DrawSetting.STROKE_COLOR, `#${color}`)
+              .set(DrawSetting.STROKE_WIDTH, width)
+              .stroke();
+          }
+          break;
+        }
+      }
+    });
   }
 
   private _renderNotePreview (): void {

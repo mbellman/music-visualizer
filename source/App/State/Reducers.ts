@@ -1,8 +1,9 @@
+import Channel from '@core/MIDI/Channel';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
-import { EffectTypes, IEffectTemplate, IShapeTemplate } from '@state/VisualizationTypes';
+import { EffectTypes, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension, Utils } from '@base';
-import { IAppState, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IPlaylistTrack, ViewMode } from '@state/Types';
+import { IAppState, IPlaylistTrack, ViewMode } from '@state/Types';
 import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
 import { Selectors } from '@state/Selectors';
 
@@ -29,7 +30,7 @@ function changeSequence (state: IAppState, sequence: Sequence): IAppState {
   const { tempo } = sequence;
   const customizer: ICustomizer = Utils.clone(initialCustomizerState);
 
-  [ ...sequence.channels() ].forEach((channel, index) => {
+  [ ...sequence.channels() ].forEach((channel: Channel, index: number) => {
     customizer.shapes[index] = initialShapeTemplate;
     customizer.effects.fills[index] = initialFillTemplate;
     customizer.effects.strokes[index] = initialStrokeTemplate;

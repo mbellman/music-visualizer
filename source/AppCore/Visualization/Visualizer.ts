@@ -6,6 +6,7 @@ import Sequence from 'AppCore/MIDI/Sequence';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
 import { Bind, Map, Utils } from 'Base/Core';
+import { ICustomizer } from '@core/Visualization/Types';
 
 type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
 
@@ -28,8 +29,8 @@ export default class Visualizer {
   };
 
   private _currentBeat: number = 0;
+  private _customizer: ICustomizer;
   private _frame: number = 0;
-  private _garbageCollectionCounter: number = Visualizer.GARBAGE_COLLECTION_DELAY;
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
@@ -91,14 +92,14 @@ export default class Visualizer {
 
     this._currentBeat = 0;
     this._frame = 0;
-    this._garbageCollectionCounter = 0;
     this._isRunning = false;
     this._visualizerNotes.length = 0;
   }
 
-  public visualize (sequence: Sequence): void {
+  public visualize (sequence: Sequence, customizer: ICustomizer): void {
     const { tempo } = sequence;
 
+    this._customizer = customizer;
     this._noteQueue = new NoteQueue(sequence);
 
     this.configure({ tempo });
@@ -119,8 +120,6 @@ export default class Visualizer {
 
       i++;
     }
-
-    this._garbageCollectionCounter = Visualizer.GARBAGE_COLLECTION_DELAY;
   }
 
   private _runNoteSpawnCheck (): void {
