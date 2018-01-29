@@ -1,5 +1,11 @@
 import Note from 'AppCore/MIDI/Note';
 import Sequence from 'AppCore/MIDI/Sequence';
+import Channel from '@core/MIDI/Channel';
+
+export interface IQueuedNote {
+  note: Note;
+  channelIndex: number;
+}
 
 export default class NoteQueue {
   private _channels: Note[][] = [];
@@ -9,25 +15,30 @@ export default class NoteQueue {
   }
 
   /**
-   * Returns all notes up to a specified note delay limit,
+   * Returns all notes up to a specified note delay,
    * removing them and shifting the queue forward.
    */
-  public take (delay: number): Note[] {
-    const notes: Note[] = [];
+  public take (delay: number): IQueuedNote[] {
+    const queuedNotes: IQueuedNote[] = [];
 
-    for (const channel of this._channels) {
+    for (let i = 0; i < this._channels.length; i++) {
+      const channel: Note[] = this._channels[i];
+
       while (channel.length > 0) {
         const nextNote: Note = channel[0];
 
         if (nextNote.delay <= delay) {
-          notes.push(channel.shift());
+          queuedNotes.push({
+            note: channel.shift(),
+            channelIndex: i
+          });
         } else {
           break;
         }
       }
     }
 
-    return notes;
+    return queuedNotes;
   }
 
   private _convert (sequence: Sequence): void {

@@ -1,18 +1,17 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Effect from 'AppCore/Visualization/Effects/Effect';
 import Note from 'AppCore/MIDI/Note';
-import NoteQueue from 'AppCore/Visualization/NoteQueue';
+import NoteQueue, { IQueuedNote } from 'AppCore/Visualization/NoteQueue';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
+import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
 import { Bind, Map, Utils } from 'Base/Core';
 import { ICustomizer } from '@core/Visualization/Types';
 
-type ShapeFactory<T extends Shape = Shape> = (...args: any[]) => T | T[];
-
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
-  speed?: number;
+  scrollSpeed?: number;
   tempo?: number;
 }
 
@@ -24,17 +23,16 @@ export default class Visualizer {
 
   private _configuration: IVisualizerConfiguration = {
     framerate: 60,
-    speed: 100,
+    scrollSpeed: 100,
     tempo: 100
   };
 
   private _currentBeat: number = 0;
-  private _customizer: ICustomizer;
   private _frame: number = 0;
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
-  private _shapeFactories: Map<string, ShapeFactory> = new Map();
+  private _visualizerNoteFactory: VisualizerNoteFactory;
   private _visualizerNotes: VisualizerNote[] = [];
 
   public constructor (element: HTMLCanvasElement) {
@@ -53,18 +51,14 @@ export default class Visualizer {
     return this._canvas.width;
   }
 
-  private get _speedFactor (): number {
-    return this._configuration.speed / 100;
+  private get _scrollSpeedFactor (): number {
+    return this._configuration.scrollSpeed / 100;
   }
 
   public configure (configuration: IVisualizerConfiguration): void {
     Object.keys(configuration).forEach((key: keyof IVisualizerConfiguration) => {
       this._configuration[key] = configuration[key];
     });
-  }
-
-  public define (name: string, shapeFactory: ShapeFactory): void {
-    this._shapeFactories.set(name, shapeFactory);
   }
 
   public run (): void {
@@ -79,14 +73,6 @@ export default class Visualizer {
     this._bufferCanvas.setSize(width, height);
   }
 
-  public spawn (name: string, ...args: any[]): void {
-    const shapeFactory: ShapeFactory = this._shapeFactories.get(name);
-    const shapes: Shape[] = shapeFactory.apply(null, args);
-    const visualizerNote: VisualizerNote = new VisualizerNote(shapes);
-
-    this._visualizerNotes.push(visualizerNote);
-  }
-
   public stop (): void {
     this._canvas.clear();
 
@@ -99,7 +85,7 @@ export default class Visualizer {
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
     const { tempo } = sequence;
 
-    this._customizer = customizer;
+    this._visualizerNoteFactory = new VisualizerNoteFactory(customizer);
     this._noteQueue = new NoteQueue(sequence);
 
     this.configure({ tempo });
@@ -123,24 +109,14 @@ export default class Visualizer {
   }
 
   private _runNoteSpawnCheck (): void {
-    const spawnableNotes: Note[] = this._noteQueue.take(this._currentBeat);
+    const queuedNotes: IQueuedNote[] = this._noteQueue.take(this._currentBeat);
 
-    if (spawnableNotes.length > 0) {
-      const { framerate, tempo } = this._configuration;
-      const visualizerHeightRatio: number = this.height / 100;
-      const heightToPitchRatio: number = 100 / 127;
-      const spreadFactor: number = 1.5;
-      const pixelsPerSecond: number = framerate * (60 / framerate) * Visualizer.TICK_CONSTANT * tempo * this._speedFactor;
-      const beatsPerSecond: number = tempo / 60;
-      const pixelsPerBeat: number = pixelsPerSecond / beatsPerSecond;
-      const defaultEffect: string = this._shapeFactories.keys()[0];
+    if (queuedNotes.length > 0) {
+      for (const queuedNote of queuedNotes) {
+        const { channelIndex, note } = queuedNote;
+        const visualizerNote: VisualizerNote = this._visualizerNoteFactory.getVisualizerNote(channelIndex, note);
 
-      for (const note of spawnableNotes) {
-        const noteX: number = this.width;
-        const noteY: number = (127 - note.pitch) * heightToPitchRatio * visualizerHeightRatio * spreadFactor - this.height / 3;
-        const noteWidth: number = note.duration * pixelsPerBeat;
-
-        this.spawn(defaultEffect, noteX, noteY, noteWidth, 12);
+        this._visualizerNotes.push(visualizerNote);
       }
     }
   }
@@ -159,7 +135,7 @@ export default class Visualizer {
     for (let i = startIndex; i < endIndex; i++) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
 
-      visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._speedFactor);
+      visualizerNote.update(this._bufferCanvas, 2 * Visualizer.TICK_CONSTANT, this.tempo * this._scrollSpeedFactor);
     }
 
     if (isFullRenderStep) {
@@ -176,7 +152,7 @@ export default class Visualizer {
     this._canvas.clear();
 
     for (const visualizerNote of this._visualizerNotes) {
-      visualizerNote.update(this._canvas, dt, this.tempo * this._speedFactor);
+      visualizerNote.update(this._canvas, dt, this.tempo * this._scrollSpeedFactor);
     }
 
     this._updateCurrentBeat(dt);

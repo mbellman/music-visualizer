@@ -62,9 +62,12 @@ export interface ICustomizer {
 }
 
 export interface ICustomizerSettings {
-  focusDelay: number;
+  framerate: 30 | 60;
   scrollSpeed: number;
+  focusDelay: number;
   tempo: number;
+  width: number;
+  height: number;
 }
 
 export interface IEffectsCustomizer {

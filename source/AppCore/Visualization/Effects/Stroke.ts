@@ -1,16 +1,15 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Effect from 'AppCore/Visualization/Effects/Effect';
-import { IColor } from 'Graphics/Types';
 import { Implementation } from 'Base/Core';
 
 export default class Stroke extends Effect {
   private _color: string;
   private _width: number;
 
-  public constructor (color: IColor, width: number) {
+  public constructor (color: string, width: number) {
     super();
 
-    this._color = Canvas.colorToString(color);
+    this._color = color;
     this._width = width;
   }
 

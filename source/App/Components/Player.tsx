@@ -1,7 +1,6 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import Visualizer from '@core/Visualization/Visualizer';
-import { ballFactory, barFactory } from 'App/ShapeFactories';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { IAppState } from '@state/Types';
@@ -54,14 +53,13 @@ export default class Player extends Component<IPlayerProps, any> {
   private _setVisualizer (): void {
     const canvas: HTMLCanvasElement = this.base.querySelector('canvas');
     const visualizer: Visualizer = new Visualizer(canvas);
+    const { width, height, framerate, scrollSpeed } = this.props.customizer.settings;
 
-    visualizer.setSize(canvas.clientWidth, canvas.clientHeight);
-    visualizer.define('Bar', barFactory);
-    visualizer.define('Ball', ballFactory);
+    visualizer.setSize(width, height);
 
     visualizer.configure({
-      framerate: 60,
-      speed: 100
+      framerate,
+      scrollSpeed
     });
 
     this._visualizer = visualizer;

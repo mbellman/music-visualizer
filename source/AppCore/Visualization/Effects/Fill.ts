@@ -6,10 +6,10 @@ import { Implementation } from 'Base/Core';
 export default class Fill extends Effect {
   private _color: string;
 
-  public constructor (color: IColor) {
+  public constructor (color: string) {
     super();
 
-    this._color = Canvas.colorToString(color);
+    this._color = color;
   }
 
   @Implementation

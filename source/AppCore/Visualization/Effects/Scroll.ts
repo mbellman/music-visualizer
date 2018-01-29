@@ -1,7 +1,7 @@
 import Canvas from 'Graphics/Canvas';
-import Effect from 'AppCore/Visualization/Effects/Effect';
-import Shape from 'AppCore/Visualization/Shapes/Shape';
-import { Implementation } from 'Base/Core';
+import Effect from '@core/Visualization/Effects/Effect';
+import Shape from '@core/Visualization/Shapes/Shape';
+import { Implementation } from '@base';
 
 export default class Scroll extends Effect {
   @Implementation

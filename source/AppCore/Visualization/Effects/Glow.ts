@@ -9,10 +9,10 @@ export default class Glow extends Effect {
   private _fadeInTime: number = 0;
   private _fadeOutTime: number = 0;
 
-  public constructor (color: IColor, blur: number = 5) {
+  public constructor (color: string, blur: number = 5) {
     super();
 
-    this._color = Canvas.colorToString(color);
+    this._color = color;
     this._blur = blur;
   }
 

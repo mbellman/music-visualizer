@@ -6,6 +6,7 @@ import { Extension, Utils } from '@base';
 import { IAppState, IPlaylistTrack, ViewMode } from '@state/Types';
 import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
 import { Selectors } from '@state/Selectors';
+import CustomizerManager from '@core/Visualization/CustomizerManager';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {
   const { customizer } = state.selectedPlaylistTrack;
@@ -72,7 +73,7 @@ function setCustomizerSettings (state: IAppState, updatedSettings: Partial<ICust
 
 function setEffectTemplateProps (state: IAppState, channelIndex: number, effectType: EffectTypes, props: Partial<Extension<IEffectTemplate>>): IAppState {
   const { effects } = state.selectedPlaylistTrack.customizer;
-  const effectProp: keyof IEffectsCustomizer = Selectors.EFFECT_TYPE_TO_CUSTOMIZER_PROP[effectType];
+  const effectProp: keyof IEffectsCustomizer = CustomizerManager.EFFECT_TYPE_TO_CUSTOMIZER_PROP[effectType];
   const effectTemplate: IEffectTemplate = effects[effectProp][channelIndex];
 
   return changeCustomizerProp(state, 'effects', {

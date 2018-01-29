@@ -21,8 +21,8 @@ export default class MultiSelectable extends Component<IMultiSelectableProps, an
 
   public get selected (): ISelectedItem[] {
     return this._selectables
-      .filter(({ selected }) => selected)
-      .map(({ props }) => {
+      .filter(({ selected }: Selectable) => selected)
+      .map(({ props }: Selectable) => {
         const { index, name } = props as IEnhancedSelectableProps;
 
         return { index, name };

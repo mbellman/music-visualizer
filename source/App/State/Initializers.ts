@@ -34,9 +34,12 @@ export const initialGlowTemplate: IGlowTemplate = {
 
 export const initialCustomizerState: ICustomizer = {
   settings: {
-    focusDelay: 1000,
+    framerate: 60,
     scrollSpeed: 100,
-    tempo: 0
+    focusDelay: 1000,
+    tempo: 0,
+    width: 1200,
+    height: 650
   },
   shapes: {},
   effects: {

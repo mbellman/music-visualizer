@@ -48,7 +48,7 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
   private _renderNoteEffects (): void {
     const { effectTemplates } = this.props;
 
-    effectTemplates.forEach((effectTemplate: Extension<IEffectTemplate>) => {
+    effectTemplates.forEach((effectTemplate: IEffectTemplate) => {
       const { effectType } = effectTemplate;
 
       switch (effectType) {

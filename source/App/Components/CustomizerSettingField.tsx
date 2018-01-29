@@ -15,7 +15,7 @@ interface ICustomizerSettingFieldPropsFromState {
 }
 
 interface ICustomizerSettingFieldPropsFromDispatch {
-  onChange?: Callback<KeyboardEvent>;
+  onChange?: Callback<number>;
 }
 
 interface ICustomizerSettingFieldProps extends ICustomizerSettingFieldPropsFromState, ICustomizerSettingFieldPropsFromDispatch {
@@ -33,15 +33,13 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState, { setting }: ICu
   };
 }
 
-function mapDispatchToProps (dispatch: Dispatch<IAppState>): ICustomizerSettingFieldPropsFromDispatch {
+function mapDispatchToProps (dispatch: Dispatch<IAppState>, { setting }: ICustomizerSettingFieldProps): ICustomizerSettingFieldPropsFromDispatch {
   const { setCustomizerSettings } = ActionCreators;
 
   return {
-    onChange: (e: KeyboardEvent) => {
-      const { name, value } = e.target as HTMLInputElement;
-
+    onChange: (value: number) => {
       dispatch(setCustomizerSettings({
-        [name]: value
+        [setting]: value
       }));
     }
   };
