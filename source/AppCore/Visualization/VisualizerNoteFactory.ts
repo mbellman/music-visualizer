@@ -1,12 +1,11 @@
 import Effect from '@core/Visualization/Effects/Effect';
 import EffectFactory from '@core/Visualization/EffectFactory';
 import Note from '@core/MIDI/Note';
+import Scroll from '@core/Visualization/Effects/Scroll';
 import Shape from '@core/Visualization/Shapes/Shape';
 import ShapeFactory from '@core/Visualization/ShapeFactory';
-import Visualizer from '@core/Visualization/Visualizer';
 import VisualizerNote from '@core/Visualization/VisualizerNote';
-import { ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate } from '@core/Visualization/Types';
-import Scroll from '@core/Visualization/Effects/Scroll';
+import { ICustomizer } from '@core/Visualization/Types';
 
 export default class VisualizerNoteFactory {
   private _shapeFactory: ShapeFactory;

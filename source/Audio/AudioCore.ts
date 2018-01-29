@@ -1,4 +1,4 @@
-import { Callback } from 'Base/Core';
+import { Callback } from '@base';
 
 export default class AudioCore {
   private static _context: AudioContext = new AudioContext();

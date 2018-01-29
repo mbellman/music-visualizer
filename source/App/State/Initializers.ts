@@ -1,6 +1,10 @@
 import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
-import { Extension, IHashMap } from '@base';
 import { IAppState, ViewMode } from '@state/Types';
+
+export const initialShapeTemplate: IShapeTemplate = {
+  shapeType: ShapeTypes.BAR,
+  size: 20
+};
 
 export const initialGlowTemplate: IGlowTemplate = {
   effectType: EffectTypes.GLOW,
@@ -10,11 +14,6 @@ export const initialGlowTemplate: IGlowTemplate = {
   fadeOut: 0,
   isSelected: false,
   isDelayed: false
-};
-
-export const initialShapeTemplate: IShapeTemplate = {
-  shapeType: ShapeTypes.BAR,
-  size: 20
 };
 
 export const initialFillTemplate: IFillTemplate = {

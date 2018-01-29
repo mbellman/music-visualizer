@@ -4,7 +4,6 @@ import Fill from '@core/Visualization/Effects/Fill';
 import Glow from '@core/Visualization/Effects/Glow';
 import Stroke from '@core/Visualization/Effects/Stroke';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IStrokeTemplate } from '@core/Visualization/Types';
-import { Extension } from '@base';
 
 export default class EffectFactory extends CustomizerManager {
   private get _delay (): number {

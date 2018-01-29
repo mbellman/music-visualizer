@@ -4,7 +4,6 @@ import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Note from '@core/MIDI/Note';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
-import { Constructor } from '@base';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class ShapeFactory extends CustomizerManager {

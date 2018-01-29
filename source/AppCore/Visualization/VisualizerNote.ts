@@ -1,5 +1,4 @@
 import Canvas from 'Graphics/Canvas';
-import Effect from 'AppCore/Visualization/Effects/Effect';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 
 export default class VisualizerNote {

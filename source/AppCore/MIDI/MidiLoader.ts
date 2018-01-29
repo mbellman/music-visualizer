@@ -5,7 +5,7 @@ import FileLoader from 'AppCore/FileLoader';
 import Note from 'AppCore/MIDI/Note';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Stream from 'AppCore/MIDI/Decoder/Stream';
-import { ChunkType, IChunk, IHeader, IMidiEvent, MetaEventType, MidiEventType } from 'AppCore/MIDI/Types';
+import { ChunkType, IChunk, IHeader, MetaEventType, MidiEventType } from 'AppCore/MIDI/Types';
 
 /**
  * Adapted from:

@@ -1,12 +1,10 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Effect from '@core/Visualization/Effects/Effect';
+import Canvas from 'Graphics/Canvas';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Sequence from '@core/MIDI/Sequence';
-import Shape from '@core/Visualization/Shapes/Shape';
 import VisualizerNote from '@core/Visualization/VisualizerNote';
 import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
-import { Bind, Map, Utils } from '@base';
+import { Bind } from '@base';
 import { ICustomizer } from '@core/Visualization/Types';
 
 interface IVisualizerConfiguration {

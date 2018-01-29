@@ -1,5 +1,4 @@
 import { CanvasImageSource, IColor } from 'Graphics/Types';
-import { IHashMap } from 'Base/Core';
 
 export enum DrawSetting {
   FILL_COLOR = 'fillStyle',

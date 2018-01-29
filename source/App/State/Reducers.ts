@@ -1,12 +1,11 @@
 import Channel from '@core/MIDI/Channel';
+import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
 import { EffectTypes, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension, Utils } from '@base';
 import { IAppState, IPlaylistTrack, ViewMode } from '@state/Types';
 import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
-import { Selectors } from '@state/Selectors';
-import CustomizerManager from '@core/Visualization/CustomizerManager';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {
   const { customizer } = state.selectedPlaylistTrack;

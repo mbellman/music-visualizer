@@ -1,7 +1,6 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
-import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate } from '@core/Visualization/Types';
-import { Extension, IHashMap } from '@base';
+import { ICustomizer } from '@core/Visualization/Types';
 
 export interface IAppState {
   playlist: IPlaylistTrack[];

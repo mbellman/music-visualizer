@@ -17,7 +17,6 @@ To-do:
 * Add an active tracks list
 
 **Code cleanup**
-* Prune unused imports
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Remove Sequence/Channel/Note stuff from MIDI directory
 * MidiLoader tidying

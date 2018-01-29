@@ -6,8 +6,8 @@ import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
 import { IAppState } from '@state/Types';
-import { IShapeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Selectors } from '@state/Selectors';
+import { ShapeTypes } from '@core/Visualization/Types';
 import '@styles/ShapeEditor.less';
 
 interface IShapeOption {

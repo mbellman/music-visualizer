@@ -1,6 +1,6 @@
 import Field from '@components/Toolkit/Field';
 import { Callback } from '@base';
-import { Component, h } from 'preact';
+import { h } from 'preact';
 import '@styles/Toolkit/ColorField.less';
 
 export interface IColorFieldProps {

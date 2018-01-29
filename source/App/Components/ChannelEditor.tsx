@@ -1,16 +1,12 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Channel from '@core/MIDI/Channel';
 import FillEditor from '@components/FillEditor';
 import NotePreview from '@components/NotePreview';
-import Sequence from '@core/MIDI/Sequence';
 import ShapeEditor from '@components/ShapeEditor';
 import StrokeEditor from '@components/StrokeEditor';
-import { Bind, Extension, Implementation, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { IAppState } from '@state/Types';
-import { IEffectTemplate, IFillTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
-import { Selectors } from '@state/Selectors';
+import { Override } from '@base';
 import '@styles/ChannelEditor.less';
 
 interface IChannelEditorPropsFromState {

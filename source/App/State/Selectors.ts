@@ -1,6 +1,6 @@
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
-import { Extension, IHashMap } from '@base';
+import { Extension } from '@base';
 import { IAppState } from '@state/Types';
 
 export namespace Selectors {

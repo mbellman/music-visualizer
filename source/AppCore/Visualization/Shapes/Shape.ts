@@ -1,6 +1,5 @@
 import Canvas from 'Graphics/Canvas';
 import Effect from '@core/Visualization/Effects/Effect';
-import { IColor } from 'Graphics/Types';
 
 export default abstract class Shape {
   protected offsetX: number = 0;

@@ -2,7 +2,7 @@ import Selectable from '@components/Toolkit/Selectable';
 import SelectableBox from '@components/Toolkit/SelectableBox';
 import SelectableButton from '@components/Toolkit/SelectableButton';
 import { ActionCreators } from '@state/ActionCreators';
-import { Bind, Callback, Override } from '@base';
+import { Callback, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';

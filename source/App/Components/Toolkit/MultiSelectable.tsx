@@ -1,7 +1,10 @@
 import Selectable, { ISelectableProps } from '@components/Toolkit/Selectable';
-import { Bind, Callback, Override, Utils } from 'Base/Core';
+import { Bind, Callback, Override } from 'Base/Core';
 import { cloneElement, Component, h } from 'preact';
 
+/**
+ * Props added to Selectables within a MultiSelectable grouping.
+ */
 interface IEnhancedSelectableProps extends ISelectableProps {
   index: number;
 }

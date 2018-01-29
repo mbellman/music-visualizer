@@ -1,4 +1,4 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
+import Canvas from 'Graphics/Canvas';
 import Shape from 'AppCore/Visualization/Shapes/Shape';
 import { Implementation } from 'Base/Core';
 

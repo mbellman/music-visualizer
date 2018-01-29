@@ -1,6 +1,5 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
 import Effect from 'AppCore/Visualization/Effects/Effect';
-import { IColor } from 'Graphics/Types';
 import { Implementation } from 'Base/Core';
 
 export default class Fill extends Effect {

@@ -44,7 +44,10 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>): IAppPropsFromDispat
   }, dispatch);
 }
 
-@Connect(mapStateToProps, mapDispatchToProps)
+@Connect(
+  mapStateToProps,
+  mapDispatchToProps
+)
 export default class App extends Component<IAppProps, any> {
   @Override
   public render (): JSX.Element {

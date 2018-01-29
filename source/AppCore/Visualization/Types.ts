@@ -1,4 +1,3 @@
-import { IColor } from 'Graphics/Types';
 import { IHashMap } from '@base';
 
 /**
