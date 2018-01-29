@@ -33,9 +33,9 @@ function changeSequence (state: IAppState, sequence: Sequence): IAppState {
 
   [ ...sequence.channels() ].forEach((channel: Channel, index: number) => {
     customizer.shapes[index] = initialShapeTemplate;
+    customizer.effects.glows[index] = initialGlowTemplate;
     customizer.effects.fills[index] = initialFillTemplate;
     customizer.effects.strokes[index] = initialStrokeTemplate;
-    customizer.effects.glows[index] = initialGlowTemplate;
   });
 
   state = changeSelectedPlaylistTrackProp(state, 'sequence', sequence);

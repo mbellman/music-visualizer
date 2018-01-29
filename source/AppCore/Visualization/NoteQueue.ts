@@ -2,13 +2,15 @@ import Note from 'AppCore/MIDI/Note';
 import Sequence from 'AppCore/MIDI/Sequence';
 import Channel from '@core/MIDI/Channel';
 
+type ChannelQueue = IQueuedNote[];
+
 export interface IQueuedNote {
   note: Note;
   channelIndex: number;
 }
 
 export default class NoteQueue {
-  private _channels: Note[][] = [];
+  private _channelQueues: ChannelQueue[] = [];
 
   public constructor (sequence: Sequence) {
     this._convert(sequence);
@@ -21,17 +23,12 @@ export default class NoteQueue {
   public take (delay: number): IQueuedNote[] {
     const queuedNotes: IQueuedNote[] = [];
 
-    for (let i = 0; i < this._channels.length; i++) {
-      const channel: Note[] = this._channels[i];
+    for (const channelQueue of this._channelQueues) {
+      while (channelQueue.length > 0) {
+        const { note, channelIndex } = channelQueue[0];
 
-      while (channel.length > 0) {
-        const nextNote: Note = channel[0];
-
-        if (nextNote.delay <= delay) {
-          queuedNotes.push({
-            note: channel.shift(),
-            channelIndex: i
-          });
+        if (note.delay <= delay) {
+          queuedNotes.push(channelQueue.shift());
         } else {
           break;
         }
@@ -42,14 +39,15 @@ export default class NoteQueue {
   }
 
   private _convert (sequence: Sequence): void {
-    for (const channel of sequence.channels()) {
-      const c: number = this._channels.length;
-
-      this._channels.push([]);
+    [ ...sequence.channels() ].map((channel: Channel, channelIndex: number) => {
+      this._channelQueues.push([]);
 
       for (const note of channel.notes()) {
-        this._channels[c].push(note);
+        this._channelQueues[channelIndex].push({
+          note,
+          channelIndex
+        });
       }
-    }
+    });
   }
 }

@@ -20,9 +20,9 @@ export interface IShapeTemplate {
  * -------
  */
 export enum EffectTypes {
+  GLOW,
   FILL,
-  STROKE,
-  GLOW
+  STROKE
 }
 
 export interface IEffectTemplate {
@@ -35,6 +35,13 @@ export interface IColorableEffectTemplate extends IEffectTemplate {
   color: string;
 }
 
+export interface IGlowTemplate extends IColorableEffectTemplate {
+  effectType: EffectTypes.GLOW;
+  blur: number;
+  fadeIn?: number;
+  fadeOut?: number;
+}
+
 export interface IFillTemplate extends IColorableEffectTemplate {
   effectType: EffectTypes.FILL;
 }
@@ -42,13 +49,6 @@ export interface IFillTemplate extends IColorableEffectTemplate {
 export interface IStrokeTemplate extends IColorableEffectTemplate {
   effectType: EffectTypes.STROKE;
   width: number;
-}
-
-export interface IGlowTemplate extends IColorableEffectTemplate {
-  effectType: EffectTypes.GLOW;
-  blur: number;
-  fadeIn?: number;
-  fadeOut?: number;
 }
 
 /**
@@ -71,7 +71,7 @@ export interface ICustomizerSettings {
 }
 
 export interface IEffectsCustomizer {
+  glows: IHashMap<IGlowTemplate>;
   fills: IHashMap<IFillTemplate>;
   strokes: IHashMap<IStrokeTemplate>;
-  glows: IHashMap<IGlowTemplate>;
 }

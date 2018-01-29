@@ -15,16 +15,16 @@ export default class EffectFactory extends CustomizerManager {
 
   public getEffects (channelIndex: number): Effect[] {
     return [
+      EffectTypes.GLOW,
       EffectTypes.FILL,
-      EffectTypes.STROKE,
-      EffectTypes.GLOW
+      EffectTypes.STROKE
     ]
       .map((effectType: EffectTypes) => this.getEffectTemplate(channelIndex, effectType))
       .filter(({ isSelected }: IEffectTemplate) => isSelected)
       .map((effectTemplate: IEffectTemplate) => {
         const effect: Effect = this._getEffect(effectTemplate);
 
-        if (effectTemplate.isSelected) {
+        if (effectTemplate.isDelayed) {
           effect.delay(this._delay);
         }
 
@@ -36,12 +36,12 @@ export default class EffectFactory extends CustomizerManager {
     const { effectType } = effectTemplate;
 
     switch (effectType) {
+      case EffectTypes.GLOW:
+        return this._getGlowEffect(effectTemplate as IGlowTemplate);
       case EffectTypes.FILL:
         return this._getFillEffect(effectTemplate as IFillTemplate);
       case EffectTypes.STROKE:
         return this._getStrokeEffect(effectTemplate as IStrokeTemplate);
-      case EffectTypes.GLOW:
-        return this._getGlowEffect(effectTemplate as IGlowTemplate);
     }
   }
 
@@ -51,17 +51,17 @@ export default class EffectFactory extends CustomizerManager {
     return new Fill('#' + color);
   }
 
-  private _getStrokeEffect (strokeTemplate: IStrokeTemplate): Stroke {
-    const { color, width } = strokeTemplate;
-
-    return new Stroke('#' + color, width);
-  }
-
   private _getGlowEffect (glowTemplate: IGlowTemplate): Glow {
     const { color, blur, fadeIn, fadeOut } = glowTemplate;
 
     return new Glow('#' + color, blur)
       .fadeIn(fadeIn)
       .fadeOut(fadeOut);
+  }
+
+  private _getStrokeEffect (strokeTemplate: IStrokeTemplate): Stroke {
+    const { color, width } = strokeTemplate;
+
+    return new Stroke('#' + color, width);
   }
 }

@@ -2,6 +2,16 @@ import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate,
 import { Extension, IHashMap } from '@base';
 import { IAppState, ViewMode } from '@state/Types';
 
+export const initialGlowTemplate: IGlowTemplate = {
+  effectType: EffectTypes.GLOW,
+  color: '00f',
+  blur: 5,
+  fadeIn: 0,
+  fadeOut: 0,
+  isSelected: false,
+  isDelayed: false
+};
+
 export const initialShapeTemplate: IShapeTemplate = {
   shapeType: ShapeTypes.BAR,
   size: 20
@@ -22,24 +32,14 @@ export const initialStrokeTemplate: IStrokeTemplate = {
   isDelayed: false
 };
 
-export const initialGlowTemplate: IGlowTemplate = {
-  effectType: EffectTypes.GLOW,
-  color: '00f',
-  blur: 5,
-  fadeIn: 0,
-  fadeOut: 0,
-  isSelected: false,
-  isDelayed: false
-};
-
 export const initialCustomizerState: ICustomizer = {
   settings: {
     framerate: 60,
     scrollSpeed: 100,
     focusDelay: 1000,
     tempo: 0,
-    width: 1200,
-    height: 650
+    width: 1190,
+    height: 640
   },
   shapes: {},
   effects: {

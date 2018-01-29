@@ -3,9 +3,9 @@ import { Extension, IHashMap } from '@base';
 
 export default abstract class CustomizerManager {
   public static readonly EFFECT_TYPE_TO_CUSTOMIZER_PROP: IHashMap<keyof IEffectsCustomizer> = {
+    [EffectTypes.GLOW]: 'glows',
     [EffectTypes.FILL]: 'fills',
-    [EffectTypes.STROKE]: 'strokes',
-    [EffectTypes.GLOW]: 'glows'
+    [EffectTypes.STROKE]: 'strokes'
   };
 
   private _customizer: ICustomizer;

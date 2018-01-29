@@ -1,7 +1,7 @@
+import CustomizerManager from '@core/Visualization/CustomizerManager';
 import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension, IHashMap } from '@base';
 import { IAppState } from '@state/Types';
-import CustomizerManager from '@core/Visualization/CustomizerManager';
 
 export namespace Selectors {
   export function getShapeTemplate ({ selectedPlaylistTrack }: IAppState, channelIndex: number): IShapeTemplate {

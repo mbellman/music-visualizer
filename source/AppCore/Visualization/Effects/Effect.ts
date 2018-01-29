@@ -24,6 +24,10 @@ export default abstract class Effect {
     return this.delayedAge === 0;
   }
 
+  /**
+   * Allows an internal reference to the parent Shape instance to be
+   * maintained after an Effect is piped into the Shape.
+   */
   public track (shape: Shape): void {
     this.shape = shape;
   }

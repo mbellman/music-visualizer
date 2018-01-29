@@ -1,12 +1,12 @@
 import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Effect from 'AppCore/Visualization/Effects/Effect';
-import Note from 'AppCore/MIDI/Note';
-import NoteQueue, { IQueuedNote } from 'AppCore/Visualization/NoteQueue';
-import Sequence from 'AppCore/MIDI/Sequence';
-import Shape from 'AppCore/Visualization/Shapes/Shape';
-import VisualizerNote from 'AppCore/Visualization/VisualizerNote';
+import Effect from '@core/Visualization/Effects/Effect';
+import Note from '@core/MIDI/Note';
+import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
+import Sequence from '@core/MIDI/Sequence';
+import Shape from '@core/Visualization/Shapes/Shape';
+import VisualizerNote from '@core/Visualization/VisualizerNote';
 import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
-import { Bind, Map, Utils } from 'Base/Core';
+import { Bind, Map, Utils } from '@base';
 import { ICustomizer } from '@core/Visualization/Types';
 
 interface IVisualizerConfiguration {
@@ -56,9 +56,10 @@ export default class Visualizer {
   }
 
   public configure (configuration: IVisualizerConfiguration): void {
-    Object.keys(configuration).forEach((key: keyof IVisualizerConfiguration) => {
-      this._configuration[key] = configuration[key];
-    });
+    this._configuration = {
+      ...this._configuration,
+      ...configuration
+    };
   }
 
   public run (): void {

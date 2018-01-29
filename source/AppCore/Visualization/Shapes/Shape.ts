@@ -1,5 +1,5 @@
 import Canvas from 'Graphics/Canvas';
-import Effect from 'AppCore/Visualization/Effects/Effect';
+import Effect from '@core/Visualization/Effects/Effect';
 import { IColor } from 'Graphics/Types';
 
 export default abstract class Shape {
@@ -29,7 +29,6 @@ export default abstract class Shape {
 
   public pipe (effect: Effect): this {
     effect.track(this);
-
     this._effects.push(effect);
 
     return this;
