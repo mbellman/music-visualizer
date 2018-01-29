@@ -67,7 +67,7 @@ export default class ShapeFactory extends CustomizerManager {
        * shift the notes partially back into view so they still "center" on the vertical
        * midpoint of the rendering area. {{SPREADFACTOR - 1}} gives us the percentage
        * by which the vertical rendering area has increased (e.g. [1.5 - 1] -> 0.5),
-       * and we divide this by 2 to shift back only to a halfway point. By multiplying
+       * and we divide this by 2 to shift back only to the halfway point. By multiplying
        * the result by {{height}} we determine the exact pixel amount to shift back,
        * and subtract it from the first expression.
        */
