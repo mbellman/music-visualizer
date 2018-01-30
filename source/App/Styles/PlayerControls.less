@@ -1,0 +1,47 @@
+@import './Helpers.less';
+
+.player {
+  .player-controls {
+    border-radius: 5px;
+    bottom: 5%;
+    height: 50px;
+    left: 40%;
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    width: 20%;
+    .transition(opacity, 0.2s);
+  
+    button {
+      border: 0;
+      border-bottom: 2px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 24px;
+      height: 50px;
+      line-height: 24px;
+      margin: 0 5px;
+      outline: none;
+      position: relative;
+      width: 60px;
+  
+      &:active {
+        top: 2px;
+      }
+
+      &:hover {
+        background-color: #aaa;
+      }
+
+      &.rewind-button {
+        letter-spacing: -8px;
+      }
+    }
+  }
+  
+  &:hover {
+    .player-controls {
+      opacity: 0.5;
+    }
+  }
+}

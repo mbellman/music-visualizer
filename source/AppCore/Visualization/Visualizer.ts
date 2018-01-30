@@ -26,10 +26,12 @@ export default class Visualizer {
   };
 
   private _currentBeat: number = 0;
+  private _customizer: ICustomizer;
   private _frame: number = 0;
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
+  private _sequence: Sequence;
   private _visualizerNoteFactory: VisualizerNoteFactory;
   private _visualizerNotes: VisualizerNote[] = [];
 
@@ -39,6 +41,10 @@ export default class Visualizer {
 
   public get height (): number {
     return this._canvas.height;
+  }
+
+  public get isRunning (): boolean {
+    return this._isRunning;
   }
 
   public get tempo (): number {
@@ -58,6 +64,15 @@ export default class Visualizer {
       ...this._configuration,
       ...configuration
     };
+  }
+
+  public pause (): void {
+    this._isRunning = false;
+  }
+
+  public restart (): void {
+    this.stop();
+    this.visualize(this._sequence, this._customizer);
   }
 
   public run (): void {
@@ -84,8 +99,10 @@ export default class Visualizer {
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
     const { tempo } = sequence;
 
-    this._visualizerNoteFactory = new VisualizerNoteFactory(customizer);
+    this._customizer = customizer;
     this._noteQueue = new NoteQueue(sequence);
+    this._sequence = sequence;
+    this._visualizerNoteFactory = new VisualizerNoteFactory(customizer);
 
     this.configure({ tempo });
     this.run();

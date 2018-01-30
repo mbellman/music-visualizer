@@ -88,9 +88,12 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
   }
 
   private _renderNotePreview (): void {
-    this._previewCanvas.clear();
+    this._previewCanvas.save().clear();
+
     this._renderNoteShape();
     this._renderNoteEffects();
+
+    this._previewCanvas.restore();
   }
 
   private _renderNoteShape (): void {

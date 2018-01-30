@@ -2,7 +2,7 @@ import ColorField from '@components/Toolkit/ColorField';
 import EffectEditor, { IEffectEditorProps } from '@components/Toolkit/EffectEditor';
 import NumberField from '@components/Toolkit/NumberField';
 import { ActionCreators } from '@state/ActionCreators';
-import { Callback, Override } from '@base';
+import { Callback, Extension, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
@@ -36,12 +36,16 @@ function mapStateToProps (state: IAppState, { channelIndex }: IStrokeEditorProps
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IStrokeEditorProps): IStrokeEditorPropsFromDispatch {
   const { setEffectTemplateProps } = ActionCreators;
 
+  const updateStroke = ({ ...strokeTemplateProps }: Partial<IStrokeTemplate>) => {
+    dispatch(setEffectTemplateProps(channelIndex, StrokeEditor.EFFECT_TYPE, strokeTemplateProps));
+  };
+
   return {
     onChangeColor: (color: string) => {
-      dispatch(setEffectTemplateProps(channelIndex, StrokeEditor.EFFECT_TYPE, { color }));
+      updateStroke({ color });
     },
     onChangeWidth: (width: number) => {
-      dispatch(setEffectTemplateProps(channelIndex, StrokeEditor.EFFECT_TYPE, { width }));
+      updateStroke({ width });
     }
   };
 }

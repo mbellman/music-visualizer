@@ -58,7 +58,11 @@ export default class EffectEditor extends Component<IEffectEditorProps, any> {
     const { isSelected, onChangeSelected, onChangeDelayed, isDelayed } = this.props;
 
     return (
-      <div className={ `effect-editor ${isSelected ? 'selected' : ''}` }>
+      <div className={ `
+        effect-editor
+        ${isSelected ? ' selected' : ''}
+        ${isDelayed ? ' delayed' : ''}
+      ` }>
         <SelectableBox
           onChange={ onChangeSelected }
           selected={ isSelected }

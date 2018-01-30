@@ -1,14 +1,16 @@
 import AudioCore from 'Audio/AudioCore';
-import FileLoader from 'AppCore/FileLoader';
+import FileLoader from '@core/FileLoader';
 import ISound from 'Audio/ISound';
 import { AudioEvent, SoundState } from 'Audio/Constants';
-import { Bind, EventManager } from 'Base/Core';
+import { Bind, Implementation, EventManager } from '@base';
 
 export default class AudioFile implements ISound {
   private _analyserNode: AnalyserNode;
   private _audioBuffer: AudioBuffer;
+  private _elapsedTime: number = 0;
   private _events: EventManager = new EventManager();
   private _isLoaded: boolean = false;
+  private _lastPlayStartTime: number = 0;
   private _name: string;
   private _node: AudioBufferSourceNode;
   private _state: SoundState = SoundState.SOUND_STOPPED;
@@ -30,6 +32,7 @@ export default class AudioFile implements ISound {
   }
 
   @Bind
+  @Implementation
   public play (): void {
     if (!this._isLoaded) {
       this._events.on(AudioEvent.LOADED, this.play);
@@ -42,24 +45,42 @@ export default class AudioFile implements ISound {
     }
 
     if (this._state !== SoundState.SOUND_PLAYING) {
-      AudioCore.play(this._node);
+      AudioCore.play(this._node, this._elapsedTime);
 
+      this._lastPlayStartTime = Date.now();
       this._state = SoundState.SOUND_PLAYING;
     }
   }
 
+  @Implementation
   public pause (): void {
+    AudioCore.stop(this._node);
+
+    this._resetNode();
+
+    this._elapsedTime += (Date.now() - this._lastPlayStartTime) / 1000;
     this._state = SoundState.SOUND_PAUSED;
   }
 
-  public stop (): void {
-    AudioCore.stop(this._node);
+  @Implementation
+  public restart (): void {
+    this.stop();
+    this.play();
+  }
 
-    this._state = SoundState.SOUND_STOPPED;
+  @Implementation
+  public stop (): void {
+    if (this._state === SoundState.SOUND_PLAYING) {
+      AudioCore.stop(this._node);
+    }
+
+    this._onEnded();
   }
 
   @Bind
   private _onEnded (): void {
+    this._elapsedTime = 0;
+    this._lastPlayStartTime = 0;
     this._state = SoundState.SOUND_STOPPED;
   }
 

@@ -7,7 +7,7 @@ import Visualizer from '@core/Visualization/Visualizer';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class ShapeFactory extends CustomizerManager {
-  public static readonly SPREAD_FACTOR: number = 1.5;
+  public static readonly SPREAD_FACTOR: number = 1.3;
 
   private get _beatsPerSecond (): number {
     return this._tempo / 60;

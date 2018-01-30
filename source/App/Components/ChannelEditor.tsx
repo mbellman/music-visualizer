@@ -1,5 +1,6 @@
 import Channel from '@core/MIDI/Channel';
 import FillEditor from '@components/FillEditor';
+import GlowEditor from '@components/GlowEditor';
 import NotePreview from '@components/NotePreview';
 import ShapeEditor from '@components/ShapeEditor';
 import StrokeEditor from '@components/StrokeEditor';
@@ -43,6 +44,7 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
           <ShapeEditor channelIndex={ index } />
           <FillEditor channelIndex={ index } />
           <StrokeEditor channelIndex={ index } />
+          <GlowEditor channelIndex={ index } />
         </div>
       </div>
     );

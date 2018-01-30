@@ -13,7 +13,8 @@ To-do:
 * Real-time tempo adjustments
 
 **UI**
-* Add remaining effects options in channel editors
+* Allow glow fade-in/fade-out parameters to be adjusted
+* Show active audio file, allow playback delay to be specified
 * Add an active tracks list
 
 **Code cleanup**

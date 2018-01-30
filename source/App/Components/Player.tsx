@@ -1,4 +1,5 @@
 import AudioFile from 'Audio/AudioFile';
+import PlayerControls from '@components/PlayerControls';
 import Sequence from '@core/MIDI/Sequence';
 import Visualizer from '@core/Visualization/Visualizer';
 import { Component, h } from 'preact';
@@ -8,13 +9,19 @@ import { ICustomizer } from '@core/Visualization/Types';
 import { Implementation, Override } from '@base';
 import '@styles/Player.less';
 
-interface IPlayerProps {
+interface IPlayerPropsFromState {
   audioFile?: AudioFile;
   customizer?: ICustomizer;
   sequence?: Sequence;
 }
 
-function mapStateToProps (state: IAppState): IPlayerProps {
+interface IPlayerProps extends IPlayerPropsFromState {}
+
+interface IPlayerState {
+  visualizer: Visualizer;
+}
+
+function mapStateToProps (state: IAppState): IPlayerPropsFromState {
   const { audioFile, customizer, sequence } = state.selectedPlaylistTrack;
 
   return {
@@ -25,9 +32,7 @@ function mapStateToProps (state: IAppState): IPlayerProps {
 }
 
 @Connect(mapStateToProps)
-export default class Player extends Component<IPlayerProps, any> {
-  private _visualizer: Visualizer;
-
+export default class Player extends Component<IPlayerProps, IPlayerState> {
   @Implementation
   public componentDidMount (): void {
     this._setVisualizer();
@@ -36,18 +41,25 @@ export default class Player extends Component<IPlayerProps, any> {
 
   @Override
   public render (): JSX.Element {
+    const { visualizer } = this.state;
+
     return (
       <div className="player">
         <canvas></canvas>
+
+        <PlayerControls visualizer={ visualizer } />
       </div>
     );
   }
 
   private _play (): void {
-    const { sequence, customizer } = this.props;
+    const { sequence, customizer, audioFile } = this.props;
+    const { visualizer } = this.state;
 
-    this._visualizer.stop();
-    this._visualizer.visualize(sequence, customizer);
+    visualizer.stop();
+    visualizer.visualize(sequence, customizer);
+
+    audioFile.play();
   }
 
   private _setVisualizer (): void {
@@ -62,6 +74,6 @@ export default class Player extends Component<IPlayerProps, any> {
       scrollSpeed
     });
 
-    this._visualizer = visualizer;
+    this.setState({ visualizer });
   }
 }
