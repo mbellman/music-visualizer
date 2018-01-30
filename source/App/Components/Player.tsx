@@ -2,11 +2,13 @@ import AudioFile from 'Audio/AudioFile';
 import PlayerControls from '@components/PlayerControls';
 import Sequence from '@core/MIDI/Sequence';
 import Visualizer from '@core/Visualization/Visualizer';
+import { ActionCreators } from '@state/ActionCreators';
+import { AudioControl, IAppState } from '@state/Types';
+import { bindActionCreators, Dispatch } from 'redux';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
-import { IAppState } from '@state/Types';
 import { ICustomizer } from '@core/Visualization/Types';
-import { Implementation, Override } from '@base';
+import { Implementation, Method, Override } from '@base';
 import '@styles/Player.less';
 
 interface IPlayerPropsFromState {
@@ -15,7 +17,11 @@ interface IPlayerPropsFromState {
   sequence?: Sequence;
 }
 
-interface IPlayerProps extends IPlayerPropsFromState {}
+interface IPlayerPropsFromDispatch {
+  controlAudio?: Method<AudioControl>;
+}
+
+interface IPlayerProps extends IPlayerPropsFromState, IPlayerPropsFromDispatch {}
 
 interface IPlayerState {
   visualizer: Visualizer;
@@ -31,7 +37,18 @@ function mapStateToProps (state: IAppState): IPlayerPropsFromState {
   };
 }
 
-@Connect(mapStateToProps)
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): IPlayerPropsFromDispatch {
+  const { controlAudio } = ActionCreators;
+
+  return bindActionCreators({
+    controlAudio
+  }, dispatch);
+}
+
+@Connect(
+  mapStateToProps,
+  mapDispatchToProps
+)
 export default class Player extends Component<IPlayerProps, IPlayerState> {
   @Implementation
   public componentDidMount (): void {
@@ -59,7 +76,7 @@ export default class Player extends Component<IPlayerProps, IPlayerState> {
     visualizer.stop();
     visualizer.visualize(sequence, customizer);
 
-    audioFile.play();
+    this.props.controlAudio(AudioControl.PLAY);
   }
 
   private _setVisualizer (): void {

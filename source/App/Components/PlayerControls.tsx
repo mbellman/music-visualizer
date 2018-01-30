@@ -1,12 +1,12 @@
 import AudioFile from 'Audio/AudioFile';
 import Visualizer from '@core/Visualization/Visualizer';
 import { ActionCreators } from '@state/ActionCreators';
+import { AudioControl, IAppState, ViewMode } from '@state/Types';
 import { Bind, Method, Override } from '@base';
 import { bindActionCreators } from 'redux';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
-import { IAppState, ViewMode } from '@state/Types';
 import '@styles/PlayerControls.less';
 
 interface IPlayerControlsPropsFromState {
@@ -15,6 +15,7 @@ interface IPlayerControlsPropsFromState {
 
 interface IPlayerControlsPropsFromDispatch {
   changeView?: Method<ViewMode>;
+  controlAudio?: Method<AudioControl>;
 }
 
 interface IPlayerControlsProps extends IPlayerControlsPropsFromState, IPlayerControlsPropsFromDispatch {
@@ -32,10 +33,11 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState): IPlayerControls
 }
 
 function mapDispatchToProps (dispatch: Dispatch<IAppState>): IPlayerControlsPropsFromDispatch {
-  const { changeView } = ActionCreators;
+  const { changeView, controlAudio } = ActionCreators;
 
   return bindActionCreators({
     changeView,
+    controlAudio
   }, dispatch);
 }
 
@@ -72,8 +74,8 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
     const { visualizer, audioFile } = this.props;
 
     visualizer.stop();
-    audioFile.stop();
 
+    this.props.controlAudio(AudioControl.STOP);
     this.props.changeView(ViewMode.EDITOR);
   }
 
@@ -84,10 +86,10 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
     if (isRunning) {
       visualizer.pause();
-      audioFile.pause();
+      this.props.controlAudio(AudioControl.PAUSE);
     } else {
       visualizer.run();
-      audioFile.play();
+      this.props.controlAudio(AudioControl.PLAY);
     }
 
     this.setState({
@@ -100,7 +102,7 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
     const { visualizer, audioFile } = this.props;
 
     visualizer.restart();
-    audioFile.restart();
+    this.props.controlAudio(AudioControl.RESTART);
 
     this.setState({
       isRunning: true

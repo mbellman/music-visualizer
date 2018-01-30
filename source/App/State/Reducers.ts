@@ -4,7 +4,7 @@ import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
 import { EffectTypes, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension, Utils } from '@base';
-import { IAppState, IPlaylistTrack, ViewMode } from '@state/Types';
+import { IAppState, IPlaylistTrack, ViewMode, AudioControl } from '@state/Types';
 import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {
@@ -40,6 +40,29 @@ function changeSequence (state: IAppState, sequence: Sequence): IAppState {
   state = changeSelectedPlaylistTrackProp(state, 'sequence', sequence);
   state = changeSelectedPlaylistTrackProp(state, 'customizer', customizer);
   state = setCustomizerSettings(state, { tempo });
+
+  return state;
+}
+
+function controlAudio (state: IAppState, audioControl: AudioControl): IAppState {
+  const { audioFile } = state.selectedPlaylistTrack;
+
+  if (audioFile) {
+    switch (audioControl) {
+      case AudioControl.PLAY:
+        audioFile.play();
+        break;
+      case AudioControl.PAUSE:
+        audioFile.pause();
+        break;
+      case AudioControl.RESTART:
+        audioFile.restart();
+        break;
+      case AudioControl.STOP:
+        audioFile.stop();
+        break;
+    }
+  }
 
   return state;
 }
@@ -130,6 +153,9 @@ export function appReducer (state: IAppState = initialState, action: IAction): I
         ...state,
         viewMode: action.payload
       };
+    }
+    case ActionTypes.CONTROL_AUDIO: {
+      return controlAudio(state, action.payload);
     }
     case ActionTypes.JUMP_TO_PLAYLIST_TRACK: {
       return jumpToPlaylistTrack(state, action.payload);

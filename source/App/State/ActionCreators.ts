@@ -1,9 +1,9 @@
 import AudioFile from 'Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
+import { AudioControl, ViewMode } from '@state/Types';
 import { EffectTypes, ICustomizerSettings, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension } from '@base';
-import { ViewMode } from '@state/Types';
 
 export namespace ActionCreators {
   export function changeAudioFile (audioFile: AudioFile): IAction {
@@ -20,10 +20,17 @@ export namespace ActionCreators {
     };
   }
 
-  export function changeView (view: ViewMode): IAction {
+  export function changeView (viewMode: ViewMode): IAction {
     return {
       type: ActionTypes.CHANGE_VIEW,
-      payload: view
+      payload: viewMode
+    };
+  }
+
+  export function controlAudio (audioControl: AudioControl): IAction {
+    return {
+      type: ActionTypes.CONTROL_AUDIO,
+      payload: audioControl
     };
   }
 

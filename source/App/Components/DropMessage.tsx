@@ -4,7 +4,7 @@ import '@styles/DropMessage.less';
 const DropMessage = () => {
   return (
     <div className="drop-message">
-      <div className="box">Drag and drop a MIDI or audio file here!</div>
+      <div className="box">Drag and drop a MIDI file here!</div>
     </div>
   );
 };

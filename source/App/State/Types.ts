@@ -22,3 +22,10 @@ export enum ViewMode {
   EDITOR,
   PLAYER
 }
+
+export enum AudioControl {
+  PLAY,
+  PAUSE,
+  RESTART,
+  STOP
+}

@@ -10,8 +10,8 @@ export const initialGlowTemplate: IGlowTemplate = {
   effectType: EffectTypes.GLOW,
   color: '00f',
   blur: 15,
-  fadeIn: 250,
-  fadeOut: 250,
+  fadeIn: 100,
+  fadeOut: 400,
   isSelected: false,
   isDelayed: false
 };
@@ -35,7 +35,7 @@ export const initialCustomizerState: ICustomizer = {
   settings: {
     framerate: 60,
     scrollSpeed: 100,
-    focusDelay: 2000,
+    focusDelay: 5000,
     tempo: 0,
     width: 1190,
     height: 640

@@ -68,25 +68,33 @@ export default class App extends Component<IAppProps, any> {
     );
   }
 
+  private async _changeAudioFileFromFile (file: File): Promise<void> {
+    const blob: Blob = await FileLoader.fileToBlob(file);
+    const url: string = URL.createObjectURL(blob);
+    const audioFile: AudioFile = new AudioFile(url, file.name);
+
+    this.props.changeAudioFile(audioFile);
+
+    URL.revokeObjectURL(url);
+  }
+
+  private async _changeSequenceFromFile (file: File): Promise<void> {
+    const sequence: Sequence = await MidiLoader.fileToSequence(file);
+
+    this.props.changeSequence(sequence);
+  }
+
   @Bind
-  private async _onDropFile (e: DragEvent): Promise<void> {
+  private _onDropFile (e: DragEvent): void {
     e.preventDefault();
 
     const file: File = e.dataTransfer.files[0];
     const extension: string = file.name.split('.').pop();
 
     if (extension === 'mid') {
-      const sequence: Sequence = await MidiLoader.fileToSequence(file);
-
-      this.props.changeSequence(sequence);
+      this._changeSequenceFromFile(file);
     } else {
-      const blob: Blob = await FileLoader.fileToBlob(file);
-      const url: string = URL.createObjectURL(blob);
-      const audioFile: AudioFile = new AudioFile(url, file.name);
-
-      this.props.changeAudioFile(audioFile);
-
-      URL.revokeObjectURL(url);
+      this._changeAudioFileFromFile(file);
     }
   }
 
