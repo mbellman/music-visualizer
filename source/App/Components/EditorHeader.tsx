@@ -2,7 +2,7 @@ import CustomizerSettingField from '@components/CustomizerSettingField';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
 import { ActionCreators } from '@state/ActionCreators';
-import { Bind, Override } from 'Base/Core';
+import { Bind, Method, Override } from 'Base/Core';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { IAction } from '@state/ActionTypes';
@@ -14,7 +14,7 @@ interface IEditorHeaderPropsFromState {
 }
 
 interface IEditorHeaderPropsFromDispatch {
-  changeView?: ActionCreator<IAction>;
+  changeView?: Method<ViewMode>;
 }
 
 interface IEditorHeaderProps extends IEditorHeaderPropsFromState, IEditorHeaderPropsFromDispatch {}

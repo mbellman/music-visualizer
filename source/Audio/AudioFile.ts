@@ -5,26 +5,22 @@ import { AudioEvent, SoundState } from 'Audio/Constants';
 import { Bind, Implementation, EventManager } from '@base';
 
 export default class AudioFile implements ISound {
+  public readonly name: string;
   private _analyserNode: AnalyserNode;
   private _audioBuffer: AudioBuffer;
   private _elapsedTime: number = 0;
   private _events: EventManager = new EventManager();
   private _isLoaded: boolean = false;
   private _lastPlayStartTime: number = 0;
-  private _name: string;
   private _node: AudioBufferSourceNode;
   private _state: SoundState = SoundState.SOUND_STOPPED;
   private _url: string;
 
   public constructor (url: string, name: string) {
     this._url = url;
-    this._name = name;
+    this.name = name;
 
     this._load();
-  }
-
-  public get name (): string {
-    return this._name;
   }
 
   public get isPlaying (): boolean {

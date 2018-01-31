@@ -56,5 +56,5 @@ export const initialState: IAppState = {
     sequence: null,
     customizer: initialCustomizerState
   },
-  viewMode: ViewMode.EDITOR
+  viewMode: ViewMode.DROP_MESSAGE
 };

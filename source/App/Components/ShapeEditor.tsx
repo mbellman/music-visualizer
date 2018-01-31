@@ -6,8 +6,8 @@ import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
 import { IAppState } from '@state/Types';
+import { IShapeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Selectors } from '@state/Selectors';
-import { ShapeTypes } from '@core/Visualization/Types';
 import '@styles/ShapeEditor.less';
 
 interface IShapeOption {
@@ -21,7 +21,8 @@ interface IShapeEditorPropsFromState {
 }
 
 interface IShapeEditorPropsFromDispatch {
-  onChangeShape?: Callback<ShapeTypes>;
+  changeShapeType?: Callback<ShapeTypes>;
+  onChangeShapeSize?: Callback<number>;
 }
 
 interface IShapeEditorProps extends IShapeEditorPropsFromState, IShapeEditorPropsFromDispatch {
@@ -38,11 +39,18 @@ function mapStateToProps (state: IAppState, { channelIndex }: IShapeEditorProps)
 }
 
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IShapeEditorProps): IShapeEditorPropsFromDispatch {
-  return {
-    onChangeShape: (shapeType: ShapeTypes) => {
-      const { setShapeTemplateProps } = ActionCreators;
+  const { setShapeTemplateProps } = ActionCreators;
 
-      dispatch(setShapeTemplateProps(channelIndex, { shapeType }));
+  const updateShape = ({ ...updatedShape }: Partial<IShapeTemplate>) => {
+    dispatch(setShapeTemplateProps(channelIndex, updatedShape));
+  };
+
+  return {
+    changeShapeType: (shapeType: ShapeTypes) => {
+      updateShape({ shapeType });
+    },
+    onChangeShapeSize: (size: number) => {
+      updateShape({ size });
     }
   };
 }
@@ -73,7 +81,7 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   }
 
   private _renderShapeButtons (): JSX.Element[] {
-    const { shapeType } = this.props;
+    const { shapeType: selectedShapeType } = this.props;
 
     return ShapeEditor.SHAPE_OPTIONS.map((shapeOption: IShapeOption) => {
       const { name, type } = shapeOption;
@@ -81,7 +89,7 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
       return (
         <SelectableButton
           value={ name }
-          selected={ type === shapeType }
+          selected={ type === selectedShapeType }
         />
       );
     });
@@ -91,6 +99,6 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   private _onChangeShape (selected: ISelectedItem[]): void {
     const { type } = ShapeEditor.SHAPE_OPTIONS[selected[0].index];
 
-    this.props.onChangeShape(type);
+    this.props.changeShapeType(type);
   }
 }
