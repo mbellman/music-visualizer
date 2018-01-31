@@ -6,23 +6,19 @@ export default abstract class Shape {
   protected offsetY: number = 0;
   protected x: number = 0;
   protected y: number = 0;
+  private _age: number = 0;
   private _effects: Effect[] = [];
-  private _startTime: number = Date.now();
 
   public constructor (x: number, y: number) {
     this.x = x;
     this.y = y;
   }
 
-  public get age (): number {
-    return Date.now() - this._startTime;
-  }
-
-  public get pixelX (): number {
+  protected get pixelX (): number {
     return this.x + this.offsetX;
   }
 
-  public get pixelY (): number {
+  protected get pixelY (): number {
     return this.y + this.offsetY;
   }
 
@@ -42,9 +38,14 @@ export default abstract class Shape {
   }
 
   public update (canvas: Canvas, dt: number, tempo: number): void {
+    const ageIncrease: number = dt * 1000;
+    this._age += ageIncrease;
+
     this.draw(canvas);
 
     for (const effect of this._effects) {
+      effect.age(ageIncrease);
+
       if (!effect.isDelaying()) {
         effect.update(canvas, dt, tempo);
       }

@@ -1,13 +1,14 @@
 import Ball from '@core/Visualization/Shapes/Ball';
 import Bar from '@core/Visualization/Shapes/Bar';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
+import Diamond from '@core/Visualization/Shapes/Diamond';
 import Note from '@core/MIDI/Note';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
 import { ICustomizer, ShapeTypes } from '@core/Visualization/Types';
+import Ellipse from '@core/Visualization/Shapes/Ellipse';
 
 export default class ShapeFactory {
-  public static readonly SPREAD_FACTOR: number = 1.3;
   private _customizerManager: CustomizerManager;
 
   public constructor (customizerManager: CustomizerManager) {
@@ -26,6 +27,10 @@ export default class ShapeFactory {
         return new Bar(x, y, length, size);
       case ShapeTypes.BALL:
         return new Ball(x, y, size);
+      case ShapeTypes.DIAMOND:
+        return new Diamond(x, y, length, size);
+      case ShapeTypes.ELLIPSE:
+        return new Ellipse(x, y, length, size);
     }
   }
 
@@ -48,19 +53,19 @@ export default class ShapeFactory {
        * pitch within the range [0, MAX_PITCH], and {{heightRatio}} is a scaling factor
        * to scale the aforementioned range to [0, height]. By subtracting the scaled
        * pitch value from the bottom edge, higher notes will appear closer to the top
-       * of the rendering area. {{SPREAD_FACTOR}} scales the vertical note spread.
+       * of the rendering area. {{NOTE_SPREAD_FACTOR}} scales the vertical note spread.
        */
-      (height - (pitch * heightRatio)) * ShapeFactory.SPREAD_FACTOR
+      (height - (pitch * heightRatio)) * Visualizer.NOTE_SPREAD_FACTOR
       /**
-       * Having used {{SPREAD_FACTOR}} to adjust our vertical note spread, we need to
+       * Having used {{NOTE_SPREAD_FACTOR}} to adjust our vertical note spread, we need to
        * shift the notes partially back into view so they still "center" on the vertical
-       * midpoint of the rendering area. {{SPREADFACTOR - 1}} gives us the percentage
-       * by which the vertical rendering area has increased (e.g. [1.5 - 1] -> 0.5),
-       * and we divide this by 2 to shift back only to the halfway point. By multiplying
-       * the result by {{height}} we determine the exact pixel amount to shift back,
-       * and subtract it from the first expression.
+       * midpoint of the rendering area. {{NOTE_SPREAD_FACTOR - 1}} gives us the percentage
+       * by which the vertical rendering area has increased (e.g. [1.5 - 1] -> 0.5), and
+       * we divide this by 2 to shift back only to the halfway point. By multiplying the
+       * result by {{height}} we determine the exact pixel amount to shift back, and
+       * subtract it from the first expression.
        */
-      - ((ShapeFactory.SPREAD_FACTOR - 1) / 2) * height
+      - ((Visualizer.NOTE_SPREAD_FACTOR - 1) / 2) * height
     );
   }
 }

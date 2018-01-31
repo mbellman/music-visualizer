@@ -65,6 +65,14 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
     {
       type: ShapeTypes.BALL,
       name: 'Ball'
+    },
+    {
+      type: ShapeTypes.DIAMOND,
+      name: 'Diamond'
+    },
+    {
+      type: ShapeTypes.ELLIPSE,
+      name: 'Ellipse'
     }
   ];
 

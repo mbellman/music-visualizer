@@ -35,15 +35,33 @@ export default class Canvas {
     return this.element.width;
   }
 
+  public circle (x: number, y: number, radius: number): this {
+    this._context.beginPath();
+    this._context.arc(x, y, radius, 0, 2 * Math.PI);
+
+    return this;
+  }
+
   public clear (): this {
     this._context.clearRect(0, 0, this.width, this.height);
 
     return this;
   }
 
-  public circle (x: number, y: number, radius: number): this {
+  public closePath (): this {
+    this._context.closePath();
+
+    return this;
+  }
+
+  public ellipse (x: number, y: number, width: number, height: number): this {
+    const controlY: number = (height / 0.75) / 2;
+    const halfWidth: number = width / 2;
+
     this._context.beginPath();
-    this._context.arc(x, y, radius, 0, 2 * Math.PI);
+    this._context.moveTo(x - halfWidth, y);
+    this._context.bezierCurveTo(x - halfWidth, y + controlY, x + halfWidth, y + controlY, x + halfWidth, y);
+    this._context.bezierCurveTo(x + halfWidth, y - controlY, x - halfWidth, y - controlY, x - halfWidth, y);
 
     return this;
   }
@@ -58,11 +76,15 @@ export default class Canvas {
     return this;
   }
 
-  public line (x1: number, y1: number, x2: number, y2: number): this {
+  public line (x: number, y: number): this {
+    this._context.lineTo(x, y);
+
+    return this;
+  }
+
+  public move (x: number, y: number): this {
     this._context.beginPath();
-    this._context.moveTo(x1, y1);
-    this._context.lineTo(x2, y2);
-    this.stroke();
+    this._context.moveTo(x, y);
 
     return this;
   }

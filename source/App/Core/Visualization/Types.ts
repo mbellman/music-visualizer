@@ -6,7 +6,9 @@ import { IHashMap } from '@base';
  */
 export enum ShapeTypes {
   BAR,
-  BALL
+  BALL,
+  DIAMOND,
+  ELLIPSE
 }
 
 export interface IShapeTemplate {

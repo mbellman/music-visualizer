@@ -1,4 +1,14 @@
+import Ball from '@core/Visualization/Shapes/Ball';
+import Bar from '@core/Visualization/Shapes/Bar';
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import Diamond from '@core/Visualization/Shapes/Diamond';
+import Effect from '@core/Visualization/Effects/Effect';
+import Ellipse from '@core/Visualization/Shapes/Ellipse';
+import Fill from '@core/Visualization/Effects/Fill';
+import Glow from '@core/Visualization/Effects/Glow';
+import Shape from '@core/Visualization/Shapes/Shape';
+import Stroke from '@core/Visualization/Effects/Stroke';
+import VisualizerNote from '@core/Visualization/VisualizerNote';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
@@ -45,67 +55,61 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
     return <canvas className="note-preview"></canvas>;
   }
 
-  private _renderNoteEffects (): void {
+  private _getEffects (): Effect[] {
     const { effectTemplates } = this.props;
 
-    effectTemplates.forEach((effectTemplate: IEffectTemplate) => {
-      const { effectType } = effectTemplate;
+    return effectTemplates
+      .filter(({ isSelected }: IEffectTemplate) => isSelected)
+      .map((effectTemplate: IEffectTemplate) => {
+        const { effectType } = effectTemplate;
 
-      switch (effectType) {
-        case EffectTypes.GLOW: {
-          const { color, blur, isSelected } = effectTemplate as IGlowTemplate;
+        switch (effectType) {
+          case EffectTypes.GLOW: {
+            const { color, blur } = effectTemplate as IGlowTemplate;
 
-          if (isSelected) {
-            this._previewCanvas
-              .set(DrawSetting.GLOW_COLOR, `#${color}`)
-              .set(DrawSetting.GLOW_BLUR, blur);
+            return new Glow('#' + color, blur);
           }
-          break;
-        }
-        case EffectTypes.FILL: {
-          const { color, isSelected } = effectTemplate as IFillTemplate;
+          case EffectTypes.FILL: {
+            const { color } = effectTemplate as IFillTemplate;
 
-          if (isSelected) {
-            this._previewCanvas
-              .set(DrawSetting.FILL_COLOR, `#${color}`)
-              .fill();
+            return new Fill('#' + color);
           }
-          break;
-        }
-        case EffectTypes.STROKE: {
-          const { color, width, isSelected } = effectTemplate as IStrokeTemplate;
+          case EffectTypes.STROKE: {
+            const { color, width } = effectTemplate as IStrokeTemplate;
 
-          if (isSelected) {
-            this._previewCanvas
-              .set(DrawSetting.STROKE_COLOR, `#${color}`)
-              .set(DrawSetting.STROKE_WIDTH, width)
-              .stroke();
+            return new Stroke('#' + color, width);
           }
-          break;
         }
-      }
-    });
+      });
   }
 
-  private _renderNotePreview (): void {
-    this._previewCanvas.save().clear();
-
-    this._renderNoteShape();
-    this._renderNoteEffects();
-
-    this._previewCanvas.restore();
-  }
-
-  private _renderNoteShape (): void {
+  private _getShape (): Shape {
     const { shapeType, size } = this.props.shapeTemplate;
 
     switch (shapeType) {
-      case ShapeTypes.BAR:
-        this._previewCanvas.rectangle(10, 18, 60, size);
-        break;
       case ShapeTypes.BALL:
-        this._previewCanvas.circle(40, 30, size);
-        break;
+        return new Ball(40, 30, size);
+      case ShapeTypes.BAR:
+        return new Bar(10, 30, 60, size);
+      case ShapeTypes.DIAMOND:
+        return new Diamond(10, 30, 60, size);
+      case ShapeTypes.ELLIPSE:
+        return new Ellipse(10, 30, 60, size);
     }
+  }
+
+  private _renderNotePreview (): void {
+    this._previewCanvas.clear();
+
+    const shape: Shape = this._getShape();
+    const effects: Effect[] = this._getEffects();
+
+    for (const effect of effects) {
+      shape.pipe(effect);
+    }
+
+    const visualizerNote: VisualizerNote = new VisualizerNote([ shape ]);
+
+    visualizerNote.update(this._previewCanvas, 1, 0);
   }
 }

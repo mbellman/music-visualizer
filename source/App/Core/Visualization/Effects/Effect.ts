@@ -3,15 +3,15 @@ import Shape from '@core/Visualization/Shapes/Shape';
 
 export default abstract class Effect {
   protected shape: Shape;
+  private _age: number = 0;
   private _delay: number = 0;
-  private _startTime: number = Date.now();
-
-  public get age (): number {
-    return Date.now() - this._startTime;
-  }
 
   public get delayedAge (): number {
-    return Math.max(this.age - this._delay, 0);
+    return Math.max(this._age - this._delay, 0);
+  }
+
+  public age (amount: number): void {
+    this._age += amount;
   }
 
   public delay (delay: number): this {

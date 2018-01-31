@@ -15,6 +15,7 @@ interface IVisualizerConfiguration {
 
 export default class Visualizer {
   public static readonly GARBAGE_COLLECTION_DELAY: number = 50;
+  public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly TICK_CONSTANT: number = 0.01667;
   private _bufferCanvas: Canvas = new Canvas();
   private _canvas: Canvas;
@@ -132,7 +133,9 @@ export default class Visualizer {
         const { channelIndex, note } = queuedNote;
         const visualizerNote: VisualizerNote = this._visualizerNoteFactory.getVisualizerNote(channelIndex, note);
 
-        this._visualizerNotes.push(visualizerNote);
+        if (visualizerNote) {
+          this._visualizerNotes.push(visualizerNote);
+        }
       }
     }
   }

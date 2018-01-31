@@ -23,6 +23,10 @@ export default class VisualizerNoteFactory {
     const shape: Shape = this._shapeFactory.getShape(channelIndex, note);
     const effects: Effect[] = this._effectFactory.getEffects(channelIndex, note);
 
+    if (effects.length === 0) {
+      return null;
+    }
+
     for (const effect of effects) {
       shape.pipe(effect);
     }
