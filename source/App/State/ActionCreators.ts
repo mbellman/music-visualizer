@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
 import { AudioControl, ViewMode } from '@state/Types';

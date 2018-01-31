@@ -1,4 +1,4 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
+import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import Effect from '@core/Visualization/Effects/Effect';
 import { Implementation } from '@base';
 

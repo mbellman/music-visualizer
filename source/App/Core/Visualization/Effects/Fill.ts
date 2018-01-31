@@ -1,6 +1,6 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
-import Effect from 'AppCore/Visualization/Effects/Effect';
-import { Implementation } from 'Base/Core';
+import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import Effect from '@core/Visualization/Effects/Effect';
+import { Implementation } from '@base';
 
 export default class Fill extends Effect {
   private _color: string;

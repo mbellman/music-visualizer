@@ -1,4 +1,4 @@
-import Canvas from 'Graphics/Canvas';
+import Canvas from '@core/Graphics/Canvas';
 import Effect from '@core/Visualization/Effects/Effect';
 
 export default abstract class Shape {

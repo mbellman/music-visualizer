@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
 import { h } from 'preact';
 import '@styles/FileInfo.less';

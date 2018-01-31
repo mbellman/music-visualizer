@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import Editor from '@components/Editor';
 import FileDropper from '@components/FileDropper';
 import Player from '@components/Player';

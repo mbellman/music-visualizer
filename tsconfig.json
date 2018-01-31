@@ -14,7 +14,7 @@
 		"noImplicitAny": true,
 		"paths": {
 			"@base": ["Base/Core"],
-			"@core/*": ["AppCore/*"],
+			"@core/*": ["App/Core/*"],
 			"@components/*": ["App/Components/*"],
 			"@state/*": ["App/State/*"],
 			"@styles/*": ["App/Styles/*"]

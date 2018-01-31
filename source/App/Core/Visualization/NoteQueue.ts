@@ -1,5 +1,5 @@
-import Note from 'AppCore/MIDI/Note';
-import Sequence from 'AppCore/MIDI/Sequence';
+import Note from '@core/MIDI/Note';
+import Sequence from '@core/MIDI/Sequence';
 import Channel from '@core/MIDI/Channel';
 
 type ChannelQueue = IQueuedNote[];

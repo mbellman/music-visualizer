@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import FileInfo from '@components/FileInfo';
 import FileLoader from '@core/FileLoader';
 import MidiLoader from '@core/MIDI/MidiLoader';

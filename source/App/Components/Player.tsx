@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import PlayerControls from '@components/PlayerControls';
 import Sequence from '@core/MIDI/Sequence';
 import Visualizer from '@core/Visualization/Visualizer';

@@ -1,4 +1,4 @@
-import Canvas from 'Graphics/Canvas';
+import Canvas from '@core/Graphics/Canvas';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Sequence from '@core/MIDI/Sequence';

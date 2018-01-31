@@ -1,7 +1,7 @@
-import AudioCore from 'Audio/AudioCore';
+import AudioCore from '@core/Audio/AudioCore';
 import FileLoader from '@core/FileLoader';
-import ISound from 'Audio/ISound';
-import { AudioEvent, SoundState } from 'Audio/Constants';
+import ISound from '@core/Audio/ISound';
+import { AudioEvent, SoundState } from '@core/Audio/Constants';
 import { Bind, Implementation, EventManager } from '@base';
 
 export default class AudioFile implements ISound {

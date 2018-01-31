@@ -1,11 +1,11 @@
-import Channel from 'AppCore/MIDI/Channel';
-import ChunkReader from 'AppCore/MIDI/Decoder/ChunkReader';
-import EventReader from 'AppCore/MIDI/Decoder/EventReader';
-import FileLoader from 'AppCore/FileLoader';
-import Note from 'AppCore/MIDI/Note';
-import Sequence from 'AppCore/MIDI/Sequence';
-import Stream from 'AppCore/MIDI/Decoder/Stream';
-import { ChunkType, IChunk, IHeader, MetaEventType, MidiEventType } from 'AppCore/MIDI/Types';
+import Channel from '@core/MIDI/Channel';
+import ChunkReader from '@core/MIDI/Decoder/ChunkReader';
+import EventReader from '@core/MIDI/Decoder/EventReader';
+import FileLoader from '@core/FileLoader';
+import Note from '@core/MIDI/Note';
+import Sequence from '@core/MIDI/Sequence';
+import Stream from '@core/MIDI/Decoder/Stream';
+import { ChunkType, IChunk, IHeader, MetaEventType, MidiEventType } from '@core/MIDI/Types';
 
 /**
  * Adapted from:

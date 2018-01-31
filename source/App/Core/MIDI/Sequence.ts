@@ -1,4 +1,4 @@
-import Channel from 'AppCore/MIDI/Channel';
+import Channel from '@core/MIDI/Channel';
 
 export default class Sequence {
   public readonly name: string;

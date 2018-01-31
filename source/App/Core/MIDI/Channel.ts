@@ -1,4 +1,4 @@
-import Note from 'AppCore/MIDI/Note';
+import Note from '@core/MIDI/Note';
 
 export default class Channel {
   public readonly id: number | string;

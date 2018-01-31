@@ -1,4 +1,4 @@
-import Canvas, { DrawSetting } from 'Graphics/Canvas';
+import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';

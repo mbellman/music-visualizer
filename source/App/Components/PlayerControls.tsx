@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import Visualizer from '@core/Visualization/Visualizer';
 import { ActionCreators } from '@state/ActionCreators';
 import { AudioControl, IAppState, ViewMode } from '@state/Types';

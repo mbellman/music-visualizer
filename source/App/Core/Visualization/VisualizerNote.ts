@@ -1,5 +1,5 @@
-import Canvas from 'Graphics/Canvas';
-import Shape from 'AppCore/Visualization/Shapes/Shape';
+import Canvas from '@core/Graphics/Canvas';
+import Shape from '@core/Visualization/Shapes/Shape';
 
 export default class VisualizerNote {
   private _shapes: Shape[] = [];

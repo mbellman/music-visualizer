@@ -1,4 +1,4 @@
-import { CanvasImageSource, IColor } from 'Graphics/Types';
+import { CanvasImageSource, IColor } from '@core/Graphics/Types';
 
 export enum DrawSetting {
   FILL_COLOR = 'fillStyle',

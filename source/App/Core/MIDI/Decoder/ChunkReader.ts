@@ -1,5 +1,5 @@
-import Stream from 'AppCore/MIDI/Decoder/Stream';
-import { IChunk } from 'AppCore/MIDI/Types';
+import Stream from '@core/MIDI/Decoder/Stream';
+import { IChunk } from '@core/MIDI/Types';
 
 export default class ChunkReader {
   private _stream: Stream;

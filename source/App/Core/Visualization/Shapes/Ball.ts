@@ -1,6 +1,6 @@
-import Canvas from 'Graphics/Canvas';
-import Shape from 'AppCore/Visualization/Shapes/Shape';
-import { Implementation } from 'Base/Core';
+import Canvas from '@core/Graphics/Canvas';
+import Shape from '@core/Visualization/Shapes/Shape';
+import { Implementation } from '@base';
 
 export default class Ball extends Shape {
   private _radius: number;

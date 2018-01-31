@@ -1,4 +1,4 @@
-import AudioFile from 'Audio/AudioFile';
+import AudioFile from '@core/Audio/AudioFile';
 import CustomizerSettingField from '@components/CustomizerSettingField';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
@@ -56,7 +56,7 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
           </div>
         </div>
 
-        <div class="editor-header-fields">
+        <div class="customizer-setting-fields">
           <CustomizerSettingField label="Tempo" setting="tempo" />
           <CustomizerSettingField label="Scroll speed" setting="scrollSpeed" />
           <CustomizerSettingField label="Focus delay" setting="focusDelay" />
