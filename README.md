@@ -10,6 +10,7 @@ To-do:
 * No progress yet
 
 **Visualizer**
+* Skip Shape/VisualizerNote instantiation for notes without effects
 * Diamond shape option
 * Ellipse shape option
 * Real-time tempo adjustments
@@ -19,7 +20,9 @@ To-do:
 * Add an active tracks list (?)
 
 **Code cleanup**
+* Move AppCore stuff into App/Core
 * Create an AudioPlayer component for handling delay behavior
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Remove Sequence/Channel/Note stuff from MIDI directory
 * MidiLoader tidying
+* Move 'Base', 'Audio', and 'Graphics' into separate repos, or bring them into App/Core
