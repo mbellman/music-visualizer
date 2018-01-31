@@ -10,14 +10,16 @@ To-do:
 * No progress yet
 
 **Visualizer**
+* Diamond shape option
+* Ellipse shape option
 * Real-time tempo adjustments
 
 **UI**
-* Allow glow fade-in/fade-out parameters to be adjusted
-* Show active audio file, allow playback delay to be specified
-* Add an active tracks list
+* An a note size adjustment field
+* Add an active tracks list (?)
 
 **Code cleanup**
+* Create an AudioPlayer component for handling delay behavior
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
 * Remove Sequence/Channel/Note stuff from MIDI directory
 * MidiLoader tidying

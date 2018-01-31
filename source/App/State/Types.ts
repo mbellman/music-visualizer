@@ -19,8 +19,8 @@ export interface ISelectedPlaylistTrack extends IPlaylistTrack {
 }
 
 export enum ViewMode {
-  DROP_MESSAGE,
   EDITOR,
+  FILE_DROPPER,
   PLAYER
 }
 

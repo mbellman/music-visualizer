@@ -64,6 +64,7 @@ export interface ICustomizerSettings {
   framerate: 30 | 60;
   scrollSpeed: number;
   focusDelay: number;
+  audioDelay: number;
   tempo: number;
   width: number;
   height: number;

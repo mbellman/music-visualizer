@@ -9,22 +9,22 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { IAppState, ViewMode } from '@state/Types';
-import '@styles/FileDrop.less';
+import '@styles/FileDropper.less';
 
-interface IFileDropPropsFromState {
+interface IFileDropperPropsFromState {
   sequence?: Sequence;
   audioFile?: AudioFile;
 }
 
-interface IFileDropPropsFromDispatch {
+interface IFileDropperPropsFromDispatch {
   changeAudioFile?: Method<AudioFile>;
   changeSequence?: Method<Sequence>;
   changeView?: Method<ViewMode>;
 }
 
-interface IFileDropProps extends IFileDropPropsFromState, IFileDropPropsFromDispatch {}
+interface IFileDropperProps extends IFileDropperPropsFromState, IFileDropperPropsFromDispatch {}
 
-function mapStateToProps ({ selectedPlaylistTrack }: IAppState): IFileDropPropsFromState {
+function mapStateToProps ({ selectedPlaylistTrack }: IAppState): IFileDropperPropsFromState {
   const { sequence, audioFile } = selectedPlaylistTrack;
 
   return {
@@ -33,7 +33,7 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState): IFileDropPropsF
   };
 }
 
-function mapDispatchToProps (dispatch: Dispatch<IAppState>): IFileDropPropsFromDispatch {
+function mapDispatchToProps (dispatch: Dispatch<IAppState>): IFileDropperPropsFromDispatch {
   const { changeAudioFile, changeSequence, changeView } = ActionCreators;
 
   return bindActionCreators({
@@ -47,7 +47,7 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>): IFileDropPropsFromD
   mapStateToProps,
   mapDispatchToProps
 )
-export default class FileDrop extends Component<IFileDropProps, any> {
+export default class FileDropper extends Component<IFileDropperProps, any> {
   @Override
   public render (): JSX.Element {
     const { sequence, audioFile } = this.props;
@@ -55,7 +55,7 @@ export default class FileDrop extends Component<IFileDropProps, any> {
     return (
       <div className="file-drop" onDrop={ this._onDropFile } onDragOver={ this._onDragOverFile }>
         <div className="box">
-          { this._getFileDropBoxContents() }
+          { this._getFileDropperBoxContents() }
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export default class FileDrop extends Component<IFileDropProps, any> {
     this.props.changeSequence(sequence);
   }
 
-  private _getFileDropBoxContents (): JSX.Element {
+  private _getFileDropperBoxContents (): JSX.Element {
     const { audioFile, sequence } = this.props;
 
     if (!sequence) {

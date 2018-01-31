@@ -1,6 +1,6 @@
 import AudioFile from 'Audio/AudioFile';
 import Editor from '@components/Editor';
-import FileDrop from '@components/FileDrop';
+import FileDropper from '@components/FileDropper';
 import Player from '@components/Player';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionCreators } from 'App/State/ActionCreators';
@@ -43,10 +43,10 @@ export default class App extends Component<IAppProps, any> {
     const { sequence, viewMode } = this.props;
 
     switch (viewMode) {
-      case ViewMode.DROP_MESSAGE:
-        return <FileDrop />;
       case ViewMode.EDITOR:
         return <Editor sequence={ sequence } />;
+      case ViewMode.FILE_DROPPER:
+        return <FileDropper />;
       case ViewMode.PLAYER:
         return <Player />;
     }

@@ -25,7 +25,7 @@ interface IGlowEditorProps extends IGlowEditorPropsFromState, IGlowEditorPropsFr
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: IGlowEditorProps): IGlowEditorPropsFromState {
-  const { color, blur } = Selectors.getEffectTemplate(state, channelIndex, GlowEditor.EFFECT_TYPE) as IGlowTemplate;
+  const { color, blur } = Selectors.getEffectTemplate(state, GlowEditor.EFFECT_TYPE, channelIndex) as IGlowTemplate;
 
   return {
     color,
@@ -37,7 +37,7 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IG
   const { setEffectTemplateProps } = ActionCreators;
 
   const updateGlow = ({ ...updatedGlow }: Partial<IGlowTemplate>) => {
-    dispatch(setEffectTemplateProps(channelIndex, GlowEditor.EFFECT_TYPE, updatedGlow));
+    dispatch(setEffectTemplateProps(GlowEditor.EFFECT_TYPE, channelIndex, updatedGlow));
   };
 
   return {

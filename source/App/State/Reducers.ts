@@ -93,7 +93,7 @@ function setCustomizerSettings (state: IAppState, updatedSettings: Partial<ICust
   });
 }
 
-function setEffectTemplateProps (state: IAppState, channelIndex: number, effectType: EffectTypes, props: Partial<Extension<IEffectTemplate>>): IAppState {
+function setEffectTemplateProps (state: IAppState, effectType: EffectTypes, channelIndex: number, props: Partial<Extension<IEffectTemplate>>): IAppState {
   const { effects } = state.selectedPlaylistTrack.customizer;
   const effectProp: keyof IEffectsCustomizer = CustomizerManager.EFFECT_TYPE_TO_CUSTOMIZER_PROP[effectType];
   const effectTemplate: IEffectTemplate = effects[effectProp][channelIndex];
@@ -175,14 +175,14 @@ export function appReducer (state: IAppState = initialState, action: IAction): I
       return setCustomizerSettings(state, settings);
     }
     case ActionTypes.SET_EFFECT_TEMPLATE_PROPS: {
-      const { index, type, effectType, ...props } = action as IEffectAction;
+      const { type, channelIndex, effectType, ...props } = action as IEffectAction;
 
-      return setEffectTemplateProps(state, index, effectType, props);
+      return setEffectTemplateProps(state, effectType, channelIndex, props);
     }
     case ActionTypes.SET_SHAPE_TEMPLATE_PROPS: {
-      const { index, type, ...props } = action as IShapeAction;
+      const { type, channelIndex, ...props } = action as IShapeAction;
 
-      return setShapeTemplateProps(state, index, props);
+      return setShapeTemplateProps(state, channelIndex, props);
     }
     case ActionTypes.SYNC_SELECTED_PLAYLIST_TRACK: {
       return syncSelectedPlaylistTrack(state);

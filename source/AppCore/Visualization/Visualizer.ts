@@ -97,7 +97,7 @@ export default class Visualizer {
   }
 
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
-    const { tempo } = sequence;
+    const { tempo } = customizer.settings;
 
     this._customizer = customizer;
     this._noteQueue = new NoteQueue(sequence);

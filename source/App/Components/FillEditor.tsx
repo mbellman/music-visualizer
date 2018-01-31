@@ -22,7 +22,7 @@ interface IFillEditorProps extends IFillEditorPropsFromState, IFillEditorPropsFr
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: IFillEditorProps): IFillEditorPropsFromState {
-  const { color } = Selectors.getEffectTemplate(state, channelIndex, FillEditor.EFFECT_TYPE) as IFillTemplate;
+  const { color } = Selectors.getEffectTemplate(state, FillEditor.EFFECT_TYPE, channelIndex) as IFillTemplate;
 
   return { color };
 }
@@ -32,7 +32,7 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IF
 
   return {
     onChangeColor: (color: string) => {
-      dispatch(setEffectTemplateProps(channelIndex, FillEditor.EFFECT_TYPE, { color }));
+      dispatch(setEffectTemplateProps(FillEditor.EFFECT_TYPE, channelIndex, { color }));
     }
   };
 }

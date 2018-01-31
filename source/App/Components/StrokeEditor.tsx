@@ -25,7 +25,7 @@ interface IStrokeEditorProps extends IStrokeEditorPropsFromState, IStrokeEditorP
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: IStrokeEditorProps): IStrokeEditorPropsFromState {
-  const { color, width } = Selectors.getEffectTemplate(state, channelIndex, StrokeEditor.EFFECT_TYPE) as IStrokeTemplate;
+  const { color, width } = Selectors.getEffectTemplate(state, StrokeEditor.EFFECT_TYPE, channelIndex) as IStrokeTemplate;
 
   return {
     color,
@@ -36,8 +36,8 @@ function mapStateToProps (state: IAppState, { channelIndex }: IStrokeEditorProps
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IStrokeEditorProps): IStrokeEditorPropsFromDispatch {
   const { setEffectTemplateProps } = ActionCreators;
 
-  const updateStroke = ({ ...strokeTemplateProps }: Partial<IStrokeTemplate>) => {
-    dispatch(setEffectTemplateProps(channelIndex, StrokeEditor.EFFECT_TYPE, strokeTemplateProps));
+  const updateStroke = ({ ...updatedStroke }: Partial<IStrokeTemplate>) => {
+    dispatch(setEffectTemplateProps(StrokeEditor.EFFECT_TYPE, channelIndex, updatedStroke));
   };
 
   return {

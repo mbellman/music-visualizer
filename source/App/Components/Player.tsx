@@ -75,8 +75,6 @@ export default class Player extends Component<IPlayerProps, IPlayerState> {
 
     visualizer.stop();
     visualizer.visualize(sequence, customizer);
-
-    this.props.controlAudio(AudioControl.PLAY);
   }
 
   private _setVisualizer (): void {

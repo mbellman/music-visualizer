@@ -2,7 +2,7 @@ import AudioFile from 'Audio/AudioFile';
 import Visualizer from '@core/Visualization/Visualizer';
 import { ActionCreators } from '@state/ActionCreators';
 import { AudioControl, IAppState, ViewMode } from '@state/Types';
-import { Bind, Method, Override } from '@base';
+import { Bind, Implementation, Method, Override } from '@base';
 import { bindActionCreators } from 'redux';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
@@ -10,7 +10,7 @@ import { Dispatch } from 'redux';
 import '@styles/PlayerControls.less';
 
 interface IPlayerControlsPropsFromState {
-  audioFile?: AudioFile;
+  audioDelay?: number;
 }
 
 interface IPlayerControlsPropsFromDispatch {
@@ -27,9 +27,9 @@ interface IPlayerControlsState {
 }
 
 function mapStateToProps ({ selectedPlaylistTrack }: IAppState): IPlayerControlsPropsFromState {
-  const { audioFile } = selectedPlaylistTrack;
+  const { audioDelay } = selectedPlaylistTrack.customizer.settings;
 
-  return { audioFile };
+  return { audioDelay };
 }
 
 function mapDispatchToProps (dispatch: Dispatch<IAppState>): IPlayerControlsPropsFromDispatch {
@@ -50,6 +50,20 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
     isRunning: true
   };
 
+  private _playAudioTimeout: number;
+  private _lastPlayAudioTime: number;
+  private _pendingAudioDelay: number;
+
+  private get _isAudioDelayed (): boolean {
+    return this._pendingAudioDelay > 0;
+  }
+
+  @Implementation
+  public componentDidMount (): void {
+    this._resetPendingAudioDelay();
+    this._playAudioMaybeDelayed();
+  }
+
   @Override
   public render (): JSX.Element {
     const { isRunning } = this.state;
@@ -59,7 +73,7 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
         <button onClick={ this._onClickBack }>
           ⟲
         </button>
-        <button class="rewind-button" onClick={ this._onClickRewind }>
+        <button class="restart-button" onClick={ this._onClickRestart }>
           ❚◄◄
         </button>
         <button onClick={ this._onClickPlayPause }>
@@ -71,9 +85,10 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
   @Bind
   private _onClickBack (): void {
-    const { visualizer, audioFile } = this.props;
+    const { visualizer } = this.props;
 
     visualizer.stop();
+    window.clearTimeout(this._playAudioTimeout);
 
     this.props.controlAudio(AudioControl.STOP);
     this.props.changeView(ViewMode.EDITOR);
@@ -81,15 +96,15 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
   @Bind
   private _onClickPlayPause (): void {
-    const { visualizer, audioFile } = this.props;
+    const { visualizer } = this.props;
     const { isRunning } = visualizer;
 
     if (isRunning) {
       visualizer.pause();
-      this.props.controlAudio(AudioControl.PAUSE);
+      this._pauseAudio();
     } else {
       visualizer.run();
-      this.props.controlAudio(AudioControl.PLAY);
+      this._playAudioMaybeDelayed();
     }
 
     this.setState({
@@ -98,14 +113,57 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
   }
 
   @Bind
-  private _onClickRewind (): void {
-    const { visualizer, audioFile } = this.props;
+  private _onClickRestart (): void {
+    const { visualizer } = this.props;
 
     visualizer.restart();
-    this.props.controlAudio(AudioControl.RESTART);
+    this._restartAudio();
 
     this.setState({
       isRunning: true
     });
+  }
+
+  private _pauseAudio (): void {
+    if (this._isAudioDelayed) {
+      window.clearTimeout(this._playAudioTimeout);
+
+      this._pendingAudioDelay -= (Date.now() - this._lastPlayAudioTime);
+    } else {
+      this.props.controlAudio(AudioControl.PAUSE);
+    }
+  }
+
+  @Bind
+  private _playAudio (): void {
+    this._pendingAudioDelay = 0;
+
+    this.props.controlAudio(AudioControl.PLAY);
+  }
+
+  private _playAudioMaybeDelayed (): void {
+    if (this._isAudioDelayed) {
+      window.clearTimeout(this._playAudioTimeout);
+
+      this._lastPlayAudioTime = Date.now();
+      this._playAudioTimeout = window.setTimeout(this._playAudio, this._pendingAudioDelay);
+    } else {
+      this._playAudio();
+    }
+  }
+
+  private _resetPendingAudioDelay (): void {
+    const { audioDelay } = this.props;
+
+    this._pendingAudioDelay = audioDelay;
+  }
+
+  private _restartAudio (): void {
+    if (!this._isAudioDelayed) {
+      this.props.controlAudio(AudioControl.STOP);
+    }
+
+    this._resetPendingAudioDelay();
+    this._playAudioMaybeDelayed();
   }
 }

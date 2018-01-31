@@ -10,7 +10,7 @@ export namespace Selectors {
     return customizer.shapes[channelIndex];
   }
 
-  export function getEffectTemplate ({ selectedPlaylistTrack }: IAppState, channelIndex: number, effectType: EffectTypes): Extension<IEffectTemplate> {
+  export function getEffectTemplate ({ selectedPlaylistTrack }: IAppState, effectType: EffectTypes, channelIndex: number): Extension<IEffectTemplate> {
     const { effects } = selectedPlaylistTrack.customizer;
     const effectProp: keyof IEffectsCustomizer = CustomizerManager.EFFECT_TYPE_TO_CUSTOMIZER_PROP[effectType];
 
@@ -23,6 +23,6 @@ export namespace Selectors {
       EffectTypes.FILL,
       EffectTypes.STROKE
     ]
-      .map((effectType: EffectTypes) => Selectors.getEffectTemplate(state, channelIndex, effectType));
+      .map((effectType: EffectTypes) => Selectors.getEffectTemplate(state, effectType, channelIndex));
   }
 }

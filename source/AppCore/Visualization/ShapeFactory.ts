@@ -4,30 +4,19 @@ import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Note from '@core/MIDI/Note';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
-import { ShapeTypes } from '@core/Visualization/Types';
+import { ICustomizer, ShapeTypes } from '@core/Visualization/Types';
 
-export default class ShapeFactory extends CustomizerManager {
+export default class ShapeFactory {
   public static readonly SPREAD_FACTOR: number = 1.3;
+  private _customizerManager: CustomizerManager;
 
-  private get _beatsPerSecond (): number {
-    return this._tempo / 60;
-  }
-
-  private get _pixelsPerSecond (): number {
-    const { framerate, scrollSpeed } = this.getCustomizerSettings();
-
-    return Visualizer.TICK_CONSTANT * 60 * this._tempo * (scrollSpeed / 100);
-  }
-
-  private get _tempo (): number {
-    const { tempo } = this.getCustomizerSettings();
-
-    return tempo;
+  public constructor (customizerManager: CustomizerManager) {
+    this._customizerManager = customizerManager;
   }
 
   public getShape (channelIndex: number, note: Note): Shape {
-    const { width } = this.getCustomizerSettings();
-    const { shapeType, size } = this.getShapeTemplate(channelIndex);
+    const { width } = this._customizerManager.getCustomizerSettings();
+    const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
     const x: number = width;
     const y: number = this._getShapeY(note);
     const length: number = this._getShapeLength(note);
@@ -42,14 +31,14 @@ export default class ShapeFactory extends CustomizerManager {
 
   private _getShapeLength (note: Note): number {
     const { duration } = note;
-    const pixelsPerBeat: number = this._pixelsPerSecond / this._beatsPerSecond;
+    const pixelsPerBeat: number = this._customizerManager.getPixelsPerSecond() / this._customizerManager.getBeatsPerSecond();
 
     return duration * pixelsPerBeat;
   }
 
   private _getShapeY (note: Note): number {
     const { pitch } = note;
-    const { height } = this.getCustomizerSettings();
+    const { height } = this._customizerManager.getCustomizerSettings();
     const heightRatio: number = height / Note.MAX_PITCH;
 
     return (

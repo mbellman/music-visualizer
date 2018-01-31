@@ -47,10 +47,10 @@ export namespace ActionCreators {
     };
   }
 
-  export function setEffectTemplateProps (channelIndex: number, effectType: EffectTypes, { ...props }: Partial<Extension<IEffectTemplate>>): IEffectAction {
+  export function setEffectTemplateProps (effectType: EffectTypes, channelIndex: number, { ...props }: Partial<Extension<IEffectTemplate>>): IEffectAction {
     return {
       type: ActionTypes.SET_EFFECT_TEMPLATE_PROPS,
-      index: channelIndex,
+      channelIndex,
       effectType,
       ...props
     };
@@ -59,7 +59,7 @@ export namespace ActionCreators {
   export function setShapeTemplateProps (channelIndex: number, { ...props }: Partial<IShapeTemplate>): IShapeAction {
     return {
       type: ActionTypes.SET_SHAPE_TEMPLATE_PROPS,
-      index: channelIndex,
+      channelIndex,
       ...props
     };
   }

@@ -25,7 +25,7 @@ export interface ICustomizerSettingsAction extends IAction, Partial<ICustomizerS
 }
 
 export interface IChannelAction extends IAction {
-  index: number;
+  channelIndex: number;
 }
 
 export type IShapeAction = IChannelAction & Partial<IShapeTemplate>;

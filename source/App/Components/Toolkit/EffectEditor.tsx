@@ -2,11 +2,11 @@ import Selectable from '@components/Toolkit/Selectable';
 import SelectableBox from '@components/Toolkit/SelectableBox';
 import SelectableButton from '@components/Toolkit/SelectableButton';
 import { ActionCreators } from '@state/ActionCreators';
-import { Callback, Override } from '@base';
+import { Callback, Extension, Override } from '@base';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
-import { EffectTypes } from '@core/Visualization/Types';
+import { EffectTypes, IEffectTemplate } from '@core/Visualization/Types';
 import { IAppState } from '@state/Types';
 import { Selectors } from '@state/Selectors';
 import '@styles/Toolkit/EffectEditor.less';
@@ -27,7 +27,7 @@ export interface IEffectEditorProps extends IEffectEditorPropsFromState, IEffect
 }
 
 function mapStateToProps (state: IAppState, { channelIndex, effectType }: IEffectEditorProps): IEffectEditorPropsFromState {
-  const { isSelected, isDelayed } = Selectors.getEffectTemplate(state, channelIndex, effectType);
+  const { isSelected, isDelayed } = Selectors.getEffectTemplate(state, effectType, channelIndex);
 
   return {
     isSelected,
@@ -38,12 +38,16 @@ function mapStateToProps (state: IAppState, { channelIndex, effectType }: IEffec
 function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex, effectType }: IEffectEditorProps): IEffectEditorPropsFromDispatch {
   const { setEffectTemplateProps } = ActionCreators;
 
+  const updateEffect = ({ ...updatedEffect }: Partial<Extension<IEffectTemplate>>) => {
+    dispatch(setEffectTemplateProps(effectType, channelIndex, updatedEffect));
+  };
+
   return {
     onChangeSelected: ({ selected }: Selectable) => {
-      dispatch(setEffectTemplateProps(channelIndex, effectType, { isSelected: selected }));
+      updateEffect({ isSelected: selected });
     },
     onChangeDelayed: ({ selected }: Selectable) => {
-      dispatch(setEffectTemplateProps(channelIndex, effectType, { isDelayed: selected }));
+      updateEffect({ isDelayed: selected });
     }
   };
 }
