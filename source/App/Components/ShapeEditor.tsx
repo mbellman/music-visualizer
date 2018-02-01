@@ -55,7 +55,10 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>, { channelIndex }: IS
   };
 }
 
-@Connect(mapStateToProps, mapDispatchToProps)
+@Connect(
+  mapStateToProps,
+  mapDispatchToProps
+)
 export default class ShapeEditor extends Component<IShapeEditorProps, any> {
   public static readonly SHAPE_OPTIONS: IShapeOption[] = [
     {

@@ -1,11 +1,11 @@
-import Canvas from '@core/Graphics/Canvas';
+import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Sequence from '@core/MIDI/Sequence';
 import VisualizerNote from '@core/Visualization/VisualizerNote';
 import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
 import { Bind } from '@base';
-import { ICustomizer } from '@core/Visualization/Types';
+import { ICustomizer, EffectTypes } from '@core/Visualization/Types';
 
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
@@ -14,7 +14,12 @@ interface IVisualizerConfiguration {
 }
 
 export default class Visualizer {
-  public static readonly GARBAGE_COLLECTION_DELAY: number = 50;
+  public static readonly EFFECT_TYPES: EffectTypes[] = [
+    EffectTypes.GLOW,
+    EffectTypes.FILL,
+    EffectTypes.STROKE
+  ];
+
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly TICK_CONSTANT: number = 0.01667;
   private _bufferCanvas: Canvas = new Canvas();
@@ -112,7 +117,7 @@ export default class Visualizer {
   private _garbageCollectVisualizerNotes (): void {
     let i: number = 0;
 
-    while (i < this._visualizerNotes.length) {
+    while (i < Math.min(this._visualizerNotes.length, 20)) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
 
       if (visualizerNote.isOffscreen()) {
@@ -122,21 +127,6 @@ export default class Visualizer {
       }
 
       i++;
-    }
-  }
-
-  private _runNoteSpawnCheck (): void {
-    const queuedNotes: IQueuedNote[] = this._noteQueue.take(this._currentBeat);
-
-    if (queuedNotes.length > 0) {
-      for (const queuedNote of queuedNotes) {
-        const { channelIndex, note } = queuedNote;
-        const visualizerNote: VisualizerNote = this._visualizerNoteFactory.getVisualizerNote(channelIndex, note);
-
-        if (visualizerNote) {
-          this._visualizerNotes.push(visualizerNote);
-        }
-      }
     }
   }
 
@@ -178,6 +168,21 @@ export default class Visualizer {
     this._runNoteSpawnCheck();
   }
 
+  private _runNoteSpawnCheck (): void {
+    const queuedNotes: IQueuedNote[] = this._noteQueue.take(this._currentBeat);
+
+    if (queuedNotes.length > 0) {
+      for (const queuedNote of queuedNotes) {
+        const { channelIndex, note } = queuedNote;
+        const visualizerNote: VisualizerNote = this._visualizerNoteFactory.getVisualizerNote(channelIndex, note);
+
+        if (visualizerNote) {
+          this._visualizerNotes.push(visualizerNote);
+        }
+      }
+    }
+  }
+
   @Bind
   private _tick (): void {
     if (!this._isRunning) {
@@ -195,9 +200,7 @@ export default class Visualizer {
       this._render60fps(dt);
     }
 
-    if (this._frame++ % Visualizer.GARBAGE_COLLECTION_DELAY === 0) {
-      this._garbageCollectVisualizerNotes();
-    }
+    this._garbageCollectVisualizerNotes();
 
     requestAnimationFrame(this._tick);
   }

@@ -2,11 +2,11 @@ import Ball from '@core/Visualization/Shapes/Ball';
 import Bar from '@core/Visualization/Shapes/Bar';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Diamond from '@core/Visualization/Shapes/Diamond';
+import Ellipse from '@core/Visualization/Shapes/Ellipse';
 import Note from '@core/MIDI/Note';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
-import { ICustomizer, ShapeTypes } from '@core/Visualization/Types';
-import Ellipse from '@core/Visualization/Shapes/Ellipse';
+import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class ShapeFactory {
   private _customizerManager: CustomizerManager;

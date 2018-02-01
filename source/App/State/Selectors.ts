@@ -1,4 +1,5 @@
 import CustomizerManager from '@core/Visualization/CustomizerManager';
+import Visualizer from '@core/Visualization/Visualizer';
 import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension } from '@base';
 import { IAppState } from '@state/Types';
@@ -18,11 +19,7 @@ export namespace Selectors {
   }
 
   export function getEffectTemplates (state: IAppState, channelIndex: number): Extension<IEffectTemplate>[] {
-    return [
-      EffectTypes.GLOW,
-      EffectTypes.FILL,
-      EffectTypes.STROKE
-    ]
+    return Visualizer.EFFECT_TYPES
       .map((effectType: EffectTypes) => Selectors.getEffectTemplate(state, effectType, channelIndex));
   }
 }

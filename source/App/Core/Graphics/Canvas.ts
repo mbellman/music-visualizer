@@ -2,6 +2,7 @@ import { CanvasImageSource, IColor } from '@core/Graphics/Types';
 
 export enum DrawSetting {
   FILL_COLOR = 'fillStyle',
+  FONT = 'font',
   GLOW_BLUR = 'shadowBlur',
   GLOW_COLOR = 'shadowColor',
   STROKE_COLOR = 'strokeStyle',
@@ -129,6 +130,12 @@ export default class Canvas {
 
   public stroke (): this {
     this._context.stroke();
+
+    return this;
+  }
+
+  public text (text: string, x: number, y: number): this {
+    this._context.fillText(text, x, y);
 
     return this;
   }

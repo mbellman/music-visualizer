@@ -42,4 +42,8 @@ export default class CustomizerManager {
   public getTempo (): number {
     return this._customizer.settings.tempo;
   }
+
+  public getTotalChannels (): number {
+    return Object.keys(this._customizer.shapes).length;
+  }
 }

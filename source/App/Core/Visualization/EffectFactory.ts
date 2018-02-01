@@ -4,13 +4,26 @@ import Fill from '@core/Visualization/Effects/Fill';
 import Glow from '@core/Visualization/Effects/Glow';
 import Note from '@core/MIDI/Note';
 import Stroke from '@core/Visualization/Effects/Stroke';
-import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IStrokeTemplate, ICustomizer } from '@core/Visualization/Types';
+import Visualizer from '@core/Visualization/Visualizer';
+import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IStrokeTemplate } from '@core/Visualization/Types';
+import { IHashMap } from 'Base/Types';
 
 export default class EffectFactory {
   private _customizerManager: CustomizerManager;
 
+  /**
+   * Maps channel indexes to arrays of selected effect templates for
+   * each particular channel. The cache is built at the beginning
+   * of visualizer playback, avoiding any unnecessary overhead when
+   * new notes are generated and effect templates need to be looped
+   * through to create new Effect instances.
+   */
+  private _selectedTemplateCache: IHashMap<IEffectTemplate[]> = {};
+
   public constructor (customizerManager: CustomizerManager) {
     this._customizerManager = customizerManager;
+
+    this._buildSelectedTemplateCache();
   }
 
   private get _focusDelay (): number {
@@ -20,13 +33,7 @@ export default class EffectFactory {
   }
 
   public getEffects (channelIndex: number, note: Note): Effect[] {
-    return [
-      EffectTypes.GLOW,
-      EffectTypes.FILL,
-      EffectTypes.STROKE
-    ]
-      .map((effectType: EffectTypes) => this._customizerManager.getEffectTemplate(effectType, channelIndex))
-      .filter(({ isSelected }: IEffectTemplate) => isSelected)
+    return this._selectedTemplateCache[channelIndex]
       .map((effectTemplate: IEffectTemplate) => {
         const effect: Effect = this._getEffect(effectTemplate, note);
 
@@ -36,6 +43,16 @@ export default class EffectFactory {
 
         return effect;
       });
+  }
+
+  private _buildSelectedTemplateCache (): void {
+    const totalChannels: number = this._customizerManager.getTotalChannels();
+
+    for (let channelIndex = 0; channelIndex < totalChannels; channelIndex++) {
+      this._selectedTemplateCache[channelIndex] = Visualizer.EFFECT_TYPES
+        .map((effectType: EffectTypes) => this._customizerManager.getEffectTemplate(effectType, channelIndex))
+        .filter(({ isSelected }: IEffectTemplate) => isSelected);
+    }
   }
 
   private _getEffect (effectTemplate: IEffectTemplate, note: Note): Effect {
@@ -60,11 +77,11 @@ export default class EffectFactory {
   private _getGlowEffect (glowTemplate: IGlowTemplate, note: Note): Glow {
     const { color, blur, fadeIn } = glowTemplate;
     const { duration } = note;
-    const fadeOutTime: number = 1000 * (duration / this._customizerManager.getBeatsPerSecond());
+    const notePlayTime: number = 1000 * (duration / this._customizerManager.getBeatsPerSecond());
 
     return new Glow('#' + color, blur)
       .fadeIn(fadeIn)
-      .fadeOut(fadeOutTime);
+      .fadeOut(notePlayTime);
   }
 
   private _getStrokeEffect (strokeTemplate: IStrokeTemplate): Stroke {

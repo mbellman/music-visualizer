@@ -18,7 +18,7 @@ export default class Diamond extends LongShape {
       .line(pixelX + width, pixelY)
       /* Draw a line to the bottom corner */
       .line(pixelX + halfWidth, pixelY + halfHeight)
-      /* Draw a line back to the left corner and complete the shape */
+      /* Close the shape path, snapping back to the left corner */
       .closePath();
   }
 }
