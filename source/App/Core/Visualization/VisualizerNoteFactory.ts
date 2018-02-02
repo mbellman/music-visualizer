@@ -18,8 +18,8 @@ export default class VisualizerNoteFactory implements IPoolableFactory<Visualize
    * Maps channel indexes to arrays of selected effect templates for
    * each particular channel. The cache is built at the beginning
    * of visualizer playback, avoiding any unnecessary overhead when
-   * new notes are generated and effect templates need to be looped
-   * through to create new Effect instances.
+   * new notes are generated and only *selected* effect templates
+   * need to be looped through to create new Effect instances.
    */
   private _selectedTemplateCache: IHashMap<IEffectTemplate[]> = {};
   private _shapeFactory: ShapeFactory;
@@ -49,7 +49,7 @@ export default class VisualizerNoteFactory implements IPoolableFactory<Visualize
       const { effectType, isDelayed } = effectTemplate;
 
       if (effectType === EffectTypes.GLOW) {
-        // The glow effect uniquely depends on the duration
+        // The Glow effect uniquely depends on the duration
         // of provided Note to determine its fade-out time.
         const notePlayTime: number = note.duration / this._customizerManager.getBeatsPerSecond();
 

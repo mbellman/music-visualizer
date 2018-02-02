@@ -31,7 +31,6 @@ export const initialStrokeTemplate: IStrokeTemplate = {
 
 export const initialCustomizerState: ICustomizer = {
   settings: {
-    framerate: 60,
     scrollSpeed: 100,
     focusDelay: 2500,
     audioDelay: 1000,

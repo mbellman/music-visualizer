@@ -30,7 +30,7 @@ export default class CustomizerManager {
   }
 
   public getPixelsPerSecond (): number {
-    const { framerate, scrollSpeed } = this.getCustomizerSettings();
+    const { scrollSpeed } = this.getCustomizerSettings();
 
     return Visualizer.TICK_CONSTANT * 60 * this.getTempo() * (scrollSpeed / 100);
   }
