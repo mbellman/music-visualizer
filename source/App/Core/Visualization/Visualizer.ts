@@ -5,7 +5,7 @@ import Sequence from '@core/MIDI/Sequence';
 import VisualizerNote from '@core/Visualization/VisualizerNote';
 import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
 import { Bind } from '@base';
-import { ICustomizer, EffectTypes } from '@core/Visualization/Types';
+import { EffectTypes, ICustomizer } from '@core/Visualization/Types';
 
 interface IVisualizerConfiguration {
   framerate?: 30 | 60;
@@ -114,14 +114,16 @@ export default class Visualizer {
     this.run();
   }
 
-  private _garbageCollectVisualizerNotes (): void {
+  private _clearOffscreenVisualizerNotes (): void {
     let i: number = 0;
 
     while (i < Math.min(this._visualizerNotes.length, 20)) {
       const visualizerNote: VisualizerNote = this._visualizerNotes[i];
 
       if (visualizerNote.isOffscreen()) {
-        this._visualizerNotes.splice(i, 1);
+        const removedVisualizerNote: VisualizerNote = this._visualizerNotes.splice(i, 1)[0];
+
+        this._visualizerNoteFactory.return(removedVisualizerNote);
 
         continue;
       }
@@ -169,16 +171,14 @@ export default class Visualizer {
   }
 
   private _runNoteSpawnCheck (): void {
-    const queuedNotes: IQueuedNote[] = this._noteQueue.take(this._currentBeat);
+    let queuedNote: IQueuedNote;
 
-    if (queuedNotes.length > 0) {
-      for (const queuedNote of queuedNotes) {
-        const { channelIndex, note } = queuedNote;
-        const visualizerNote: VisualizerNote = this._visualizerNoteFactory.getVisualizerNote(channelIndex, note);
+    while (queuedNote = this._noteQueue.takeNextBefore(this._currentBeat)) {
+      const { channelIndex, note } = queuedNote;
+      const visualizerNote: VisualizerNote = this._visualizerNoteFactory.request(channelIndex, note);
 
-        if (visualizerNote) {
-          this._visualizerNotes.push(visualizerNote);
-        }
+      if (visualizerNote) {
+        this._visualizerNotes.push(visualizerNote);
       }
     }
   }
@@ -200,7 +200,7 @@ export default class Visualizer {
       this._render60fps(dt);
     }
 
-    this._garbageCollectVisualizerNotes();
+    this._clearOffscreenVisualizerNotes();
 
     requestAnimationFrame(this._tick);
   }

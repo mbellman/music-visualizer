@@ -10,8 +10,6 @@ export const initialGlowTemplate: IGlowTemplate = {
   effectType: EffectTypes.GLOW,
   color: '00f',
   blur: 15,
-  fadeIn: 50,
-  fadeOut: 0,
   isSelected: false,
   isDelayed: true
 };

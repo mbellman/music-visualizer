@@ -67,17 +67,17 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
           case EffectTypes.GLOW: {
             const { color, blur } = effectTemplate as IGlowTemplate;
 
-            return new Glow('#' + color, blur);
+            return new Glow().construct('#' + color, blur);
           }
           case EffectTypes.FILL: {
             const { color } = effectTemplate as IFillTemplate;
 
-            return new Fill('#' + color);
+            return new Fill().construct('#' + color);
           }
           case EffectTypes.STROKE: {
             const { color, width } = effectTemplate as IStrokeTemplate;
 
-            return new Stroke('#' + color, width);
+            return new Stroke().construct('#' + color, width);
           }
         }
       });
@@ -88,13 +88,13 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
 
     switch (shapeType) {
       case ShapeTypes.BALL:
-        return new Ball(40, 30, size);
+        return new Ball().construct(40, 30, size);
       case ShapeTypes.BAR:
-        return new Bar(10, 30, 60, size);
+        return new Bar().construct(10, 30, 60, size);
       case ShapeTypes.DIAMOND:
-        return new Diamond(10, 30, 60, size);
+        return new Diamond().construct(10, 30, 60, size);
       case ShapeTypes.ELLIPSE:
-        return new Ellipse(10, 30, 60, size);
+        return new Ellipse().construct(10, 30, 60, size);
     }
   }
 
@@ -108,7 +108,7 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
       shape.pipe(effect);
     }
 
-    const visualizerNote: VisualizerNote = new VisualizerNote([ shape ]);
+    const visualizerNote: VisualizerNote = new VisualizerNote().construct(shape);
 
     visualizerNote.update(this._previewCanvas, 1, 0);
   }

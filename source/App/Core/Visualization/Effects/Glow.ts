@@ -1,18 +1,32 @@
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import Effect from '@core/Visualization/Effects/Effect';
-import { Implementation } from '@base';
+import { EffectTypes } from '@core/Visualization/Types';
+import { Implementation, Override } from '@base';
+import { IPoolable } from '@core/Pool';
 
-export default class Glow extends Effect {
+export default class Glow extends Effect implements IPoolable<Glow> {
+  public readonly type: EffectTypes = EffectTypes.GLOW;
   private _blur: number;
   private _color: string;
   private _fadeInTime: number = 0;
   private _fadeOutTime: number = 0;
 
-  public constructor (color: string, blur: number = 5) {
-    super();
-
+  @Implementation
+  public construct (color: string, blur: number = 5): this {
     this._color = color;
     this._blur = blur;
+
+    return this;
+  }
+
+  @Override
+  public destruct (): void {
+    super.destruct();
+
+    this._blur = null;
+    this._color = null;
+    this._fadeInTime = 0;
+    this._fadeOutTime = 0;
   }
 
   public fadeIn (time: number): this {

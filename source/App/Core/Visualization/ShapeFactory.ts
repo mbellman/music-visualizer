@@ -4,34 +4,58 @@ import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Diamond from '@core/Visualization/Shapes/Diamond';
 import Ellipse from '@core/Visualization/Shapes/Ellipse';
 import Note from '@core/MIDI/Note';
+import Pool, { IPoolableFactory } from '@core/Pool';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
+import { Extension, Implementation } from '@base';
+import { IHashMap } from 'Base/Types';
 import { ShapeTypes } from '@core/Visualization/Types';
 
-export default class ShapeFactory {
+export default class ShapeFactory implements IPoolableFactory<Shape> {
+  private _ballPool: Pool<Ball> = new Pool(Ball, 250);
+  private _barPool: Pool<Bar> = new Pool(Bar, 250);
   private _customizerManager: CustomizerManager;
+  private _diamondPool: Pool<Diamond> = new Pool(Diamond, 250);
+  private _ellipsePool: Pool<Ellipse> = new Pool(Ellipse, 250);
+  private _poolMap: IHashMap<Pool<Shape>>;
 
   public constructor (customizerManager: CustomizerManager) {
     this._customizerManager = customizerManager;
+
+    this._poolMap = {
+      [ShapeTypes.BALL]: this._ballPool,
+      [ShapeTypes.BAR]: this._barPool,
+      [ShapeTypes.DIAMOND]: this._diamondPool,
+      [ShapeTypes.ELLIPSE]: this._ellipsePool
+    };
   }
 
-  public getShape (channelIndex: number, note: Note): Shape {
+  @Implementation
+  public request (channelIndex: number, note: Note): Shape {
     const { width } = this._customizerManager.getCustomizerSettings();
     const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
     const x: number = width;
     const y: number = this._getShapeY(note);
     const length: number = this._getShapeLength(note);
+    const shape: Shape = this._poolMap[shapeType].request() as Shape;
 
     switch (shapeType) {
-      case ShapeTypes.BAR:
-        return new Bar(x, y, length, size);
       case ShapeTypes.BALL:
-        return new Ball(x, y, size);
+        return (shape as Ball).construct(x, y, size);
+      case ShapeTypes.BAR:
+        return (shape as Bar).construct(x, y, length, size);
       case ShapeTypes.DIAMOND:
-        return new Diamond(x, y, length, size);
+        return (shape as Diamond).construct(x, y, length, size);
       case ShapeTypes.ELLIPSE:
-        return new Ellipse(x, y, length, size);
+        return (shape as Ellipse).construct(x, y, length, size);
     }
+  }
+
+  @Implementation
+  public return (shape: Shape): void {
+    const { type } = shape;
+
+    this._poolMap[type].return(shape);
   }
 
   private _getShapeLength (note: Note): number {

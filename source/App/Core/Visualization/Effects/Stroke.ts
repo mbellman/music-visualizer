@@ -1,16 +1,28 @@
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import Effect from '@core/Visualization/Effects/Effect';
-import { Implementation } from '@base';
+import { EffectTypes } from '@core/Visualization/Types';
+import { Implementation, Override } from '@base';
+import { IPoolable } from '@core/Pool';
 
-export default class Stroke extends Effect {
+export default class Stroke extends Effect implements IPoolable<Stroke> {
+  public readonly type: EffectTypes = EffectTypes.STROKE;
   private _color: string;
   private _width: number;
 
-  public constructor (color: string, width: number) {
-    super();
-
+  @Implementation
+  public construct (color: string, width: number): this {
     this._color = color;
     this._width = width;
+
+    return this;
+  }
+
+  @Override
+  public destruct (): void {
+    super.destruct();
+
+    this._color = null;
+    this._width = null;
   }
 
   @Implementation

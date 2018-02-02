@@ -3,90 +3,55 @@ import Effect from '@core/Visualization/Effects/Effect';
 import Fill from '@core/Visualization/Effects/Fill';
 import Glow from '@core/Visualization/Effects/Glow';
 import Note from '@core/MIDI/Note';
+import Pool, { IPoolable, IPoolableFactory } from '@core/Pool';
 import Stroke from '@core/Visualization/Effects/Stroke';
 import Visualizer from '@core/Visualization/Visualizer';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IStrokeTemplate } from '@core/Visualization/Types';
 import { IHashMap } from 'Base/Types';
+import { Implementation } from '@base';
 
-export default class EffectFactory {
-  private _customizerManager: CustomizerManager;
+export default class EffectFactory implements IPoolableFactory<Effect> {
+  private _fillPool: Pool<Fill> = new Pool(Fill, 250);
+  private _glowPool: Pool<Glow> = new Pool(Glow, 250);
+  private _poolMap: IHashMap<Pool<Effect>>;
+  private _strokePool: Pool<Stroke> = new Pool(Stroke, 250);
 
-  /**
-   * Maps channel indexes to arrays of selected effect templates for
-   * each particular channel. The cache is built at the beginning
-   * of visualizer playback, avoiding any unnecessary overhead when
-   * new notes are generated and effect templates need to be looped
-   * through to create new Effect instances.
-   */
-  private _selectedTemplateCache: IHashMap<IEffectTemplate[]> = {};
-
-  public constructor (customizerManager: CustomizerManager) {
-    this._customizerManager = customizerManager;
-
-    this._buildSelectedTemplateCache();
+  public constructor () {
+    this._poolMap = {
+      [EffectTypes.FILL]: this._fillPool,
+      [EffectTypes.GLOW]: this._glowPool,
+      [EffectTypes.STROKE]: this._strokePool
+    };
   }
 
-  private get _focusDelay (): number {
-    const { focusDelay } = this._customizerManager.getCustomizerSettings();
-
-    return focusDelay;
-  }
-
-  public getEffects (channelIndex: number, note: Note): Effect[] {
-    return this._selectedTemplateCache[channelIndex]
-      .map((effectTemplate: IEffectTemplate) => {
-        const effect: Effect = this._getEffect(effectTemplate, note);
-
-        if (effectTemplate.isDelayed) {
-          effect.delay(this._focusDelay);
-        }
-
-        return effect;
-      });
-  }
-
-  private _buildSelectedTemplateCache (): void {
-    const totalChannels: number = this._customizerManager.getTotalChannels();
-
-    for (let channelIndex = 0; channelIndex < totalChannels; channelIndex++) {
-      this._selectedTemplateCache[channelIndex] = Visualizer.EFFECT_TYPES
-        .map((effectType: EffectTypes) => this._customizerManager.getEffectTemplate(effectType, channelIndex))
-        .filter(({ isSelected }: IEffectTemplate) => isSelected);
-    }
-  }
-
-  private _getEffect (effectTemplate: IEffectTemplate, note: Note): Effect {
+  @Implementation
+  public request (effectTemplate: IEffectTemplate): Effect {
     const { effectType } = effectTemplate;
+    const effect: Effect = this._poolMap[effectType].request() as Effect;
 
     switch (effectType) {
-      case EffectTypes.GLOW:
-        return this._getGlowEffect(effectTemplate as IGlowTemplate, note);
-      case EffectTypes.FILL:
-        return this._getFillEffect(effectTemplate as IFillTemplate);
-      case EffectTypes.STROKE:
-        return this._getStrokeEffect(effectTemplate as IStrokeTemplate);
+      case EffectTypes.FILL: {
+        const { color } = effectTemplate as IFillTemplate;
+
+        return (effect as Fill).construct('#' + color);
+      }
+      case EffectTypes.GLOW: {
+        const { color, blur } = effectTemplate as IGlowTemplate;
+
+        return (effect as Glow).construct('#' + color, blur);
+      }
+      case EffectTypes.STROKE: {
+        const { color, width } = effectTemplate as IStrokeTemplate;
+
+        return (effect as Stroke).construct('#' + color, width);
+      }
     }
   }
 
-  private _getFillEffect (fillTemplate: IFillTemplate): Fill {
-    const { color } = fillTemplate;
+  @Implementation
+  public return (effect: Effect): void {
+    const { type } = effect;
 
-    return new Fill('#' + color);
-  }
-
-  private _getGlowEffect (glowTemplate: IGlowTemplate, note: Note): Glow {
-    const { color, blur, fadeIn } = glowTemplate;
-    const { duration } = note;
-    const notePlayTime: number = 1000 * (duration / this._customizerManager.getBeatsPerSecond());
-
-    return new Glow('#' + color, blur)
-      .fadeIn(fadeIn)
-      .fadeOut(notePlayTime);
-  }
-
-  private _getStrokeEffect (strokeTemplate: IStrokeTemplate): Stroke {
-    const { color, width } = strokeTemplate;
-
-    return new Stroke('#' + color, width);
+    this._poolMap[type].return(effect);
   }
 }

@@ -1,8 +1,11 @@
 import Canvas from '@core/Graphics/Canvas';
 import LongShape from '@core/Visualization/Shapes/LongShape';
 import { Implementation } from '@base';
+import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class Diamond extends LongShape {
+  public readonly type: ShapeTypes = ShapeTypes.DIAMOND;
+
   @Implementation
   public draw (canvas: Canvas): void {
     const { pixelX, pixelY, width, height } = this;

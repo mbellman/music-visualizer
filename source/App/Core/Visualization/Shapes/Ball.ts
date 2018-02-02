@@ -1,14 +1,27 @@
 import Canvas from '@core/Graphics/Canvas';
 import Shape from '@core/Visualization/Shapes/Shape';
-import { Implementation } from '@base';
+import { Implementation, Override } from '@base';
+import { IPoolable } from '@core/Pool';
+import { ShapeTypes } from '@core/Visualization/Types';
 
-export default class Ball extends Shape {
+export default class Ball extends Shape implements IPoolable<Ball> {
+  public readonly type: ShapeTypes = ShapeTypes.BALL;
   private _radius: number;
 
-  public constructor (x: number, y: number, radius: number) {
-    super(x, y);
+  @Override
+  public construct (x: number, y: number, radius: number): this {
+    super.construct(x, y);
 
     this._radius = radius;
+
+    return this;
+  }
+
+  @Override
+  public destruct (): void {
+    super.destruct();
+
+    this._radius = null;
   }
 
   @Implementation

@@ -23,6 +23,7 @@ export interface IShapeTemplate {
 export enum EffectTypes {
   GLOW,
   FILL,
+  SCROLL,
   STROKE
 }
 
@@ -39,8 +40,6 @@ export interface IColorableEffectTemplate extends IEffectTemplate {
 export interface IGlowTemplate extends IColorableEffectTemplate {
   effectType: EffectTypes.GLOW;
   blur: number;
-  fadeIn?: number;
-  fadeOut?: number;
 }
 
 export interface IFillTemplate extends IColorableEffectTemplate {

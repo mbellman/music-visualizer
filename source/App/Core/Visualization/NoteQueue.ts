@@ -1,6 +1,6 @@
+import Channel from '@core/MIDI/Channel';
 import Note from '@core/MIDI/Note';
 import Sequence from '@core/MIDI/Sequence';
-import Channel from '@core/MIDI/Channel';
 
 type ChannelQueue = IQueuedNote[];
 
@@ -17,25 +17,33 @@ export default class NoteQueue {
   }
 
   /**
-   * Returns all notes up to a specified note delay,
-   * removing them and shifting the queue forward.
+   * Returns one IQueuedNote object at a time from the first
+   * ChannelQueue containing one with a Note object whose
+   * delay is earlier than the {{delay}} argument. Combined
+   * with a while loop, individual IQueuedNotes can be retrieved
+   * until none exist in the NoteQueue with a delay earlier
+   * than {{delay}}. For example:
+   *
+   *   let queuedNote: IQueuedNote;
+   *
+   *   while (queuedNote = noteQueue.takeNextBefore(N)) {
+   *     // ...
+   *   }
    */
-  public take (delay: number): IQueuedNote[] {
-    const queuedNotes: IQueuedNote[] = [];
+  public takeNextBefore (delay: number): IQueuedNote {
+    for (let i = 0; i < this._channelQueues.length; i++) {
+      const channelQueue: ChannelQueue = this._channelQueues[i];
 
-    for (const channelQueue of this._channelQueues) {
-      while (channelQueue.length > 0) {
+      if (channelQueue.length > 0) {
         const { note, channelIndex } = channelQueue[0];
 
         if (note.delay <= delay) {
-          queuedNotes.push(channelQueue.shift());
-        } else {
-          break;
+          return channelQueue.shift();
         }
       }
     }
 
-    return queuedNotes;
+    return null;
   }
 
   private _convert (sequence: Sequence): void {
