@@ -8,7 +8,6 @@ import Fill from '@core/Visualization/Effects/Fill';
 import Glow from '@core/Visualization/Effects/Glow';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Stroke from '@core/Visualization/Effects/Stroke';
-import VisualizerNote from '@core/Visualization/VisualizerNote';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
@@ -108,8 +107,6 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
       shape.pipe(effect);
     }
 
-    const visualizerNote: VisualizerNote = new VisualizerNote().construct(shape);
-
-    visualizerNote.update(this._previewCanvas, 1, 0);
+    shape.update(this._previewCanvas, 1);
   }
 }

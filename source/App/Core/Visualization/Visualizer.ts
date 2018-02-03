@@ -2,8 +2,8 @@ import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Sequence from '@core/MIDI/Sequence';
-import VisualizerNote from '@core/Visualization/VisualizerNote';
-import VisualizerNoteFactory from '@core/Visualization/VisualizerNoteFactory';
+import Shape from '@core/Visualization/Shapes/Shape';
+import ShapeFactory from '@core/Visualization/ShapeFactory';
 import { Bind } from '@base';
 import { EffectTypes, ICustomizer } from '@core/Visualization/Types';
 
@@ -36,8 +36,8 @@ export default class Visualizer {
   private _lastTick: number;
   private _noteQueue: NoteQueue;
   private _sequence: Sequence;
-  private _visualizerNoteFactory: VisualizerNoteFactory;
-  private _visualizerNotes: VisualizerNote[] = [];
+  private _shapeFactory: ShapeFactory;
+  private _shapes: Shape[] = [];
 
   public constructor (element: HTMLCanvasElement) {
     this._canvas = new Canvas(element);
@@ -97,7 +97,7 @@ export default class Visualizer {
     this._currentBeat = 0;
     this._frame = 0;
     this._isRunning = false;
-    this._visualizerNotes.length = 0;
+    this._shapes.length = 0;
   }
 
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
@@ -106,22 +106,22 @@ export default class Visualizer {
     this._customizer = customizer;
     this._noteQueue = new NoteQueue(sequence);
     this._sequence = sequence;
-    this._visualizerNoteFactory = new VisualizerNoteFactory(customizer);
+    this._shapeFactory = new ShapeFactory(customizer);
 
     this.configure({ tempo });
     this.run();
   }
 
-  private _clearOffscreenVisualizerNotes (): void {
+  private _clearOffscreenShapes (): void {
     let i: number = 0;
 
-    while (i < Math.min(this._visualizerNotes.length, 20)) {
-      const visualizerNote: VisualizerNote = this._visualizerNotes[i];
+    while (i < Math.min(this._shapes.length, 20)) {
+      const shape: Shape = this._shapes[i];
 
-      if (visualizerNote.isOffscreen()) {
-        const removedVisualizerNote: VisualizerNote = this._visualizerNotes.splice(i, 1)[0];
+      if (shape.isOffscreen()) {
+        const removedShape: Shape = this._shapes.splice(i, 1)[0];
 
-        this._visualizerNoteFactory.return(removedVisualizerNote);
+        this._shapeFactory.return(removedShape);
 
         continue;
       }
@@ -133,14 +133,19 @@ export default class Visualizer {
   private _handlePostRender (dt: number): void {
     this._updateCurrentBeat(dt);
     this._runNoteSpawnCheck();
-    this._clearOffscreenVisualizerNotes();
+    this._clearOffscreenShapes();
   }
 
   private _handleRenderPass (dt: number): void {
     this._canvas.clear();
 
-    for (const visualizerNote of this._visualizerNotes) {
-      visualizerNote.update(this._canvas, dt, this.tempo * this._scrollSpeedFactor);
+    for (const shape of this._shapes) {
+      this._canvas.save();
+
+      shape.move(-dt * this.tempo * this._scrollSpeedFactor);
+      shape.update(this._canvas, dt);
+
+      this._canvas.restore();
     }
   }
 
@@ -149,10 +154,10 @@ export default class Visualizer {
 
     while (queuedNote = this._noteQueue.takeNextBefore(this._currentBeat)) {
       const { channelIndex, note } = queuedNote;
-      const visualizerNote: VisualizerNote = this._visualizerNoteFactory.request(channelIndex, note);
+      const shape: Shape = this._shapeFactory.request(channelIndex, note);
 
-      if (visualizerNote) {
-        this._visualizerNotes.push(visualizerNote);
+      if (shape) {
+        this._shapes.push(shape);
       }
     }
   }

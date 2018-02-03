@@ -57,7 +57,7 @@ export default abstract class Shape implements IPoolable<Shape> {
     return this;
   }
 
-  public update (canvas: Canvas, dt: number, tempo: number): void {
+  public update (canvas: Canvas, dt: number): void {
     const ageIncrease: number = dt * 1000;
     this._age += ageIncrease;
 
@@ -69,7 +69,7 @@ export default abstract class Shape implements IPoolable<Shape> {
       effect.age(ageIncrease);
 
       if (!effect.isDelaying()) {
-        effect.update(canvas, dt, tempo);
+        effect.update(canvas, dt);
       }
     }
   }

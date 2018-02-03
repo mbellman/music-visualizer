@@ -23,7 +23,6 @@ export interface IShapeTemplate {
 export enum EffectTypes {
   GLOW,
   FILL,
-  SCROLL,
   STROKE
 }
 

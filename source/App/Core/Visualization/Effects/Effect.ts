@@ -35,5 +35,5 @@ export default abstract class Effect implements IPoolable<Effect> {
     return this.delayedAge === 0;
   }
 
-  public abstract update (canvas: Canvas, dt: number, tempo: number): void;
+  public abstract update (canvas: Canvas, dt: number): void;
 }

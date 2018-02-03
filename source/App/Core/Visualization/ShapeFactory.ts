@@ -2,25 +2,37 @@ import Ball from '@core/Visualization/Shapes/Ball';
 import Bar from '@core/Visualization/Shapes/Bar';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Diamond from '@core/Visualization/Shapes/Diamond';
+import Effect from '@core/Visualization/Effects/Effect';
+import EffectFactory from '@core/Visualization/EffectFactory';
 import Ellipse from '@core/Visualization/Shapes/Ellipse';
+import Glow from '@core/Visualization/Effects/Glow';
 import Note from '@core/MIDI/Note';
 import Pool, { IPoolableFactory } from '@core/Pool';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
-import { Extension, Implementation } from '@base';
-import { IHashMap } from 'Base/Types';
-import { ShapeTypes } from '@core/Visualization/Types';
+import { EffectTypes, ICustomizer, IEffectTemplate, ShapeTypes } from '@core/Visualization/Types';
+import { Extension, IHashMap, Implementation } from '@base';
 
 export default class ShapeFactory implements IPoolableFactory<Shape> {
   private _ballPool: Pool<Ball> = new Pool(Ball, 250);
   private _barPool: Pool<Bar> = new Pool(Bar, 250);
   private _customizerManager: CustomizerManager;
   private _diamondPool: Pool<Diamond> = new Pool(Diamond, 250);
+  private _effectFactory: EffectFactory = new EffectFactory();
   private _ellipsePool: Pool<Ellipse> = new Pool(Ellipse, 250);
   private _poolMap: IHashMap<Pool<Shape>>;
+  /**
+   * Maps channel indexes to arrays of selected effect templates for
+   * each particular channel. The cache is built at the beginning
+   * of visualizer playback, avoiding any unnecessary overhead when
+   * new Shapes are generated and only *selected* effect templates
+   * for a channel need to be looped through to create new Effect
+   * instances.
+   */
+  private _selectedTemplateCache: IHashMap<IEffectTemplate[]> = {};
 
-  public constructor (customizerManager: CustomizerManager) {
-    this._customizerManager = customizerManager;
+  public constructor (customizer: ICustomizer) {
+    this._customizerManager = new CustomizerManager(customizer);
 
     this._poolMap = {
       [ShapeTypes.BALL]: this._ballPool,
@@ -28,10 +40,47 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
       [ShapeTypes.DIAMOND]: this._diamondPool,
       [ShapeTypes.ELLIPSE]: this._ellipsePool
     };
+
+    this._buildSelectedTemplateCache();
   }
 
   @Implementation
   public request (channelIndex: number, note: Note): Shape {
+    const selectedEffectTemplates: IEffectTemplate[] = this._selectedTemplateCache[channelIndex];
+
+    if (selectedEffectTemplates.length === 0) {
+      return null;
+    }
+
+    const shape: Shape = this._getShape(channelIndex, note);
+
+    this._pipeEffectsIntoShape(shape, selectedEffectTemplates, note);
+
+    return shape;
+  }
+
+  @Implementation
+  public return (shape: Shape): void {
+    const { effects, type } = shape;
+
+    for (const effect of effects) {
+      this._effectFactory.return(effect);
+    }
+
+    this._poolMap[type].return(shape);
+  }
+
+  private _buildSelectedTemplateCache (): void {
+    const totalChannels: number = this._customizerManager.getTotalChannels();
+
+    for (let channelIndex = 0; channelIndex < totalChannels; channelIndex++) {
+      this._selectedTemplateCache[channelIndex] = Visualizer.EFFECT_TYPES
+        .map((effectType: EffectTypes) => this._customizerManager.getEffectTemplate(effectType, channelIndex))
+        .filter(({ isSelected }: IEffectTemplate) => isSelected);
+    }
+  }
+
+  private _getShape (channelIndex: number, note: Note): Shape {
     const { width } = this._customizerManager.getCustomizerSettings();
     const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
     const x: number = width;
@@ -49,13 +98,6 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
       case ShapeTypes.ELLIPSE:
         return (shape as Ellipse).construct(x, y, length, size);
     }
-  }
-
-  @Implementation
-  public return (shape: Shape): void {
-    const { type } = shape;
-
-    this._poolMap[type].return(shape);
   }
 
   private _getShapeLength (note: Note): number {
@@ -91,5 +133,30 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
        */
       - ((Visualizer.NOTE_SPREAD_FACTOR - 1) / 2) * height
     );
+  }
+
+  private _pipeEffectsIntoShape (shape: Shape, effectTemplates: IEffectTemplate[], note: Note): void {
+    for (const effectTemplate of effectTemplates) {
+      const effect: Effect = this._effectFactory.request(effectTemplate);
+      const { effectType, isDelayed } = effectTemplate;
+
+      if (effectType === EffectTypes.GLOW) {
+        // The Glow effect uniquely depends on the duration
+        // of provided Note to determine its fade-out time.
+        const notePlayTime: number = note.duration / this._customizerManager.getBeatsPerSecond();
+
+        (effect as Glow)
+          .fadeIn(50)
+          .fadeOut(1000 * notePlayTime);
+      }
+
+      if (isDelayed) {
+        const { focusDelay } = this._customizerManager.getCustomizerSettings();
+
+        effect.delay(focusDelay);
+      }
+
+      shape.pipe(effect);
+    }
   }
 }
