@@ -107,6 +107,7 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
       shape.pipe(effect);
     }
 
-    shape.update(this._previewCanvas, 1);
+    shape.tick(1);
+    shape.render(this._previewCanvas);
   }
 }

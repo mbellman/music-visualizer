@@ -5,16 +5,21 @@ import { Implementation } from '@base';
 import { IPoolable } from '@core/Pool';
 
 export default abstract class Effect implements IPoolable<Effect> {
-  public abstract readonly type: EffectTypes;
-  private _age: number = 0;
+  public abstract type: EffectTypes;
+  /**
+   * Determines whether the Effect has been permanently prerendered by the
+   * Visualizer, and requires no further updates or redraws. This flag is
+   * set to true once the Effect flags its parent Shape for prerendering.
+   *
+   * If a Shape's Effects have all been prerendered, the Shape is ready
+   * for deallocation.
+   */
+  public isPrerendered: boolean = false;
   private _delay: number = 0;
+  private _parentShape: Shape;
 
-  public get delayedAge (): number {
-    return Math.max(this._age - this._delay, 0);
-  }
-
-  public age (amount: number): void {
-    this._age += amount;
+  public get activeAge (): number {
+    return Math.max(this._parentShape.age - this._delay, 0);
   }
 
   public abstract construct (...args: any[]): this;
@@ -27,13 +32,39 @@ export default abstract class Effect implements IPoolable<Effect> {
 
   @Implementation
   public destruct (): void {
-    this._age = 0;
+    this.isPrerendered = false;
+    this._parentShape = null;
     this._delay = 0;
   }
 
-  public isDelaying (): boolean {
-    return this.delayedAge === 0;
+  public abstract draw (canvas: Canvas): void;
+
+  public isActive (): boolean {
+    return this.activeAge > 0;
   }
 
-  public abstract update (canvas: Canvas, dt: number): void;
+  /**
+   * This tick function assumes that the Effect, once activated after its
+   * delay, is ready to flag is parent Shape for prerendering. Subclasses
+   * can override this method and use custom logic to determine whether a
+   * Shape should be prerendered or refreshed.
+   */
+  public tick (dt: number): void {
+    if (this.isActive() && !this.isPrerendered) {
+      this.flagShapeForPrerendering();
+    }
+  }
+
+  public track (shape: Shape): void {
+    this._parentShape = shape;
+  }
+
+  protected flagShapeForPrerendering (): void {
+    this._parentShape.shouldPrerender = true;
+    this.isPrerendered = true;
+  }
+
+  protected flagShapeForRefreshing (): void {
+    this._parentShape.shouldRefresh = true;
+  }
 }

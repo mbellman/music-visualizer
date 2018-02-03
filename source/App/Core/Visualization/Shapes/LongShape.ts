@@ -23,9 +23,4 @@ export default abstract class LongShape extends Shape implements IPoolable<LongS
     this.width = null;
     this.height = null;
   }
-
-  @Implementation
-  public isOffscreen (): boolean {
-    return this.pixelX + this.width < 0;
-  }
 }

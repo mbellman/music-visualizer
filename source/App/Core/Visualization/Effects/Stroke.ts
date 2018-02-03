@@ -5,7 +5,7 @@ import { Implementation, Override } from '@base';
 import { IPoolable } from '@core/Pool';
 
 export default class Stroke extends Effect implements IPoolable<Stroke> {
-  public readonly type: EffectTypes = EffectTypes.STROKE;
+  public type: EffectTypes = EffectTypes.STROKE;
   private _color: string;
   private _width: number;
 
@@ -26,7 +26,7 @@ export default class Stroke extends Effect implements IPoolable<Stroke> {
   }
 
   @Implementation
-  public update (canvas: Canvas): void {
+  public draw (canvas: Canvas): void {
     canvas.set(DrawSetting.STROKE_COLOR, this._color);
     canvas.set(DrawSetting.STROKE_WIDTH, this._width);
     canvas.stroke();

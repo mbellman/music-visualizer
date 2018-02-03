@@ -5,7 +5,7 @@ import { IPoolable } from '@core/Pool';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class Ball extends Shape implements IPoolable<Ball> {
-  public readonly type: ShapeTypes = ShapeTypes.BALL;
+  public type: ShapeTypes = ShapeTypes.BALL;
   private _radius: number;
 
   @Override
@@ -25,12 +25,7 @@ export default class Ball extends Shape implements IPoolable<Ball> {
   }
 
   @Implementation
-  public draw (canvas: Canvas): void {
+  protected draw (canvas: Canvas): void {
     canvas.circle(this.pixelX, this.pixelY, this._radius);
-  }
-
-  @Implementation
-  public isOffscreen (): boolean {
-    return this.pixelX + this._radius < 0;
   }
 }

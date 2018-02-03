@@ -13,6 +13,8 @@ interface IVisualizerConfiguration {
 }
 
 export default class Visualizer {
+  public static readonly DESPAWN_CHECK_LIMIT: number = 20;
+
   public static readonly EFFECT_TYPES: EffectTypes[] = [
     EffectTypes.GLOW,
     EffectTypes.FILL,
@@ -21,8 +23,6 @@ export default class Visualizer {
 
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly TICK_CONSTANT: number = 0.01667;
-  private _bufferCanvas: Canvas = new Canvas();
-  private _canvas: Canvas;
 
   private _configuration: IVisualizerConfiguration = {
     scrollSpeed: 100,
@@ -35,16 +35,18 @@ export default class Visualizer {
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
+  private _prerenderingCanvas: Canvas = new Canvas();
+  private _refreshingCanvas: Canvas;
   private _sequence: Sequence;
   private _shapeFactory: ShapeFactory;
   private _shapes: Shape[] = [];
 
   public constructor (element: HTMLCanvasElement) {
-    this._canvas = new Canvas(element);
+    this._refreshingCanvas = new Canvas(element);
   }
 
   public get height (): number {
-    return this._canvas.height;
+    return this._refreshingCanvas.height;
   }
 
   public get isRunning (): boolean {
@@ -56,7 +58,7 @@ export default class Visualizer {
   }
 
   public get width (): number {
-    return this._canvas.width;
+    return this._refreshingCanvas.width;
   }
 
   private get _scrollSpeedFactor (): number {
@@ -75,6 +77,10 @@ export default class Visualizer {
   }
 
   public restart (): void {
+    for (const shape of this._shapes) {
+      this._shapeFactory.return(shape);
+    }
+
     this.stop();
     this.visualize(this._sequence, this._customizer);
   }
@@ -87,15 +93,15 @@ export default class Visualizer {
   }
 
   public setSize (width: number, height: number): void {
-    this._canvas.setSize(width, height);
-    this._bufferCanvas.setSize(width, height);
+    this._refreshingCanvas.setSize(width, height);
+    this._prerenderingCanvas.setSize(3 * width, height);
   }
 
   public stop (): void {
-    this._canvas.clear();
+    this._refreshingCanvas.clear();
+    this._prerenderingCanvas.clear();
 
     this._currentBeat = 0;
-    this._frame = 0;
     this._isRunning = false;
     this._shapes.length = 0;
   }
@@ -112,14 +118,16 @@ export default class Visualizer {
     this.run();
   }
 
-  private _clearOffscreenShapes (): void {
+  private _despawnPrerenderedShapes (): void {
     let i: number = 0;
 
-    while (i < Math.min(this._shapes.length, 20)) {
+    while (i < Math.min(this._shapes.length, Visualizer.DESPAWN_CHECK_LIMIT)) {
       const shape: Shape = this._shapes[i];
 
-      if (shape.isOffscreen()) {
+      if (shape.isPrerendered()) {
         const removedShape: Shape = this._shapes.splice(i, 1)[0];
+
+        console.log('Removing!');
 
         this._shapeFactory.return(removedShape);
 
@@ -130,26 +138,13 @@ export default class Visualizer {
     }
   }
 
-  private _handlePostRender (dt: number): void {
-    this._updateCurrentBeat(dt);
-    this._runNoteSpawnCheck();
-    this._clearOffscreenShapes();
+  private _renderShapeWith (shape: Shape, canvas: Canvas): void {
+    canvas.save();
+    shape.render(canvas);
+    canvas.restore();
   }
 
-  private _handleRenderPass (dt: number): void {
-    this._canvas.clear();
-
-    for (const shape of this._shapes) {
-      this._canvas.save();
-
-      shape.move(-dt * this.tempo * this._scrollSpeedFactor);
-      shape.update(this._canvas, dt);
-
-      this._canvas.restore();
-    }
-  }
-
-  private _runNoteSpawnCheck (): void {
+  private _runShapeSpawnCheck (): void {
     let queuedNote: IQueuedNote;
 
     while (queuedNote = this._noteQueue.takeNextBefore(this._currentBeat)) {
@@ -172,10 +167,11 @@ export default class Visualizer {
     const dt: number = (time - this._lastTick) / 1000;
 
     this._lastTick = time;
-    this._frame++;
 
-    this._handleRenderPass(dt);
-    this._handlePostRender(dt);
+    this._updateShapes(dt);
+    this._updateCurrentBeat(dt);
+    this._runShapeSpawnCheck();
+    this._despawnPrerenderedShapes();
 
     requestAnimationFrame(this._tick);
   }
@@ -185,5 +181,23 @@ export default class Visualizer {
     const beatsPerSecond: number = tempo / 60;
 
     this._currentBeat += beatsPerSecond * dt;
+  }
+
+  private _updateShapes (dt: number): void {
+    this._refreshingCanvas.clear();
+
+    this._refreshingCanvas.image(this._prerenderingCanvas.element, 0, 0);
+
+    for (const shape of this._shapes) {
+      shape.tick(dt);
+
+      const { shouldPrerender, shouldRefresh } = shape;
+
+      if (shouldPrerender) {
+        this._renderShapeWith(shape, this._prerenderingCanvas);
+      } else if (shouldRefresh) {
+        this._renderShapeWith(shape, this._refreshingCanvas);
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@ import { Implementation, Override } from '@base';
 import { IPoolable } from '@core/Pool';
 
 export default class Glow extends Effect implements IPoolable<Glow> {
-  public readonly type: EffectTypes = EffectTypes.GLOW;
+  public type: EffectTypes = EffectTypes.GLOW;
   private _blur: number;
   private _color: string;
   private _fadeInTime: number = 0;
@@ -42,29 +42,44 @@ export default class Glow extends Effect implements IPoolable<Glow> {
   }
 
   @Implementation
-  public update (canvas: Canvas): void {
-    const blur: number = this._getBlurAmount();
+  public draw (canvas: Canvas): void {
+    const blurAmount: number = this._getBlurAmount();
 
-    if (blur > 0) {
-      canvas.set(DrawSetting.GLOW_COLOR, this._color);
-      canvas.set(DrawSetting.GLOW_BLUR, blur);
+    canvas.set(DrawSetting.GLOW_COLOR, this._color);
+    canvas.set(DrawSetting.GLOW_BLUR, blurAmount);
+  }
+
+  @Override
+  public tick (dt: number): void {
+    if (this.activeAge < this._fadeInTime + this._fadeOutTime) {
+      // Glow cannot be prerendered yet, as it is still fading in or out
+      this.flagShapeForRefreshing();
+    } else if (!this.isPrerendered) {
+      // Glow will remain constant from here on out, so it's safe to prerender
+      this.flagShapeForPrerendering();
     }
   }
 
   private _getBlurAmount (): number {
-    const shouldUseDefault: boolean = this.delayedAge > this._fadeInTime && this._fadeOutTime === 0;
-    const hasFadedOut: boolean = !shouldUseDefault && this.delayedAge > this._fadeInTime + this._fadeOutTime;
+    const shouldUseDefault: boolean = (this.activeAge > this._fadeInTime) && this._fadeOutTime === 0;
+    const hasFadedOut: boolean = !shouldUseDefault && this.activeAge > (this._fadeInTime + this._fadeOutTime);
 
     if (shouldUseDefault) {
       return this._blur;
     } else if (hasFadedOut) {
       return 0;
     } else {
-      const isFadingIn: boolean = this.delayedAge < this._fadeInTime;
-      const elapsedFadeOutTime: number = this.delayedAge - this._fadeInTime;
-      const blurMultiplier: number = isFadingIn ? this.delayedAge / this._fadeInTime : 1 - elapsedFadeOutTime / this._fadeOutTime;
-
-      return this._blur * blurMultiplier;
+      return this._blur * this._getBlurMultiplier();
     }
+  }
+
+  private _getBlurMultiplier (): number {
+    const elapsedFadeOutTime: number = this.activeAge - this._fadeInTime;
+
+    return this._isFadingIn() ? (this.activeAge / this._fadeInTime) : 1 - (elapsedFadeOutTime / this._fadeOutTime);
+  }
+
+  private _isFadingIn (): boolean {
+    return this.activeAge < this._fadeInTime;
   }
 }

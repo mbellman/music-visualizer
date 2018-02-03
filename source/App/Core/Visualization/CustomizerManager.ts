@@ -29,6 +29,10 @@ export default class CustomizerManager {
     return this._customizer.effects[effectProp][channelIndex];
   }
 
+  public getPixelsPerBeat (): number {
+    return this.getPixelsPerSecond() / this.getBeatsPerSecond();
+  }
+
   public getPixelsPerSecond (): number {
     const { scrollSpeed } = this.getCustomizerSettings();
 

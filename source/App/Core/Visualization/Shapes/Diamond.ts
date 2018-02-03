@@ -4,10 +4,10 @@ import { Implementation } from '@base';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class Diamond extends LongShape {
-  public readonly type: ShapeTypes = ShapeTypes.DIAMOND;
+  public type: ShapeTypes = ShapeTypes.DIAMOND;
 
   @Implementation
-  public draw (canvas: Canvas): void {
+  protected draw (canvas: Canvas): void {
     const { pixelX, pixelY, width, height } = this;
     const halfWidth: number = width / 2;
     const halfHeight: number = height / 2;

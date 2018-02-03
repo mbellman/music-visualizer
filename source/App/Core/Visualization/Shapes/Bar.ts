@@ -4,10 +4,10 @@ import { Implementation } from '@base';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class Bar extends LongShape {
-  public readonly type: ShapeTypes = ShapeTypes.BAR;
+  public type: ShapeTypes = ShapeTypes.BAR;
 
   @Implementation
-  public draw (canvas: Canvas): void {
+  protected draw (canvas: Canvas): void {
     canvas.rectangle(this.pixelX, this.pixelY - (this.height / 2), this.width, this.height);
   }
 }

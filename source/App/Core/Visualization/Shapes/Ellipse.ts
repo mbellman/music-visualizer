@@ -4,10 +4,10 @@ import { Implementation } from '@base';
 import { ShapeTypes } from '@core/Visualization/Types';
 
 export default class Ellipse extends LongShape {
-  public readonly type: ShapeTypes = ShapeTypes.ELLIPSE;
+  public type: ShapeTypes = ShapeTypes.ELLIPSE;
 
   @Implementation
-  public draw (canvas: Canvas): void {
+  protected draw (canvas: Canvas): void {
     const { pixelX, pixelY, width, height } = this;
 
     canvas.ellipse(pixelX + width / 2, pixelY, width, height);

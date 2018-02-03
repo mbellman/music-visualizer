@@ -83,9 +83,10 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
   private _getShape (channelIndex: number, note: Note): Shape {
     const { width } = this._customizerManager.getCustomizerSettings();
     const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
-    const x: number = width;
+    const pixelsPerBeat: number = this._customizerManager.getPixelsPerBeat();
+    const x: number = note.delay * pixelsPerBeat;
     const y: number = this._getShapeY(note);
-    const length: number = this._getShapeLength(note);
+    const length: number = note.duration * pixelsPerBeat;
     const shape: Shape = this._poolMap[shapeType].request() as Shape;
 
     switch (shapeType) {
@@ -98,13 +99,6 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
       case ShapeTypes.ELLIPSE:
         return (shape as Ellipse).construct(x, y, length, size);
     }
-  }
-
-  private _getShapeLength (note: Note): number {
-    const { duration } = note;
-    const pixelsPerBeat: number = this._customizerManager.getPixelsPerSecond() / this._customizerManager.getBeatsPerSecond();
-
-    return duration * pixelsPerBeat;
   }
 
   private _getShapeY (note: Note): number {

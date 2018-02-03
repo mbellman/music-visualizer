@@ -5,7 +5,7 @@ import { Implementation, Override } from '@base';
 import { IPoolable } from '@core/Pool';
 
 export default class Fill extends Effect implements IPoolable<Fill> {
-  public readonly type: EffectTypes = EffectTypes.FILL;
+  public type: EffectTypes = EffectTypes.FILL;
   private _color: string;
 
   @Implementation
@@ -23,7 +23,7 @@ export default class Fill extends Effect implements IPoolable<Fill> {
   }
 
   @Implementation
-  public update (canvas: Canvas): void {
+  public draw (canvas: Canvas): void {
     canvas.set(DrawSetting.FILL_COLOR, this._color);
     canvas.fill();
   }
