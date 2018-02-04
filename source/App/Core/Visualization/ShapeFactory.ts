@@ -31,8 +31,8 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
    */
   private _selectedTemplateCache: IHashMap<IEffectTemplate[]> = {};
 
-  public constructor (customizer: ICustomizer) {
-    this._customizerManager = new CustomizerManager(customizer);
+  public constructor (customizerManager: CustomizerManager) {
+    this._customizerManager = customizerManager;
 
     this._poolMap = {
       [ShapeTypes.BALL]: this._ballPool,

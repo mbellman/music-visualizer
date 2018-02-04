@@ -72,7 +72,6 @@ export default class Player extends Component<IPlayerProps, IPlayerState> {
     const { width, height, scrollSpeed } = this.props.customizer.settings;
 
     visualizer.setSize(width, height);
-    visualizer.configure({ scrollSpeed });
 
     this.setState({ visualizer });
   }

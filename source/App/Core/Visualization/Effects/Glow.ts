@@ -51,12 +51,14 @@ export default class Glow extends Effect implements IPoolable<Glow> {
 
   @Override
   public tick (dt: number): void {
-    if (this.activeAge < this._fadeInTime + this._fadeOutTime) {
-      // Glow cannot be prerendered yet, as it is still fading in or out
-      this.flagShapeForRefreshing();
-    } else if (!this.isPrerendered) {
-      // Glow will remain constant from here on out, so it's safe to prerender
-      this.flagShapeForPrerendering();
+    if (this.isActive()) {
+      if (this.activeAge < this._fadeInTime + this._fadeOutTime) {
+        // Glow cannot be prerendered yet, as it is still fading in or out
+        this.flagShapeForRefreshing();
+      } else if (!this.isPrerendered) {
+        // Glow will remain constant from here on out, so it's safe to prerender
+        this.flagShapeForPrerendering();
+      }
     }
   }
 

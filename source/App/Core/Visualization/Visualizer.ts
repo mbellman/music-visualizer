@@ -1,4 +1,5 @@
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Sequence from '@core/MIDI/Sequence';
@@ -7,14 +8,7 @@ import ShapeFactory from '@core/Visualization/ShapeFactory';
 import { Bind } from '@base';
 import { EffectTypes, ICustomizer } from '@core/Visualization/Types';
 
-interface IVisualizerConfiguration {
-  scrollSpeed?: number;
-  tempo?: number;
-}
-
 export default class Visualizer {
-  public static readonly DESPAWN_CHECK_LIMIT: number = 20;
-
   public static readonly EFFECT_TYPES: EffectTypes[] = [
     EffectTypes.GLOW,
     EffectTypes.FILL,
@@ -22,31 +16,27 @@ export default class Visualizer {
   ];
 
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
+  public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
   public static readonly TICK_CONSTANT: number = 0.01667;
-
-  private _configuration: IVisualizerConfiguration = {
-    scrollSpeed: 100,
-    tempo: 100
-  };
-
+  private _canvas: Canvas;
   private _currentBeat: number = 0;
-  private _customizer: ICustomizer;
-  private _frame: number = 0;
+  private _customizerManager: CustomizerManager;
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
   private _prerenderingCanvas: Canvas = new Canvas();
-  private _refreshingCanvas: Canvas;
+  private _refreshingCanvas: Canvas = new Canvas();
+  private _scrollOffset: number = 0;
   private _sequence: Sequence;
   private _shapeFactory: ShapeFactory;
   private _shapes: Shape[] = [];
 
   public constructor (element: HTMLCanvasElement) {
-    this._refreshingCanvas = new Canvas(element);
+    this._canvas = new Canvas(element);
   }
 
   public get height (): number {
-    return this._refreshingCanvas.height;
+    return this._canvas.height;
   }
 
   public get isRunning (): boolean {
@@ -54,22 +44,13 @@ export default class Visualizer {
   }
 
   public get tempo (): number {
-    return this._configuration.tempo;
+    const { tempo } = this._customizerManager.getCustomizerSettings();
+
+    return tempo;
   }
 
   public get width (): number {
-    return this._refreshingCanvas.width;
-  }
-
-  private get _scrollSpeedFactor (): number {
-    return this._configuration.scrollSpeed / 100;
-  }
-
-  public configure (configuration: IVisualizerConfiguration): void {
-    this._configuration = {
-      ...this._configuration,
-      ...configuration
-    };
+    return this._canvas.width;
   }
 
   public pause (): void {
@@ -77,12 +58,12 @@ export default class Visualizer {
   }
 
   public restart (): void {
-    for (const shape of this._shapes) {
-      this._shapeFactory.return(shape);
-    }
-
     this.stop();
-    this.visualize(this._sequence, this._customizer);
+
+    this._noteQueue = new NoteQueue(this._sequence);
+    const tempo: number = this._customizerManager.getTempo();
+
+    this.run();
   }
 
   public run (): void {
@@ -93,41 +74,56 @@ export default class Visualizer {
   }
 
   public setSize (width: number, height: number): void {
+    this._canvas.setSize(width, height);
     this._refreshingCanvas.setSize(width, height);
     this._prerenderingCanvas.setSize(3 * width, height);
   }
 
   public stop (): void {
+    for (const shape of this._shapes) {
+      this._shapeFactory.return(shape);
+    }
+
+    this._canvas.clear();
     this._refreshingCanvas.clear();
     this._prerenderingCanvas.clear();
 
     this._currentBeat = 0;
     this._isRunning = false;
+    this._scrollOffset = 0;
     this._shapes.length = 0;
   }
 
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
     const { tempo } = customizer.settings;
 
-    this._customizer = customizer;
+    this._customizerManager = new CustomizerManager(customizer);
     this._noteQueue = new NoteQueue(sequence);
     this._sequence = sequence;
-    this._shapeFactory = new ShapeFactory(customizer);
+    this._shapeFactory = new ShapeFactory(this._customizerManager);
 
-    this.configure({ tempo });
     this.run();
+  }
+
+  private _compositeScene (): void {
+    this._canvas.clear();
+
+    this._canvas.image(
+      this._prerenderingCanvas.element, this._getPrerenderingCanvasClipX(), 0, this.width, this.height,
+      this._getPrerenderingCanvasDestinationX(), 0, this.width, this.height
+    );
+
+    this._canvas.image(this._refreshingCanvas.element, 0, 0);
   }
 
   private _despawnPrerenderedShapes (): void {
     let i: number = 0;
 
-    while (i < Math.min(this._shapes.length, Visualizer.DESPAWN_CHECK_LIMIT)) {
+    while (i < Math.min(this._shapes.length, Visualizer.PER_FRAME_DESPAWN_MAXIMUM)) {
       const shape: Shape = this._shapes[i];
 
       if (shape.isPrerendered()) {
         const removedShape: Shape = this._shapes.splice(i, 1)[0];
-
-        console.log('Removing!');
 
         this._shapeFactory.return(removedShape);
 
@@ -138,7 +134,71 @@ export default class Visualizer {
     }
   }
 
-  private _renderShapeWith (shape: Shape, canvas: Canvas): void {
+  /**
+   * Determines the X coordinate at which to start clipping the prerendering Canvas
+   * for superimposition onto the main Canvas. Until the scroll offset exceeds the
+   * Visualizer width, this value will remain at 0. From there it will increase in
+   * proportion to the scroll offset.
+   */
+  private _getPrerenderingCanvasClipX (): number {
+    return Math.max(0, this._scrollOffset - this.width);
+  }
+
+  /**
+   * Determines the X coordinate at which to superimpose the prerendering Canvas
+   * onto the main Canvas. This value starts starts out as the Visualizer width
+   * value, decreases to 0 as the scroll offset increases, and stops at 0 once
+   * the scroll offset exceeds the width.
+   */
+  private _getPrerenderingCanvasDestinationX (): number {
+    return Math.max(0, this.width - this._scrollOffset);
+  }
+
+  private _getScrollSpeedFactor (): number {
+    const { scrollSpeed } = this._customizerManager.getCustomizerSettings();
+
+    return scrollSpeed / 100;
+  }
+
+  /**
+   * Determines the X offset for a Shape rendered on the refreshing Canvas. The
+   * offset value displaces the Shape from its initial X coordinate, and does not
+   * represent its actual pixel coordinate value. While the scroll offset is less
+   * than the Visualizer width, and while the prerendering Canvas is being scrolled
+   * into view, we want this offset to equal the prerendering Canvas destination X
+   * coordinate to ensure refreshed Shapes align with prerendered Shapes. Once the
+   * scroll offset exceeds the Visualizer width, we need to offset any refreshing
+   * Shapes backward in proportion to the prerendering Canvas clip X coordinate as
+   * to maintain that alignment; otherwise, refreshed Shapes would render further
+   * and further to the right until they disappeared from view.
+   */
+  private _getRefreshingShapeOffsetX (): number {
+    if (this._scrollOffset < this.width) {
+      return this._getPrerenderingCanvasDestinationX();
+    } else {
+      return -1 * this._getPrerenderingCanvasClipX();
+    }
+  }
+
+  private _renderShapes (dt: number): void {
+    this._refreshingCanvas.clear();
+
+    for (const shape of this._shapes) {
+      shape.tick(dt);
+
+      if (shape.shouldRefresh) {
+        shape.offsetX = this._getRefreshingShapeOffsetX();
+
+        this._renderShapeWithCanvas(shape, this._refreshingCanvas);
+      } else if (shape.shouldPrerender) {
+        shape.offsetX = 0;
+
+        this._renderShapeWithCanvas(shape, this._prerenderingCanvas);
+      }
+    }
+  }
+
+  private _renderShapeWithCanvas (shape: Shape, canvas: Canvas): void {
     canvas.save();
     shape.render(canvas);
     canvas.restore();
@@ -167,8 +227,10 @@ export default class Visualizer {
     const dt: number = (time - this._lastTick) / 1000;
 
     this._lastTick = time;
+    this._scrollOffset += dt * this.tempo * this._getScrollSpeedFactor();
 
-    this._updateShapes(dt);
+    this._renderShapes(dt);
+    this._compositeScene();
     this._updateCurrentBeat(dt);
     this._runShapeSpawnCheck();
     this._despawnPrerenderedShapes();
@@ -177,27 +239,6 @@ export default class Visualizer {
   }
 
   private _updateCurrentBeat (dt: number): void {
-    const { tempo } = this._configuration;
-    const beatsPerSecond: number = tempo / 60;
-
-    this._currentBeat += beatsPerSecond * dt;
-  }
-
-  private _updateShapes (dt: number): void {
-    this._refreshingCanvas.clear();
-
-    this._refreshingCanvas.image(this._prerenderingCanvas.element, 0, 0);
-
-    for (const shape of this._shapes) {
-      shape.tick(dt);
-
-      const { shouldPrerender, shouldRefresh } = shape;
-
-      if (shouldPrerender) {
-        this._renderShapeWith(shape, this._prerenderingCanvas);
-      } else if (shouldRefresh) {
-        this._renderShapeWith(shape, this._refreshingCanvas);
-      }
-    }
+    this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
   }
 }

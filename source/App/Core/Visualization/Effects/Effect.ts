@@ -47,7 +47,8 @@ export default abstract class Effect implements IPoolable<Effect> {
    * This tick function assumes that the Effect, once activated after its
    * delay, is ready to flag is parent Shape for prerendering. Subclasses
    * can override this method and use custom logic to determine whether a
-   * Shape should be prerendered or refreshed.
+   * Shape should be prerendered or refreshed, but be sure they make an
+   * isActive() check to avoid premature prerendering or refreshing.
    */
   public tick (dt: number): void {
     if (this.isActive() && !this.isPrerendered) {
