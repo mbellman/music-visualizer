@@ -6,15 +6,21 @@ import ShapeEditor from '@components/ShapeEditor';
 import StrokeEditor from '@components/StrokeEditor';
 import { Component, h } from 'preact';
 import { Connect } from '@components/Toolkit/Decorators';
+import { Dispatch } from 'redux';
 import { IAppState } from '@state/Types';
-import { Override } from '@base';
+import { Method, Override } from '@base';
 import '@styles/ChannelEditor.less';
+import { ActionCreators } from '@state/ActionCreators';
 
 interface IChannelEditorPropsFromState {
   channel?: Channel;
 }
 
-interface IChannelEditorProps extends IChannelEditorPropsFromState {
+interface IChannelEditorPropsFromDispatch {
+  randomizeChannel?: Method<any>;
+}
+
+interface IChannelEditorProps extends IChannelEditorPropsFromState, IChannelEditorPropsFromDispatch {
   index: number;
 }
 
@@ -26,7 +32,20 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState, { index }: IChan
   };
 }
 
-@Connect(mapStateToProps)
+function mapDispatchToProps (dispatch: Dispatch<IAppState>, { index }: IChannelEditorProps): IChannelEditorPropsFromDispatch {
+  const { randomizeChannel } = ActionCreators;
+
+  return {
+    randomizeChannel: () => {
+      dispatch(randomizeChannel(index));
+    }
+  };
+}
+
+@Connect(
+  mapStateToProps,
+  mapDispatchToProps
+)
 export default class ChannelEditor extends Component<IChannelEditorProps, any> {
   @Override
   public render (): JSX.Element {
@@ -37,6 +56,13 @@ export default class ChannelEditor extends Component<IChannelEditorProps, any> {
         <div className="channel-editor-header">
           <h4 className="channel-title">Channel { channel.id }</h4>
           <label>Total notes:</label> <span>{ channel.size }</span>
+
+          <input
+            type="button"
+            className="randomize-button"
+            value="Randomize"
+            onClick={ this.props.randomizeChannel }
+          />
         </div>
 
         <div className="channel-editor-body">

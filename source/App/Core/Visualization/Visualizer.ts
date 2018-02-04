@@ -2,6 +2,7 @@ import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Note from '@core/MIDI/Note';
 import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
+import Prerenderer from '@core/Visualization/Prerenderer';
 import Sequence from '@core/MIDI/Sequence';
 import Shape from '@core/Visualization/Shapes/Shape';
 import ShapeFactory from '@core/Visualization/ShapeFactory';
@@ -61,7 +62,6 @@ export default class Visualizer {
     this.stop();
 
     this._noteQueue = new NoteQueue(this._sequence);
-    const tempo: number = this._customizerManager.getTempo();
 
     this.run();
   }
@@ -180,24 +180,6 @@ export default class Visualizer {
     }
   }
 
-  private _renderShapes (dt: number): void {
-    this._refreshingCanvas.clear();
-
-    for (const shape of this._shapes) {
-      shape.tick(dt);
-
-      if (shape.shouldRefresh) {
-        shape.offsetX = this._getRefreshingShapeOffsetX();
-
-        this._renderShapeWithCanvas(shape, this._refreshingCanvas);
-      } else if (shape.shouldPrerender) {
-        shape.offsetX = 0;
-
-        this._renderShapeWithCanvas(shape, this._prerenderingCanvas);
-      }
-    }
-  }
-
   private _renderShapeWithCanvas (shape: Shape, canvas: Canvas): void {
     canvas.save();
     shape.render(canvas);
@@ -226,19 +208,33 @@ export default class Visualizer {
     const time: number = Date.now();
     const dt: number = (time - this._lastTick) / 1000;
 
+    this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
     this._lastTick = time;
     this._scrollOffset += dt * this.tempo * this._getScrollSpeedFactor();
 
-    this._renderShapes(dt);
+    this._updateShapes(dt);
     this._compositeScene();
-    this._updateCurrentBeat(dt);
     this._runShapeSpawnCheck();
     this._despawnPrerenderedShapes();
 
     requestAnimationFrame(this._tick);
   }
 
-  private _updateCurrentBeat (dt: number): void {
-    this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
+  private _updateShapes (dt: number): void {
+    this._refreshingCanvas.clear();
+
+    for (const shape of this._shapes) {
+      shape.tick(dt);
+
+      if (shape.shouldRefresh) {
+        shape.offsetX = this._getRefreshingShapeOffsetX();
+
+        this._renderShapeWithCanvas(shape, this._refreshingCanvas);
+      } else if (shape.shouldPrerender) {
+        shape.offsetX = 0;
+
+        this._renderShapeWithCanvas(shape, this._prerenderingCanvas);
+      }
+    }
   }
 }

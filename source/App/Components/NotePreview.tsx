@@ -34,6 +34,7 @@ function mapStateToProps (state: IAppState, { channelIndex }: INotePreviewProps)
 
 @Connect (mapStateToProps)
 export default class NotePreview extends Component<INotePreviewProps, any> {
+  public static readonly NOTE_Y: number = 25;
   private _previewCanvas: Canvas;
 
   @Implementation
@@ -87,18 +88,18 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
 
     switch (shapeType) {
       case ShapeTypes.BALL:
-        return new Ball().construct(40, 30, size);
+        return new Ball().construct(40, NotePreview.NOTE_Y, size);
       case ShapeTypes.BAR:
-        return new Bar().construct(10, 30, 60, size);
+        return new Bar().construct(10, NotePreview.NOTE_Y, 60, size);
       case ShapeTypes.DIAMOND:
-        return new Diamond().construct(10, 30, 60, size);
+        return new Diamond().construct(10, NotePreview.NOTE_Y, 60, size);
       case ShapeTypes.ELLIPSE:
-        return new Ellipse().construct(10, 30, 60, size);
+        return new Ellipse().construct(10, NotePreview.NOTE_Y, 60, size);
     }
   }
 
   private _renderNotePreview (): void {
-    this._previewCanvas.clear();
+    this._previewCanvas.save().clear();
 
     const shape: Shape = this._getShape();
     const effects: Effect[] = this._getEffects();
@@ -109,5 +110,7 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
 
     shape.tick(1);
     shape.render(this._previewCanvas);
+
+    this._previewCanvas.restore();
   }
 }

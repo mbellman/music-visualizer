@@ -1,6 +1,6 @@
 import AudioFile from '@core/Audio/AudioFile';
 import Sequence from '@core/MIDI/Sequence';
-import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
+import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction, IChannelAction } from '@state/ActionTypes';
 import { AudioControl, ViewMode } from '@state/Types';
 import { EffectTypes, ICustomizerSettings, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
 import { Extension } from '@base';
@@ -31,6 +31,13 @@ export namespace ActionCreators {
     return {
       type: ActionTypes.CONTROL_AUDIO,
       payload: audioControl
+    };
+  }
+
+  export function randomizeChannel (channelIndex: number): IChannelAction {
+    return {
+      type: ActionTypes.RANDOMIZE_CHANNEL,
+      channelIndex
     };
   }
 

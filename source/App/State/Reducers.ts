@@ -1,10 +1,11 @@
 import Channel from '@core/MIDI/Channel';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Sequence from '@core/MIDI/Sequence';
-import { ActionTypes, IAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
-import { EffectTypes, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
+import { ActionTypes, IAction, IChannelAction, ICustomizerSettingsAction, IEffectAction, IShapeAction } from '@state/ActionTypes';
+import { AppUtils } from '@core/AppUtils';
+import { AudioControl, IAppState, IPlaylistTrack, ViewMode } from '@state/Types';
+import { EffectTypes, ICustomizer, ICustomizerSettings, IEffectsCustomizer, IEffectTemplate, IShapeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Extension, Utils } from '@base';
-import { IAppState, IPlaylistTrack, ViewMode, AudioControl } from '@state/Types';
 import { initialCustomizerState, initialFillTemplate, initialGlowTemplate, initialShapeTemplate, initialState, initialStrokeTemplate } from '@state/Initializers';
 
 function changeCustomizerProp <K extends keyof ICustomizer>(state: IAppState, prop: K, value: ICustomizer[K]): IAppState {
@@ -82,6 +83,38 @@ function jumpToPlaylistTrack (state: IAppState, index: number): IAppState {
       sequence
     }
   };
+}
+
+function randomizeChannel (state: IAppState, channelIndex: number): IAppState {
+  state = setShapeTemplateProps(state, channelIndex, {
+    shapeType: Utils.pick([
+      ShapeTypes.BAR,
+      ShapeTypes.BALL,
+      ShapeTypes.DIAMOND,
+      ShapeTypes.ELLIPSE
+    ])
+  });
+
+  state = setEffectTemplateProps(state, EffectTypes.FILL, channelIndex, {
+    color: AppUtils.randomHexColor(),
+    isSelected: Utils.chance(),
+    isDelayed: Utils.chance()
+  });
+
+  state = setEffectTemplateProps(state, EffectTypes.STROKE, channelIndex, {
+    color: AppUtils.randomHexColor(),
+    width: Utils.random(0, 5),
+    isSelected: Utils.chance(),
+    isDelayed: Utils.chance()
+  });
+
+  state = setEffectTemplateProps(state, EffectTypes.GLOW, channelIndex, {
+    color: AppUtils.randomHexColor(),
+    blur: Utils.random(5, 30),
+    isSelected: Utils.chance()
+  });
+
+  return state;
 }
 
 function setCustomizerSettings (state: IAppState, updatedSettings: Partial<ICustomizerSettings>): IAppState {
@@ -165,6 +198,11 @@ export function appReducer (state: IAppState = initialState, action: IAction): I
     }
     case ActionTypes.PREVIOUS_PLAYLIST_TRACK: {
       return jumpToPlaylistTrack(state, state.selectedPlaylistTrack.index - 1);
+    }
+    case ActionTypes.RANDOMIZE_CHANNEL: {
+      const { channelIndex } = action as IChannelAction;
+
+      return randomizeChannel(state, channelIndex);
     }
     case ActionTypes.RESET_CUSTOMIZER: {
       return changeSelectedPlaylistTrackProp(state, 'customizer', initialCustomizerState);

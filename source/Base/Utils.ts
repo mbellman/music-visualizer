@@ -9,6 +9,10 @@ export namespace Utils {
     }
   }
 
+  export function chance (): boolean {
+    return Math.random() < 0.5;
+  }
+
   export function clamp (n: number, lowest: number, highest: number): number {
     if ( n >= lowest && n <= highest) {
       return n;
@@ -19,6 +23,10 @@ export namespace Utils {
 
   export function clone <T>(object: T): T {
     return JSON.parse(JSON.stringify(object));
+  }
+
+  export function pick <T>(array: T[]): T {
+    return array[Utils.random(0, array.length - 1)];
   }
 
   export function random (lowest: number, highest: number): number {
