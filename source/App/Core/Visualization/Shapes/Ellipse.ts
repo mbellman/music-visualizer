@@ -10,6 +10,9 @@ export default class Ellipse extends LongShape {
   protected draw (canvas: Canvas): void {
     const { pixelX, pixelY, width, height } = this;
 
+    // Canvas.ellipse() centers the Ellipse at the provided X
+    // coordinate, so in order to set the left edge of the Ellipse
+    // at the pixel X coordinate we simply add half the width.
     canvas.ellipse(pixelX + width / 2, pixelY, width, height);
   }
 }

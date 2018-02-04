@@ -6,6 +6,11 @@ export default abstract class LongShape extends Shape implements IPoolable<LongS
   protected height: number;
   protected width: number;
 
+  @Implementation
+  public get size (): number {
+    return this.width;
+  }
+
   @Override
   public construct (x: number, y: number, width: number, height: number): this {
     super.construct(x, y);

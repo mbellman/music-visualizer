@@ -18,6 +18,7 @@ export default class Visualizer {
 
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
+  public static readonly PRERENDERING_WIDTH_FACTOR: number = 3;
   public static readonly TICK_CONSTANT: number = 0.01667;
   private _canvas: Canvas;
   private _currentBeat: number = 0;
@@ -25,7 +26,7 @@ export default class Visualizer {
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
-  private _prerenderingCanvas: Canvas = new Canvas();
+  private _prerenderer: Prerenderer = new Prerenderer();
   private _refreshingCanvas: Canvas = new Canvas();
   private _scrollOffset: number = 0;
   private _sequence: Sequence;
@@ -76,7 +77,7 @@ export default class Visualizer {
   public setSize (width: number, height: number): void {
     this._canvas.setSize(width, height);
     this._refreshingCanvas.setSize(width, height);
-    this._prerenderingCanvas.setSize(3 * width, height);
+    this._prerenderer.setSize(width, height);
   }
 
   public stop (): void {
@@ -86,10 +87,11 @@ export default class Visualizer {
 
     this._canvas.clear();
     this._refreshingCanvas.clear();
-    this._prerenderingCanvas.clear();
+    this._prerenderer.clear();
 
     this._currentBeat = 0;
     this._isRunning = false;
+    this._noteQueue = null;
     this._scrollOffset = 0;
     this._shapes.length = 0;
   }
@@ -108,11 +110,7 @@ export default class Visualizer {
   private _compositeScene (): void {
     this._canvas.clear();
 
-    this._canvas.image(
-      this._prerenderingCanvas.element, this._getPrerenderingCanvasClipX(), 0, this.width, this.height,
-      this._getPrerenderingCanvasDestinationX(), 0, this.width, this.height
-    );
-
+    this._prerenderer.clipOnto(this._canvas, this._getPrerendererCanvasTargetX(), this._getPrerendererCanvasClipX());
     this._canvas.image(this._refreshingCanvas.element, 0, 0);
   }
 
@@ -140,7 +138,7 @@ export default class Visualizer {
    * Visualizer width, this value will remain at 0. From there it will increase in
    * proportion to the scroll offset.
    */
-  private _getPrerenderingCanvasClipX (): number {
+  private _getPrerendererCanvasClipX (): number {
     return Math.max(0, this._scrollOffset - this.width);
   }
 
@@ -150,7 +148,7 @@ export default class Visualizer {
    * value, decreases to 0 as the scroll offset increases, and stops at 0 once
    * the scroll offset exceeds the width.
    */
-  private _getPrerenderingCanvasDestinationX (): number {
+  private _getPrerendererCanvasTargetX (): number {
     return Math.max(0, this.width - this._scrollOffset);
   }
 
@@ -174,16 +172,10 @@ export default class Visualizer {
    */
   private _getRefreshingShapeOffsetX (): number {
     if (this._scrollOffset < this.width) {
-      return this._getPrerenderingCanvasDestinationX();
+      return this._getPrerendererCanvasTargetX();
     } else {
-      return -1 * this._getPrerenderingCanvasClipX();
+      return -1 * this._getPrerendererCanvasClipX();
     }
-  }
-
-  private _renderShapeWithCanvas (shape: Shape, canvas: Canvas): void {
-    canvas.save();
-    shape.render(canvas);
-    canvas.restore();
   }
 
   private _runShapeSpawnCheck (): void {
@@ -229,11 +221,11 @@ export default class Visualizer {
       if (shape.shouldRefresh) {
         shape.offsetX = this._getRefreshingShapeOffsetX();
 
-        this._renderShapeWithCanvas(shape, this._refreshingCanvas);
+        this._refreshingCanvas.save();
+        shape.render(this._refreshingCanvas);
+        this._refreshingCanvas.restore();
       } else if (shape.shouldPrerender) {
-        shape.offsetX = 0;
-
-        this._renderShapeWithCanvas(shape, this._prerenderingCanvas);
+        this._prerenderer.prerender(shape);
       }
     }
   }

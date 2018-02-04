@@ -43,8 +43,8 @@ export default class Canvas {
     return this;
   }
 
-  public clear (): this {
-    this._context.clearRect(0, 0, this.width, this.height);
+  public clear (x: number = 0, y: number = 0, width: number = this.width, height: number = this.height): this {
+    this._context.clearRect(x, y, width, height);
 
     return this;
   }

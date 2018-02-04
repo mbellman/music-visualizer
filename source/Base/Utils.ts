@@ -25,6 +25,10 @@ export namespace Utils {
     return JSON.parse(JSON.stringify(object));
   }
 
+  export function modulo (n: number, k: number): number {
+    return ((n % k) + k) % k;
+  }
+
   export function pick <T>(array: T[]): T {
     return array[Utils.random(0, array.length - 1)];
   }

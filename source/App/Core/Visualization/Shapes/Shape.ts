@@ -38,13 +38,15 @@ export default abstract class Shape implements IPoolable<Shape> {
     return this._effects;
   }
 
-  protected get pixelX (): number {
+  public get pixelX (): number {
     return this.x + this.offsetX;
   }
 
-  protected get pixelY (): number {
+  public get pixelY (): number {
     return this.y + this.offsetY;
   }
+
+  public abstract get size (): number;
 
   @Implementation
   public construct (x: number, y: number, ...args: any[]): this {

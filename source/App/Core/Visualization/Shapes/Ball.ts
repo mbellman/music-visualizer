@@ -8,6 +8,11 @@ export default class Ball extends Shape implements IPoolable<Ball> {
   public type: ShapeTypes = ShapeTypes.BALL;
   private _radius: number;
 
+  @Implementation
+  public get size (): number {
+    return 2 * this._radius;
+  }
+
   @Override
   public construct (x: number, y: number, radius: number): this {
     super.construct(x, y);
@@ -26,6 +31,8 @@ export default class Ball extends Shape implements IPoolable<Ball> {
 
   @Implementation
   protected draw (canvas: Canvas): void {
-    canvas.circle(this.pixelX, this.pixelY, this._radius);
+    // We render the Ball {{_radius}} pixels to the right
+    // to ensure its left edge aligns with {{pixelX}}.
+    canvas.circle(this.pixelX + this._radius, this.pixelY, this._radius);
   }
 }

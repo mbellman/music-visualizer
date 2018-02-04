@@ -88,7 +88,7 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
 
     switch (shapeType) {
       case ShapeTypes.BALL:
-        return new Ball().construct(40, NotePreview.NOTE_Y, size);
+        return new Ball().construct(28, NotePreview.NOTE_Y, size);
       case ShapeTypes.BAR:
         return new Bar().construct(10, NotePreview.NOTE_Y, 60, size);
       case ShapeTypes.DIAMOND:
