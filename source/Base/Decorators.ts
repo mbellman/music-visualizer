@@ -1,7 +1,4 @@
-import { Constructor } from "Base/Types";
-
-type ClassDecorator<T> = (constructor: Constructor<T>) => any;
-type MethodDecorator = (target: any, method: string, descriptor: PropertyDescriptor) => any;
+import { Constructor, IHashMap, Method } from 'Base/Types';
 
 interface IClassTaxonomy {
   prototype: any;
@@ -49,24 +46,6 @@ export function Implementation (target: any, method: string): void {
   if (!!taxonomy.prototype[method]) {
     console.warn(`Invalid @Implements: Method '${method}' on class ${taxonomy.name} already exists on base class ${taxonomy.parent}!`);
   }
-}
-
-export function Mix <T>(...mixins: any[]): ClassDecorator<T> {
-  return (constructor: Constructor<T>) => {
-    mixins.forEach((mixin: any) => {
-      Object.keys(mixin).forEach((key: string) => {
-        constructor.prototype[key] = function () {
-          try {
-            mixin[key].apply(this, arguments);
-          } catch (e) {
-            console.warn(`Invalid @Mix: Error in mixin '${key}' on target class '${constructor.name}':`);
-
-            throw e;
-          }
-        };
-      });
-    });
-  };
 }
 
 export function Override (target: any, method: string): void {

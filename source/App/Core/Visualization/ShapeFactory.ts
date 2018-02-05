@@ -48,7 +48,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
   public request (channelIndex: number, note: Note): Shape {
     const selectedEffectTemplates: IEffectTemplate[] = this._selectedTemplateCache[channelIndex];
 
-    if (selectedEffectTemplates.length === 0) {
+    if (note.duration === 0 || selectedEffectTemplates.length === 0) {
       return null;
     }
 
@@ -136,7 +136,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
 
       if (effectType === EffectTypes.GLOW) {
         // The Glow effect uniquely depends on the duration
-        // of provided Note to determine its fade-out time.
+        // of provided Note to determine its fade-out time
         const notePlayTime: number = note.duration / this._customizerManager.getBeatsPerSecond();
 
         (effect as Glow)

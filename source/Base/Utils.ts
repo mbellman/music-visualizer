@@ -14,7 +14,7 @@ export namespace Utils {
   }
 
   export function clamp (n: number, lowest: number, highest: number): number {
-    if ( n >= lowest && n <= highest) {
+    if (n >= lowest && n <= highest) {
       return n;
     }
 

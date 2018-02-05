@@ -8,6 +8,7 @@ export default abstract class Shape implements IPoolable<Shape> {
   public abstract type: ShapeTypes;
   public offsetX: number = 0;
   public offsetY: number = 0;
+
   /**
    * Both {{shouldPrerender}} and {{shouldRefresh}} are flags which determine
    * where a Shape is to be drawn during the next render pass. The Visualizer
@@ -25,6 +26,7 @@ export default abstract class Shape implements IPoolable<Shape> {
    */
   public shouldPrerender: boolean = false;
   public shouldRefresh: boolean = false;
+
   protected x: number = 0;
   protected y: number = 0;
   private _age: number = 0;
@@ -92,6 +94,8 @@ export default abstract class Shape implements IPoolable<Shape> {
    * piped Effects.
    */
   public render (canvas: Canvas): void {
+    canvas.save();
+
     this.draw(canvas);
 
     for (let i = 0; i < this._effects.length; i++) {
@@ -101,6 +105,8 @@ export default abstract class Shape implements IPoolable<Shape> {
         effect.draw(canvas);
       }
     }
+
+    canvas.restore();
   }
 
   /**

@@ -28,7 +28,7 @@ export default class Visualizer {
   private _noteQueue: NoteQueue;
   private _prerenderer: Prerenderer = new Prerenderer();
   private _refreshingCanvas: Canvas = new Canvas();
-  private _scrollOffset: number = 0;
+  private _scrollX: number = 0;
   private _sequence: Sequence;
   private _shapeFactory: ShapeFactory;
   private _shapes: Shape[] = [];
@@ -92,7 +92,7 @@ export default class Visualizer {
     this._currentBeat = 0;
     this._isRunning = false;
     this._noteQueue = null;
-    this._scrollOffset = 0;
+    this._scrollX = 0;
     this._shapes.length = 0;
   }
 
@@ -110,7 +110,7 @@ export default class Visualizer {
   private _compositeScene (): void {
     this._canvas.clear();
 
-    this._prerenderer.clipOnto(this._canvas, this._getPrerendererCanvasTargetX(), this._getPrerendererCanvasClipX());
+    this._prerenderer.superimpose(this._canvas);
     this._canvas.image(this._refreshingCanvas.element, 0, 0);
   }
 
@@ -132,26 +132,6 @@ export default class Visualizer {
     }
   }
 
-  /**
-   * Determines the X coordinate at which to start clipping the prerendering Canvas
-   * for superimposition onto the main Canvas. Until the scroll offset exceeds the
-   * Visualizer width, this value will remain at 0. From there it will increase in
-   * proportion to the scroll offset.
-   */
-  private _getPrerendererCanvasClipX (): number {
-    return Math.max(0, this._scrollOffset - this.width);
-  }
-
-  /**
-   * Determines the X coordinate at which to superimpose the prerendering Canvas
-   * onto the main Canvas. This value starts starts out as the Visualizer width
-   * value, decreases to 0 as the scroll offset increases, and stops at 0 once
-   * the scroll offset exceeds the width.
-   */
-  private _getPrerendererCanvasTargetX (): number {
-    return Math.max(0, this.width - this._scrollOffset);
-  }
-
   private _getScrollSpeedFactor (): number {
     const { scrollSpeed } = this._customizerManager.getCustomizerSettings();
 
@@ -159,23 +139,22 @@ export default class Visualizer {
   }
 
   /**
-   * Determines the X offset for a Shape rendered on the refreshing Canvas. The
-   * offset value displaces the Shape from its initial X coordinate, and does not
-   * represent its actual pixel coordinate value. While the scroll offset is less
-   * than the Visualizer width, and while the prerendering Canvas is being scrolled
-   * into view, we want this offset to equal the prerendering Canvas destination X
-   * coordinate to ensure refreshed Shapes align with prerendered Shapes. Once the
-   * scroll offset exceeds the Visualizer width, we need to offset any refreshing
-   * Shapes backward in proportion to the prerendering Canvas clip X coordinate as
-   * to maintain that alignment; otherwise, refreshed Shapes would render further
-   * and further to the right until they disappeared from view.
+   * Draws a Shape to the refreshing Canvas, rather than
+   * prerendering it. When the current scroll X is beyond
+   * the width of the Visualizer, we need to offset the
+   * Shape back into view; otherwise we just need to offset
+   * it from the right edge in proportion to the current
+   * scroll offset. In both cases the goal is to keep it
+   * aligned with what exists on the Prendererer Canvas.
    */
-  private _getRefreshingShapeOffsetX (): number {
-    if (this._scrollOffset < this.width) {
-      return this._getPrerendererCanvasTargetX();
+  private _refreshShape (shape: Shape): void {
+    if (this._scrollX > this.width) {
+      shape.offsetX = -1 * (this._scrollX - this.width);
     } else {
-      return -1 * this._getPrerendererCanvasClipX();
+      shape.offsetX = this.width - this._scrollX;
     }
+
+    shape.render(this._refreshingCanvas);
   }
 
   private _runShapeSpawnCheck (): void {
@@ -202,14 +181,20 @@ export default class Visualizer {
 
     this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
     this._lastTick = time;
-    this._scrollOffset += dt * this.tempo * this._getScrollSpeedFactor();
 
+    this._updateScroll(dt);
     this._updateShapes(dt);
     this._compositeScene();
     this._runShapeSpawnCheck();
     this._despawnPrerenderedShapes();
 
     requestAnimationFrame(this._tick);
+  }
+
+  private _updateScroll (dt: number): void {
+    this._scrollX += dt * this.tempo * this._getScrollSpeedFactor();
+
+    this._prerenderer.scrollTo(this._scrollX);
   }
 
   private _updateShapes (dt: number): void {
@@ -219,11 +204,7 @@ export default class Visualizer {
       shape.tick(dt);
 
       if (shape.shouldRefresh) {
-        shape.offsetX = this._getRefreshingShapeOffsetX();
-
-        this._refreshingCanvas.save();
-        shape.render(this._refreshingCanvas);
-        this._refreshingCanvas.restore();
+        this._refreshShape(shape);
       } else if (shape.shouldPrerender) {
         this._prerenderer.prerender(shape);
       }

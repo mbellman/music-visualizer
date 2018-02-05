@@ -6,6 +6,7 @@ import { IPoolable } from '@core/Pool';
 
 export default abstract class Effect implements IPoolable<Effect> {
   public abstract type: EffectTypes;
+
   /**
    * Determines whether the Effect has been permanently prerendered by the
    * Visualizer, and requires no further updates or redraws. This flag is
@@ -15,6 +16,7 @@ export default abstract class Effect implements IPoolable<Effect> {
    * for deallocation.
    */
   public isPrerendered: boolean = false;
+
   private _delay: number = 0;
   private _parentShape: Shape;
 

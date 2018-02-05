@@ -49,6 +49,12 @@ export default class Canvas {
     return this;
   }
 
+  public clip (): this {
+    this._context.clip();
+
+    return this;
+  }
+
   public closePath (): this {
     this._context.closePath();
 
