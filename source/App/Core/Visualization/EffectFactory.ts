@@ -11,23 +11,16 @@ import { IHashMap } from 'Base/Types';
 import { Implementation } from '@base';
 
 export default class EffectFactory implements IPoolableFactory<Effect> {
-  private _fillPool: Pool<Fill> = new Pool(Fill, 250);
-  private _glowPool: Pool<Glow> = new Pool(Glow, 250);
-  private _poolMap: IHashMap<Pool<Effect>>;
-  private _strokePool: Pool<Stroke> = new Pool(Stroke, 250);
-
-  public constructor () {
-    this._poolMap = {
-      [EffectTypes.FILL]: this._fillPool,
-      [EffectTypes.GLOW]: this._glowPool,
-      [EffectTypes.STROKE]: this._strokePool
-    };
-  }
+  private _effectPools: IHashMap<Pool<Effect>> = {
+    [EffectTypes.FILL]: new Pool(Fill, 250),
+    [EffectTypes.GLOW]: new Pool(Glow, 250),
+    [EffectTypes.STROKE]: new Pool(Stroke, 250)
+  };
 
   @Implementation
   public request (effectTemplate: IEffectTemplate): Effect {
     const { effectType } = effectTemplate;
-    const effect: Effect = this._poolMap[effectType].request() as Effect;
+    const effect: Effect = this._effectPools[effectType].request() as Effect;
 
     switch (effectType) {
       case EffectTypes.FILL: {
@@ -52,6 +45,6 @@ export default class EffectFactory implements IPoolableFactory<Effect> {
   public return (effect: Effect): void {
     const { type } = effect;
 
-    this._poolMap[type].return(effect);
+    this._effectPools[type].return(effect);
   }
 }

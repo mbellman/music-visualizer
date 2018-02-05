@@ -18,7 +18,6 @@ export default class Visualizer {
 
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
-  public static readonly PRERENDERING_WIDTH_FACTOR: number = 3;
   public static readonly TICK_CONSTANT: number = 0.01667;
   private _canvas: Canvas;
   private _currentBeat: number = 0;

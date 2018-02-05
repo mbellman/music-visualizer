@@ -1,6 +1,5 @@
-import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import Canvas from '@core/Graphics/Canvas';
 import Shape from '@core/Visualization/Shapes/Shape';
-import Visualizer from '@core/Visualization/Visualizer';
 import { Utils } from '@base';
 
 /**
