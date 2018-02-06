@@ -1,17 +1,16 @@
 import NumberField, { INumberFieldProps } from '@components/Toolkit/NumberField';
 import { ActionCreators } from '@state/ActionCreators';
-import { AnyComponent } from 'preact';
-import { Callback } from '@base';
-import { connect } from 'preact-redux';
+import { Callback, Override } from '@base';
+import { cloneElement, Component, h } from 'preact';
+import { Connect } from '@components/Toolkit/Decorators';
 import { Dispatch } from 'redux';
 import { IAppState } from '@state/Types';
 import { ICustomizerSettings } from '@core/Visualization/Types';
 import '@styles/CustomizerSettingField.less';
 
 interface ICustomizerSettingFieldPropsFromState {
-  className?: string;
   name?: keyof ICustomizerSettings;
-  value?: number;
+  value?: string | number;
 }
 
 interface ICustomizerSettingFieldPropsFromDispatch {
@@ -19,7 +18,6 @@ interface ICustomizerSettingFieldPropsFromDispatch {
 }
 
 interface ICustomizerSettingFieldProps extends ICustomizerSettingFieldPropsFromState, ICustomizerSettingFieldPropsFromDispatch {
-  label: string;
   setting: keyof ICustomizerSettings;
 }
 
@@ -27,7 +25,6 @@ function mapStateToProps ({ selectedPlaylistTrack }: IAppState, { setting }: ICu
   const { settings } = selectedPlaylistTrack.customizer;
 
   return {
-    className: 'customizer-setting-field',
     name: setting,
     value: settings[setting]
   };
@@ -45,9 +42,28 @@ function mapDispatchToProps (dispatch: Dispatch<IAppState>, { setting }: ICustom
   };
 }
 
-const CustomizerSettingField = connect(
+@Connect(
   mapStateToProps,
   mapDispatchToProps
-)(NumberField as AnyComponent<any, any>);
+)
+export default class CustomizerSettingField extends Component<ICustomizerSettingFieldProps, any> {
+  @Override
+  public render (): JSX.Element {
+    const { name, value, onChange } = this.props;
 
-export default CustomizerSettingField;
+    return (
+      <span>
+        {
+          this.props.children.map((child: JSX.Element) => {
+            return cloneElement(child, {
+              className: 'customizer-setting-field',
+              name,
+              value,
+              onChange
+            });
+          })
+        }
+      </span>
+    );
+  }
+}

@@ -1,10 +1,16 @@
 import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Visualizer from '@core/Visualization/Visualizer';
-import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate } from '@core/Visualization/Types';
+import { EffectTypes, IEffectsCustomizer, IEffectTemplate, IShapeTemplate, ICustomizerSettings } from '@core/Visualization/Types';
 import { Extension } from '@base';
 import { IAppState } from '@state/Types';
 
 export namespace Selectors {
+  export function getCustomizerSettings ({ selectedPlaylistTrack}: IAppState): ICustomizerSettings {
+    const { settings } = selectedPlaylistTrack.customizer;
+
+    return settings;
+  }
+
   export function getShapeTemplate ({ selectedPlaylistTrack }: IAppState, channelIndex: number): IShapeTemplate {
     const { customizer } = selectedPlaylistTrack;
 

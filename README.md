@@ -14,10 +14,15 @@ To-do:
 
 **UI**
 * An a note size adjustment field
-* Add an active tracks list (?)
 
 **Code cleanup**
-* Create an AudioPlayer component for handling delay behavior
+* Reducer refactoring
+* - Remove playlist/selected track stuff
+* - Use combineReducers with separate reducer functions:
+* - - audioFile
+* - - sequence
+* - - customizer
+* - - viewMode
+* Create an AudioPlayer component for handling delay behavior/clean up PlayerControls component
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
-* Remove Sequence/Channel/Note stuff from MIDI directory
 * MidiLoader tidying

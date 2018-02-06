@@ -36,7 +36,7 @@ export default class NumberField extends Component<INumberFieldProps, any> {
     const { onChange } = this.props;
 
     if (onChange) {
-      onChange(parseInt(value));
+      onChange(parseFloat(value));
     }
   }
 }

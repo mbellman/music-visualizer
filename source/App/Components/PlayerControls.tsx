@@ -76,6 +76,9 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
         <button class="restart-button" onClick={ this._onClickRestart }>
           ❚◄◄
         </button>
+        <button onClick={ this._onClickDownload }>
+          ⇓
+        </button>
         <button onClick={ this._onClickPlayPause }>
           { isRunning ? `❚❚` : '►' }
         </button>
@@ -92,6 +95,16 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
     this.props.controlAudio(AudioControl.STOP);
     this.props.changeView(ViewMode.EDITOR);
+  }
+
+  @Bind
+  private _onClickDownload (): void {
+    const { visualizer } = this.props;
+
+    visualizer.startDownloadingFrames();
+
+    this.props.controlAudio(AudioControl.STOP);
+    this._restartVisualizer();
   }
 
   @Bind
@@ -114,14 +127,8 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
   @Bind
   private _onClickRestart (): void {
-    const { visualizer } = this.props;
-
-    visualizer.restart();
+    this._restartVisualizer();
     this._restartAudio();
-
-    this.setState({
-      isRunning: true
-    });
   }
 
   private _pauseAudio (): void {
@@ -135,7 +142,7 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
   }
 
   @Bind
-  private _playAudio (): void {
+  private _playAudioImmediately (): void {
     this._pendingAudioDelay = 0;
 
     this.props.controlAudio(AudioControl.PLAY);
@@ -146,9 +153,9 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
       window.clearTimeout(this._playAudioTimeout);
 
       this._lastPlayAudioTime = Date.now();
-      this._playAudioTimeout = window.setTimeout(this._playAudio, this._pendingAudioDelay);
+      this._playAudioTimeout = window.setTimeout(this._playAudioImmediately, this._pendingAudioDelay);
     } else {
-      this._playAudio();
+      this._playAudioImmediately();
     }
   }
 
@@ -165,5 +172,15 @@ export default class PlayerControls extends Component<IPlayerControlsProps, IPla
 
     this._resetPendingAudioDelay();
     this._playAudioMaybeDelayed();
+  }
+
+  private _restartVisualizer (): void {
+    const { visualizer } = this.props;
+
+    visualizer.restart();
+
+    this.setState({
+      isRunning: true
+    });
   }
 }

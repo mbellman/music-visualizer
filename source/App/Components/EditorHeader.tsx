@@ -1,5 +1,7 @@
 import AudioFile from '@core/Audio/AudioFile';
+import ColorField from '@components/Toolkit/ColorField';
 import CustomizerSettingField from '@components/CustomizerSettingField';
+import NumberField from '@components/Toolkit/NumberField';
 import Sequence from '@core/MIDI/Sequence';
 import { ActionCreator, bindActionCreators, Dispatch } from 'redux';
 import { ActionCreators } from '@state/ActionCreators';
@@ -57,10 +59,25 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
         </div>
 
         <div class="customizer-setting-fields">
-          <CustomizerSettingField label="Tempo" setting="tempo" />
-          <CustomizerSettingField label="Scroll speed" setting="scrollSpeed" />
-          <CustomizerSettingField label="Focus delay" setting="focusDelay" />
-          <CustomizerSettingField label="Audio delay" setting="audioDelay" />
+          <CustomizerSettingField setting="tempo">
+            <NumberField label="Tempo" />
+          </CustomizerSettingField>
+
+          <CustomizerSettingField setting="scrollSpeed">
+            <NumberField label="Scroll speed" />
+          </CustomizerSettingField>
+
+          <CustomizerSettingField setting="focusDelay">
+            <NumberField label="Focus delay" />
+          </CustomizerSettingField>
+
+          <CustomizerSettingField setting="audioDelay">
+            <NumberField label="Audio delay" />
+          </CustomizerSettingField>
+
+          <CustomizerSettingField setting="backgroundColor">
+            <ColorField label="Background color" />
+          </CustomizerSettingField>
         </div>
 
         <input className="play-button" type="button" onClick={ this._showVisualizer } value="Play" />

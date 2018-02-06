@@ -61,6 +61,7 @@ export interface ICustomizer {
 }
 
 export interface ICustomizerSettings {
+  backgroundColor: string;
   scrollSpeed: number;
   focusDelay: number;
   audioDelay: number;

@@ -8,6 +8,7 @@ import Shape from '@core/Visualization/Shapes/Shape';
 import ShapeFactory from '@core/Visualization/ShapeFactory';
 import { Bind } from '@base';
 import { EffectTypes, ICustomizer } from '@core/Visualization/Types';
+import { setTimeout } from 'core-js/library/web/timers';
 
 export default class Visualizer {
   public static readonly EFFECT_TYPES: EffectTypes[] = [
@@ -19,9 +20,18 @@ export default class Visualizer {
   public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
   public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
   public static readonly TICK_CONSTANT: number = 0.01667;
+
+  /**
+   * The delay in milliseconds before every render/frame download
+   * cycle when {{_shouldDownloadFrames}} is set to true.
+   */
+  public static readonly FRAME_DOWNLOAD_DELAY: number = 100;
+
   private _canvas: Canvas;
   private _currentBeat: number = 0;
   private _customizerManager: CustomizerManager;
+  private _frame: number = 0;
+  private _imageDataLink: HTMLAnchorElement = document.createElement('a');
   private _isRunning: boolean = false;
   private _lastTick: number;
   private _noteQueue: NoteQueue;
@@ -31,6 +41,14 @@ export default class Visualizer {
   private _sequence: Sequence;
   private _shapeFactory: ShapeFactory;
   private _shapes: Shape[] = [];
+
+  /**
+   * Determines whether the Visualizer should render and save frames
+   * to disk every {{FRAME_DOWNLOAD_DELAY}} milliseconds. If false,
+   * the Visualizer runs in real time and only renders the scene,
+   * without triggering frame downloads.
+   */
+  private _shouldDownloadFrames: boolean = false;
 
   public constructor (element: HTMLCanvasElement) {
     this._canvas = new Canvas(element);
@@ -79,6 +97,10 @@ export default class Visualizer {
     this._prerenderer.setSize(width, height);
   }
 
+  public startDownloadingFrames (): void {
+    this._shouldDownloadFrames = true;
+  }
+
   public stop (): void {
     for (const shape of this._shapes) {
       this._shapeFactory.return(shape);
@@ -89,6 +111,7 @@ export default class Visualizer {
     this._prerenderer.clear();
 
     this._currentBeat = 0;
+    this._frame = 0;
     this._isRunning = false;
     this._noteQueue = null;
     this._scrollX = 0;
@@ -107,7 +130,13 @@ export default class Visualizer {
   }
 
   private _compositeScene (): void {
-    this._canvas.clear();
+    const { backgroundColor } = this._customizerManager.getCustomizerSettings();
+    const { width, height } = this._canvas;
+
+    this._canvas
+      .set(DrawSetting.FILL_COLOR, '#' + backgroundColor)
+      .rectangle(0, 0, width, height)
+      .fill();
 
     this._prerenderer.superimpose(this._canvas);
     this._canvas.image(this._refreshingCanvas.element, 0, 0);
@@ -129,6 +158,16 @@ export default class Visualizer {
 
       i++;
     }
+  }
+
+  private _downloadFrame (): void {
+    const imageData: string = this._canvas.element.toDataURL();
+    const filename: string = 'frame_' + `${this._frame}`.padStart(5, '0');
+
+    this._imageDataLink.href = imageData;
+    this._imageDataLink.download = filename;
+
+    this._imageDataLink.click();
   }
 
   private _getScrollSpeedFactor (): number {
@@ -176,9 +215,10 @@ export default class Visualizer {
     }
 
     const time: number = Date.now();
-    const dt: number = (time - this._lastTick) / 1000;
+    const dt: number = this._shouldDownloadFrames ? Visualizer.TICK_CONSTANT : (time - this._lastTick) / 1000;
 
     this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
+    this._frame++;
     this._lastTick = time;
 
     this._updateScroll(dt);
@@ -187,7 +227,13 @@ export default class Visualizer {
     this._runShapeSpawnCheck();
     this._despawnPrerenderedShapes();
 
-    requestAnimationFrame(this._tick);
+    if (this._shouldDownloadFrames) {
+      this._downloadFrame();
+
+      setTimeout(this._tick, Visualizer.FRAME_DOWNLOAD_DELAY);
+    } else {
+      requestAnimationFrame(this._tick);
+    }
   }
 
   private _updateScroll (dt: number): void {

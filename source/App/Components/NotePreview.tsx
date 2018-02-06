@@ -17,6 +17,7 @@ import { Selectors } from '@state/Selectors';
 import '@styles/NotePreview.less';
 
 interface INotePreviewPropsFromState {
+  backgroundColor?: string;
   shapeTemplate?: IShapeTemplate;
   effectTemplates?: Extension<IEffectTemplate>[];
 }
@@ -26,7 +27,10 @@ interface INotePreviewProps extends INotePreviewPropsFromState {
 }
 
 function mapStateToProps (state: IAppState, { channelIndex }: INotePreviewProps): INotePreviewPropsFromState {
+  const { backgroundColor } = Selectors.getCustomizerSettings(state);
+
   return {
+    backgroundColor,
     shapeTemplate: Selectors.getShapeTemplate(state, channelIndex),
     effectTemplates: Selectors.getEffectTemplates(state, channelIndex)
   };
@@ -99,7 +103,14 @@ export default class NotePreview extends Component<INotePreviewProps, any> {
   }
 
   private _renderNotePreview (): void {
-    this._previewCanvas.save().clear();
+    const { backgroundColor } = this.props;
+    const { width, height } = this._previewCanvas;
+
+    this._previewCanvas
+      .set(DrawSetting.FILL_COLOR, '#' + backgroundColor)
+      .rectangle(0, 0, width, height)
+      .fill()
+      .save();
 
     const shape: Shape = this._getShape();
     const effects: Effect[] = this._getEffects();
