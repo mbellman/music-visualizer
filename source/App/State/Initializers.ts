@@ -36,8 +36,8 @@ export const initialCustomizerState: ICustomizer = {
     focusDelay: 2500,
     audioDelay: 1000,
     tempo: 0,
-    width: 1190,
-    height: 640
+    width: 1280,
+    height: 720
   },
   shapes: {},
   effects: {

@@ -1,4 +1,5 @@
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import Ease from '@core/Ease';
 import Effect from '@core/Visualization/Effects/Effect';
 import { EffectTypes } from '@core/Visualization/Types';
 import { Implementation, Override } from '@base';
@@ -78,7 +79,7 @@ export default class Glow extends Effect implements IPoolable<Glow> {
   private _getBlurMultiplier (): number {
     const elapsedFadeOutTime: number = this.activeAge - this._fadeInTime;
 
-    return this._isFadingIn() ? (this.activeAge / this._fadeInTime) : 1 - (elapsedFadeOutTime / this._fadeOutTime);
+    return this._isFadingIn() ? (this.activeAge / this._fadeInTime) : Ease.outQuad(elapsedFadeOutTime / this._fadeOutTime);
   }
 
   private _isFadingIn (): boolean {

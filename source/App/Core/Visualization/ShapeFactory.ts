@@ -14,6 +14,15 @@ import { EffectTypes, ICustomizer, IEffectTemplate, ShapeTypes } from '@core/Vis
 import { Extension, IHashMap, Implementation } from '@base';
 
 export default class ShapeFactory implements IPoolableFactory<Shape> {
+  public static readonly NOTE_SPREAD_FACTOR: number = 1.8;
+
+  /**
+   * An additional X offset to apply to all Shapes on construction,
+   * ensuring that Notes with 0 delay aren't rendered and potentially
+   * clipped on the left edge of the Prerenderer Canvas.
+   */
+  public static readonly SHAPE_X_OFFSET: number = 10;
+
   private _customizerManager: CustomizerManager;
   private _effectFactory: EffectFactory = new EffectFactory();
 
@@ -79,7 +88,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
   private _getShape (channelIndex: number, note: Note): Shape {
     const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
     const pixelsPerBeat: number = this._customizerManager.getPixelsPerBeat();
-    const x: number = note.delay * pixelsPerBeat;
+    const x: number = note.delay * pixelsPerBeat + ShapeFactory.SHAPE_X_OFFSET;
     const y: number = this._getShapeY(note);
     const length: number = note.duration * pixelsPerBeat;
     const shape: Shape = this._shapePools[shapeType].request() as Shape;
@@ -110,7 +119,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
        * pitch value from the bottom edge, higher notes will appear closer to the top
        * of the rendering area. {{NOTE_SPREAD_FACTOR}} scales the vertical note spread.
        */
-      (height - (pitch * heightRatio)) * Visualizer.NOTE_SPREAD_FACTOR
+      (height - (pitch * heightRatio)) * ShapeFactory.NOTE_SPREAD_FACTOR
       /**
        * Having used {{NOTE_SPREAD_FACTOR}} to adjust our vertical note spread, we need to
        * shift the notes partially back into view so they still "center" on the vertical
@@ -120,7 +129,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
        * result by {{height}} we determine the exact pixel amount to shift back, and
        * subtract it from the first expression.
        */
-      - ((Visualizer.NOTE_SPREAD_FACTOR - 1) / 2) * height
+      - ((ShapeFactory.NOTE_SPREAD_FACTOR - 1) / 2) * height
     );
   }
 
@@ -135,7 +144,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
         const notePlayTime: number = note.duration / this._customizerManager.getBeatsPerSecond();
 
         (effect as Glow)
-          .fadeIn(50)
+          .fadeIn(30)
           .fadeOut(1000 * notePlayTime);
       }
 

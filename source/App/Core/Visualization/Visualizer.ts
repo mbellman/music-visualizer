@@ -17,16 +17,14 @@ export default class Visualizer {
     EffectTypes.STROKE
   ];
 
-  public static readonly NOTE_SPREAD_FACTOR: number = 1.3;
-  public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
-  public static readonly TICK_CONSTANT: number = 0.01667;
-
   /**
    * The delay in milliseconds before every render/frame download
    * cycle when {{_shouldDownloadFrames}} is set to true.
    */
   public static readonly FRAME_DOWNLOAD_DELAY: number = 100;
 
+  public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
+  public static readonly TICK_CONSTANT: number = (1000 / 60) / 1000;
   private _canvas: Canvas;
   private _currentBeat: number = 0;
   private _customizerManager: CustomizerManager;

@@ -4,7 +4,7 @@ export default class Ease {
   }
 
   public static outQuad (t: number): number {
-    return 1 - Ease.inQuad(1 - t);
+    return 1 - Ease.inQuad(t);
   }
 
   public static inOutQuad (t: number): number {
