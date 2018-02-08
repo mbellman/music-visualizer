@@ -14,8 +14,6 @@ import { EffectTypes, ICustomizer, IEffectTemplate, ShapeTypes } from '@core/Vis
 import { Extension, IHashMap, Implementation } from '@base';
 
 export default class ShapeFactory implements IPoolableFactory<Shape> {
-  public static readonly NOTE_SPREAD_FACTOR: number = 1.8;
-
   /**
    * An additional X offset to apply to all Shapes on construction,
    * ensuring that Notes with 0 delay aren't rendered and potentially
@@ -107,7 +105,7 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
 
   private _getShapeY (note: Note): number {
     const { pitch } = note;
-    const { height } = this._customizerManager.getCustomizerSettings();
+    const { height, noteSpread } = this._customizerManager.getCustomizerSettings();
     const heightRatio: number = height / Note.MAX_PITCH;
 
     return (
@@ -117,19 +115,19 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
        * pitch within the range [0, MAX_PITCH], and {{heightRatio}} is a scaling factor
        * to scale the aforementioned range to [0, height]. By subtracting the scaled
        * pitch value from the bottom edge, higher notes will appear closer to the top
-       * of the rendering area. {{NOTE_SPREAD_FACTOR}} scales the vertical note spread.
+       * of the rendering area. {{noteSpread}} scales the vertical note spread.
        */
-      (height - (pitch * heightRatio)) * ShapeFactory.NOTE_SPREAD_FACTOR
+      (height - (pitch * heightRatio)) * noteSpread
       /**
-       * Having used {{NOTE_SPREAD_FACTOR}} to adjust our vertical note spread, we need to
+       * Having used {{noteSpread}} to adjust our vertical note spread, we still need to
        * shift the notes partially back into view so they still "center" on the vertical
-       * midpoint of the rendering area. {{NOTE_SPREAD_FACTOR - 1}} gives us the percentage
-       * by which the vertical rendering area has increased (e.g. [1.5 - 1] -> 0.5), and
-       * we divide this by 2 to shift back only to the halfway point. By multiplying the
+       * midpoint of the rendering area. {{noteSpread - 1}} gives us the percentage by
+       * which the vertical rendering area has increased (e.g. [1.5 - 1] -> 0.5), and we
+       * divide this by 2 to shift back only to the halfway point. By multiplying the
        * result by {{height}} we determine the exact pixel amount to shift back, and
        * subtract it from the first expression.
        */
-      - ((ShapeFactory.NOTE_SPREAD_FACTOR - 1) / 2) * height
+      - ((noteSpread - 1) / 2) * height
     );
   }
 

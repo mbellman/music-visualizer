@@ -3,7 +3,7 @@ import { IAppState, ViewMode } from '@state/Types';
 
 export const initialShapeTemplate: IShapeTemplate = {
   shapeType: ShapeTypes.BAR,
-  size: 12
+  size: 20
 };
 
 export const initialGlowTemplate: IGlowTemplate = {
@@ -33,6 +33,7 @@ export const initialCustomizerState: ICustomizer = {
   settings: {
     backgroundColor: '000',
     scrollSpeed: 100,
+    noteSpread: 1.5,
     focusDelay: 2500,
     audioDelay: 1000,
     tempo: 0,

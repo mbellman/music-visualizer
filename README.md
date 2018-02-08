@@ -10,10 +10,13 @@ To-do:
 * No progress yet
 
 **Visualizer**
+* Post-processing filters
 * Real-time tempo adjustments
 
 **UI**
-* An a note size adjustment field
+* Channel names/instrument listings
+* Channel settings up/down swapping
+* Save/load customization profiles
 
 **Code cleanup**
 * Reducer refactoring

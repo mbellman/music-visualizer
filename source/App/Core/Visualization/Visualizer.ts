@@ -21,7 +21,7 @@ export default class Visualizer {
    * The delay in milliseconds before every render/frame download
    * cycle when {{_shouldDownloadFrames}} is set to true.
    */
-  public static readonly FRAME_DOWNLOAD_DELAY: number = 100;
+  public static readonly FRAME_DOWNLOAD_DELAY: number = 150;
 
   public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
   public static readonly TICK_CONSTANT: number = (1000 / 60) / 1000;

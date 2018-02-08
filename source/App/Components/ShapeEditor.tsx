@@ -1,4 +1,5 @@
 import MultiSelectable, { ISelectedItem } from '@components/Toolkit/MultiSelectable';
+import NumberField from '@components/Toolkit/NumberField';
 import SelectableButton from '@components/Toolkit/SelectableButton';
 import { ActionCreators } from '@state/ActionCreators';
 import { Bind, Callback, Override } from '@base';
@@ -81,12 +82,21 @@ export default class ShapeEditor extends Component<IShapeEditorProps, any> {
 
   @Override
   public render (): JSX.Element {
+    const { size, onChangeShapeSize } = this.props;
+
     return (
       <div className="shape-editor">
         <label>Shape:</label>
         <MultiSelectable onChange={ this._onChangeShape }>
           { this._renderShapeButtons() }
         </MultiSelectable>
+
+        <NumberField
+          label="Size"
+          className="shape-size-field"
+          value={ size }
+          onChange={ onChangeShapeSize }
+        />
       </div>
     );
   }

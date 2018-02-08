@@ -67,6 +67,10 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
             <NumberField label="Scroll speed" />
           </CustomizerSettingField>
 
+          <CustomizerSettingField setting="noteSpread">
+            <NumberField label="Note spread" />
+          </CustomizerSettingField>
+
           <CustomizerSettingField setting="focusDelay">
             <NumberField label="Focus delay" />
           </CustomizerSettingField>
