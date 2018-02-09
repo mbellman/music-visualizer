@@ -1,7 +1,6 @@
 import Canvas, { DrawSetting } from '@core/Graphics/Canvas';
+import ChannelEventQueue, { IQueuedChannelEvent } from '@core/Visualization/ChannelEventQueue';
 import CustomizerManager from '@core/Visualization/CustomizerManager';
-import Note from '@core/MIDI/Note';
-import NoteQueue, { IQueuedNote } from '@core/Visualization/NoteQueue';
 import Prerenderer from '@core/Visualization/Prerenderer';
 import Sequence from '@core/MIDI/Sequence';
 import Shape from '@core/Visualization/Shapes/Shape';
@@ -9,6 +8,7 @@ import ShapeFactory from '@core/Visualization/ShapeFactory';
 import { Bind } from '@base';
 import { EffectTypes, ICustomizer } from '@core/Visualization/Types';
 import { setTimeout } from 'core-js/library/web/timers';
+import { MidiEventType, MetaEventType, INoteEvent, ITempoEvent } from '@core/MIDI/Types';
 
 export default class Visualizer {
   public static readonly EFFECT_TYPES: EffectTypes[] = [
@@ -26,13 +26,14 @@ export default class Visualizer {
   public static readonly PER_FRAME_DESPAWN_MAXIMUM: number = 20;
   public static readonly TICK_CONSTANT: number = (1000 / 60) / 1000;
   private _canvas: Canvas;
+  private _channelEventQueue: ChannelEventQueue;
   private _currentBeat: number = 0;
+  private _currentTempo: number;
   private _customizerManager: CustomizerManager;
   private _frame: number = 0;
   private _imageDataLink: HTMLAnchorElement = document.createElement('a');
   private _isRunning: boolean = false;
   private _lastTick: number;
-  private _noteQueue: NoteQueue;
   private _prerenderer: Prerenderer = new Prerenderer();
   private _refreshingCanvas: Canvas = new Canvas();
   private _scrollX: number = 0;
@@ -60,14 +61,28 @@ export default class Visualizer {
     return this._isRunning;
   }
 
-  public get tempo (): number {
-    const { tempo } = this._customizerManager.getCustomizerSettings();
-
-    return tempo;
-  }
-
   public get width (): number {
     return this._canvas.width;
+  }
+
+  public getBeatsPerSecond (): number {
+    return this.getTempo() / 60;
+  }
+
+  public getPixelsPerBeat (): number {
+    return this.getPixelsPerSecond() / this.getBeatsPerSecond();
+  }
+
+  public getPixelsPerSecond (): number {
+    const { scrollSpeed } = this._customizerManager.getCustomizerSettings();
+
+    return Visualizer.TICK_CONSTANT * 60 * this.getTempo() * (scrollSpeed / 100);
+  }
+
+  public getTempo (): number {
+    const { tempoFactor } = this._customizerManager.getCustomizerSettings();
+
+    return this._currentTempo * (tempoFactor / 100);
   }
 
   public pause (): void {
@@ -77,7 +92,7 @@ export default class Visualizer {
   public restart (): void {
     this.stop();
 
-    this._noteQueue = new NoteQueue(this._sequence);
+    this._channelEventQueue = new ChannelEventQueue(this._sequence);
 
     this.run();
   }
@@ -111,18 +126,16 @@ export default class Visualizer {
     this._currentBeat = 0;
     this._frame = 0;
     this._isRunning = false;
-    this._noteQueue = null;
+    this._channelEventQueue = null;
     this._scrollX = 0;
     this._shapes.length = 0;
   }
 
   public visualize (sequence: Sequence, customizer: ICustomizer): void {
-    const { tempo } = customizer.settings;
-
     this._customizerManager = new CustomizerManager(customizer);
-    this._noteQueue = new NoteQueue(sequence);
+    this._channelEventQueue = new ChannelEventQueue(sequence);
     this._sequence = sequence;
-    this._shapeFactory = new ShapeFactory(this._customizerManager);
+    this._shapeFactory = new ShapeFactory(this, this._customizerManager);
 
     this.run();
   }
@@ -193,15 +206,25 @@ export default class Visualizer {
     shape.render(this._refreshingCanvas);
   }
 
-  private _runShapeSpawnCheck (): void {
-    let queuedNote: IQueuedNote;
+  private _takeNextChannelEvents (): void {
+    let queuedChannelEvent: IQueuedChannelEvent;
 
-    while (queuedNote = this._noteQueue.takeNextBefore(this._currentBeat)) {
-      const { channelIndex, note } = queuedNote;
-      const shape: Shape = this._shapeFactory.request(channelIndex, note);
+    while (queuedChannelEvent = this._channelEventQueue.takeNextUpTo(this._currentBeat)) {
+      const { channelEvent, channelIndex } = queuedChannelEvent;
 
-      if (shape) {
-        this._shapes.push(shape);
+      switch (channelEvent.type) {
+        case MidiEventType.NOTE_ON:
+          const shape: Shape = this._shapeFactory.request(channelIndex, channelEvent as INoteEvent);
+
+          if (shape) {
+            this._shapes.push(shape);
+          }
+          break;
+        case MetaEventType.TEMPO:
+          const { tempo } = channelEvent as ITempoEvent;
+
+          this._currentTempo = tempo;
+          break;
       }
     }
   }
@@ -215,14 +238,21 @@ export default class Visualizer {
     const time: number = Date.now();
     const dt: number = this._shouldDownloadFrames ? Visualizer.TICK_CONSTANT : (time - this._lastTick) / 1000;
 
-    this._currentBeat += this._customizerManager.getBeatsPerSecond() * dt;
     this._frame++;
     this._lastTick = time;
 
-    this._updateScroll(dt);
+    if (this._currentTempo) {
+      // The first channel tempo event object has been read
+      // and set on {{_currentTempo}}, so we can safely start
+      // advancing the beat + scroll position
+      this._currentBeat += this.getBeatsPerSecond() * dt;
+
+      this._updateScroll(dt);
+    }
+
     this._updateShapes(dt);
     this._compositeScene();
-    this._runShapeSpawnCheck();
+    this._takeNextChannelEvents();
     this._despawnPrerenderedShapes();
 
     if (this._shouldDownloadFrames) {
@@ -235,7 +265,7 @@ export default class Visualizer {
   }
 
   private _updateScroll (dt: number): void {
-    this._scrollX += dt * this.tempo * this._getScrollSpeedFactor();
+    this._scrollX += dt * this.getTempo() * this._getScrollSpeedFactor();
 
     this._prerenderer.scrollTo(this._scrollX);
   }

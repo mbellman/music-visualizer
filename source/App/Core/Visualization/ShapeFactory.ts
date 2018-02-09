@@ -6,20 +6,22 @@ import Effect from '@core/Visualization/Effects/Effect';
 import EffectFactory from '@core/Visualization/EffectFactory';
 import Ellipse from '@core/Visualization/Shapes/Ellipse';
 import Glow from '@core/Visualization/Effects/Glow';
-import Note from '@core/MIDI/Note';
 import Pool, { IPoolableFactory } from '@core/Pool';
 import Shape from '@core/Visualization/Shapes/Shape';
 import Visualizer from '@core/Visualization/Visualizer';
 import { EffectTypes, ICustomizer, IEffectTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { Extension, IHashMap, Implementation } from '@base';
+import { INoteEvent } from '@core/MIDI/Types';
 
 export default class ShapeFactory implements IPoolableFactory<Shape> {
+  public static readonly MAX_NOTE_PITCH: number = 127;
+
   /**
-   * An additional X offset to apply to all Shapes on construction,
+   * An additional X offset buffer to apply to all Shapes on construction,
    * ensuring that Notes with 0 delay aren't rendered and potentially
    * clipped on the left edge of the Prerenderer Canvas.
    */
-  public static readonly SHAPE_X_OFFSET: number = 10;
+  public static readonly SHAPE_X_BUFFER: number = 10;
 
   private _customizerManager: CustomizerManager;
   private _effectFactory: EffectFactory = new EffectFactory();
@@ -41,23 +43,26 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
     [ShapeTypes.ELLIPSE]: new Pool(Ellipse, 250)
   };
 
-  public constructor (customizerManager: CustomizerManager) {
+  private _visualizer: Visualizer;
+
+  public constructor (visualizer: Visualizer, customizerManager: CustomizerManager) {
+    this._visualizer = visualizer;
     this._customizerManager = customizerManager;
 
     this._buildSelectedTemplateCache();
   }
 
   @Implementation
-  public request (channelIndex: number, note: Note): Shape {
+  public request (channelIndex: number, noteEvent: INoteEvent): Shape {
     const selectedEffectTemplates: IEffectTemplate[] = this._selectedTemplateCache[channelIndex];
 
-    if (note.duration === 0 || selectedEffectTemplates.length === 0) {
+    if (noteEvent.duration === 0 || selectedEffectTemplates.length === 0) {
       return null;
     }
 
-    const shape: Shape = this._getShape(channelIndex, note);
+    const shape: Shape = this._getShape(channelIndex, noteEvent);
 
-    this._pipeEffectsIntoShape(shape, selectedEffectTemplates, note);
+    this._pipeEffectsIntoShape(shape, selectedEffectTemplates, noteEvent);
 
     return shape;
   }
@@ -83,12 +88,13 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
     }
   }
 
-  private _getShape (channelIndex: number, note: Note): Shape {
+  private _getShape (channelIndex: number, noteEvent: INoteEvent): Shape {
     const { shapeType, size } = this._customizerManager.getShapeTemplate(channelIndex);
-    const pixelsPerBeat: number = this._customizerManager.getPixelsPerBeat();
-    const x: number = note.delay * pixelsPerBeat + ShapeFactory.SHAPE_X_OFFSET;
-    const y: number = this._getShapeY(note);
-    const length: number = note.duration * pixelsPerBeat;
+    const { delay, duration } = noteEvent;
+    const pixelsPerBeat: number = this._visualizer.getPixelsPerBeat();
+    const x: number = delay * pixelsPerBeat + ShapeFactory.SHAPE_X_BUFFER;
+    const y: number = this._getShapeY(noteEvent);
+    const length: number = duration * pixelsPerBeat;
     const shape: Shape = this._shapePools[shapeType].request() as Shape;
 
     switch (shapeType) {
@@ -103,19 +109,19 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
     }
   }
 
-  private _getShapeY (note: Note): number {
-    const { pitch } = note;
+  private _getShapeY (noteEvent: INoteEvent): number {
+    const { pitch } = noteEvent;
     const { height, noteSpread } = this._customizerManager.getCustomizerSettings();
-    const heightRatio: number = height / Note.MAX_PITCH;
+    const heightRatio: number = height / ShapeFactory.MAX_NOTE_PITCH;
 
     return (
       /**
        * {{height}} represents the bottom edge of the rendering area (since our
        * coordinate system sets the top edge at y = 0), {{pitch}} represents a note
-       * pitch within the range [0, MAX_PITCH], and {{heightRatio}} is a scaling factor
-       * to scale the aforementioned range to [0, height]. By subtracting the scaled
-       * pitch value from the bottom edge, higher notes will appear closer to the top
-       * of the rendering area. {{noteSpread}} scales the vertical note spread.
+       * pitch within the range [0, MAX_NOTE_PITCH], and {{heightRatio}} is a scaling
+       * factor to scale the aforementioned range to [0, height]. By subtracting the
+       * scaled pitch value from the bottom edge, higher notes will appear closer to
+       * the top of the rendering area. {{noteSpread}} scales the vertical note spread.
        */
       (height - (pitch * heightRatio)) * noteSpread
       /**
@@ -131,15 +137,15 @@ export default class ShapeFactory implements IPoolableFactory<Shape> {
     );
   }
 
-  private _pipeEffectsIntoShape (shape: Shape, effectTemplates: IEffectTemplate[], note: Note): void {
+  private _pipeEffectsIntoShape (shape: Shape, effectTemplates: IEffectTemplate[], noteEvent: INoteEvent): void {
     for (const effectTemplate of effectTemplates) {
       const effect: Effect = this._effectFactory.request(effectTemplate);
       const { effectType, isDelayed } = effectTemplate;
 
       if (effectType === EffectTypes.GLOW) {
-        // The Glow effect uniquely depends on the duration
-        // of provided Note to determine its fade-out time
-        const notePlayTime: number = note.duration / this._customizerManager.getBeatsPerSecond();
+        // The Glow effect uniquely depends on the duration of
+        // the provided note event to determine its fade-out time
+        const notePlayTime: number = noteEvent.duration / this._visualizer.getBeatsPerSecond();
 
         (effect as Glow)
           .fadeIn(30)

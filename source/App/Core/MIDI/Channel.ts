@@ -1,33 +1,33 @@
-import Note from '@core/MIDI/Note';
+import { IChannelEvent, INoteEvent } from '@core/MIDI/Types';
 
 export default class Channel {
-  public readonly id: number | string;
-  private _notes: Note[] = [];
+  public id: number | string;
+  private _channelEvents: IChannelEvent[] = [];
 
   public constructor (id?: number | string) {
     this.id = id;
   }
 
   public get size (): number {
-    return this._notes.length;
+    return this._channelEvents.length;
   }
 
-  public addNote (note: Note): void {
-    this._notes.push(note);
+  public addEvent <T extends IChannelEvent>(channelEvent: T): void {
+    this._channelEvents.push(channelEvent);
   }
 
-  public getLastNoteAtPitch (pitch: number): Note {
-    for (let i = this._notes.length - 1; i >= 0; i--) {
-      const note: Note = this._notes[i];
+  public getLastNoteAtPitch (pitch: number): INoteEvent {
+    for (let i = this._channelEvents.length - 1; i >= 0; i--) {
+      const noteEvent: INoteEvent = this._channelEvents[i] as INoteEvent;
 
-      if (note.pitch === pitch) {
-        return note;
+      if (noteEvent.pitch === pitch) {
+        return noteEvent;
       }
     }
   }
 
-  public * notes (): IterableIterator<Note> {
-    for (const note of this._notes) {
+  public * events (): IterableIterator<IChannelEvent> {
+    for (const note of this._channelEvents) {
       yield note;
     }
   }

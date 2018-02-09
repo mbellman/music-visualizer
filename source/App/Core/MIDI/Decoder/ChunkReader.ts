@@ -4,8 +4,8 @@ import { IChunk } from '@core/MIDI/Types';
 export default class ChunkReader {
   private _stream: Stream;
 
-  public constructor (data: string) {
-    this._stream = new Stream(data);
+  public constructor (midiFileData: string) {
+    this._stream = new Stream(midiFileData);
   }
 
   public * chunks (): IterableIterator<IChunk> {

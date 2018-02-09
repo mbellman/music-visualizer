@@ -1,3 +1,4 @@
+import Sequence from '@core/MIDI/Sequence';
 import { EffectTypes, ICustomizer, IFillTemplate, IGlowTemplate, IShapeTemplate, IStrokeTemplate, ShapeTypes } from '@core/Visualization/Types';
 import { IAppState, ViewMode } from '@state/Types';
 
@@ -33,10 +34,10 @@ export const initialCustomizerState: ICustomizer = {
   settings: {
     backgroundColor: '000',
     scrollSpeed: 100,
+    tempoFactor: 100,
     noteSpread: 1.5,
     focusDelay: 2500,
     audioDelay: 1000,
-    tempo: 0,
     width: 1280,
     height: 720
   },

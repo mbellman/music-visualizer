@@ -15,10 +15,6 @@ export default class CustomizerManager {
     this._customizer = customizer;
   }
 
-  public getBeatsPerSecond (): number {
-    return this.getTempo() / 60;
-  }
-
   public getCustomizerSettings (): ICustomizerSettings {
     return this._customizer.settings;
   }
@@ -29,22 +25,8 @@ export default class CustomizerManager {
     return this._customizer.effects[effectProp][channelIndex];
   }
 
-  public getPixelsPerBeat (): number {
-    return this.getPixelsPerSecond() / this.getBeatsPerSecond();
-  }
-
-  public getPixelsPerSecond (): number {
-    const { scrollSpeed } = this.getCustomizerSettings();
-
-    return Visualizer.TICK_CONSTANT * 60 * this.getTempo() * (scrollSpeed / 100);
-  }
-
   public getShapeTemplate (channelIndex: number): IShapeTemplate {
     return this._customizer.shapes[channelIndex];
-  }
-
-  public getTempo (): number {
-    return this._customizer.settings.tempo;
   }
 
   public getTotalChannels (): number {

@@ -40,7 +40,6 @@ function changeSequence (state: IAppState, sequence: Sequence): IAppState {
 
   state = changeSelectedPlaylistTrackProp(state, 'sequence', sequence);
   state = changeSelectedPlaylistTrackProp(state, 'customizer', customizer);
-  state = setCustomizerSettings(state, { tempo });
 
   return state;
 }

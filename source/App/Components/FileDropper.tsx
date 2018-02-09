@@ -71,7 +71,8 @@ export default class FileDropper extends Component<IFileDropperProps, any> {
   }
 
   private async _changeSequenceFromFile (file: File): Promise<void> {
-    const sequence: Sequence = await MidiLoader.fileToSequence(file);
+    const midiLoader: MidiLoader = new MidiLoader();
+    const sequence: Sequence = await midiLoader.fileToSequence(file);
 
     this.props.changeSequence(sequence);
   }

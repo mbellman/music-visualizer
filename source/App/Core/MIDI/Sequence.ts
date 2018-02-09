@@ -1,8 +1,9 @@
 import Channel from '@core/MIDI/Channel';
 
 export default class Sequence {
-  public readonly name: string;
-  public tempo: number = 130;
+  public static readonly DEFAULT_TEMPO: number = 120;
+  public name: string;
+  public tempo: number = Sequence.DEFAULT_TEMPO;
   private _channels: Channel[] = [];
 
   public constructor (name?: string) {

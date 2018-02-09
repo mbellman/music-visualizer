@@ -14,10 +14,10 @@ export default class Ball extends Shape implements IPoolable<Ball> {
   }
 
   @Override
-  public construct (x: number, y: number, radius: number): this {
+  public construct (x: number, y: number, diameter: number): this {
     super.construct(x, y);
 
-    this._radius = radius;
+    this._radius = diameter / 2;
 
     return this;
   }

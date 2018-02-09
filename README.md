@@ -11,7 +11,6 @@ To-do:
 
 **Visualizer**
 * Post-processing filters
-* Real-time tempo adjustments
 
 **UI**
 * Channel names/instrument listings
@@ -28,4 +27,3 @@ To-do:
 * - - viewMode
 * Create an AudioPlayer component for handling delay behavior/clean up PlayerControls component
 * Move Channel.getLastNoteAtPitch() logic into MidiLoader
-* MidiLoader tidying

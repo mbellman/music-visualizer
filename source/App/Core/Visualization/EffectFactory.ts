@@ -1,11 +1,8 @@
-import CustomizerManager from '@core/Visualization/CustomizerManager';
 import Effect from '@core/Visualization/Effects/Effect';
 import Fill from '@core/Visualization/Effects/Fill';
 import Glow from '@core/Visualization/Effects/Glow';
-import Note from '@core/MIDI/Note';
-import Pool, { IPoolable, IPoolableFactory } from '@core/Pool';
+import Pool, { IPoolableFactory } from '@core/Pool';
 import Stroke from '@core/Visualization/Effects/Stroke';
-import Visualizer from '@core/Visualization/Visualizer';
 import { EffectTypes, IEffectTemplate, IFillTemplate, IGlowTemplate, IStrokeTemplate } from '@core/Visualization/Types';
 import { IHashMap } from 'Base/Types';
 import { Implementation } from '@base';

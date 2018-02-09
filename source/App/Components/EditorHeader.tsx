@@ -59,12 +59,12 @@ export default class EditorHeader extends Component<IEditorHeaderProps, any> {
         </div>
 
         <div class="customizer-setting-fields">
-          <CustomizerSettingField setting="tempo">
-            <NumberField label="Tempo" />
-          </CustomizerSettingField>
-
           <CustomizerSettingField setting="scrollSpeed">
             <NumberField label="Scroll speed" />
+          </CustomizerSettingField>
+
+          <CustomizerSettingField setting="tempoFactor">
+            <NumberField label="Tempo factor" />
           </CustomizerSettingField>
 
           <CustomizerSettingField setting="noteSpread">

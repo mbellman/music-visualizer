@@ -14,8 +14,8 @@ export default class EventReader {
   private _stream: Stream;
   private _runningStatusCode: number;
 
-  public constructor (data: string) {
-    this._stream = new Stream(data);
+  public constructor (midiChunkData: string) {
+    this._stream = new Stream(midiChunkData);
   }
 
   public * events (): IterableIterator<IMidiEvent | IMetaEvent | ISysexEvent> {

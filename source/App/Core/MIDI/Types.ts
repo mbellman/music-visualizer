@@ -1,3 +1,7 @@
+/**
+ * MIDI specification/code constants
+ * ---------------------------------
+ */
 export enum ChunkType {
   HEADER = 'MThd',
   TRACK = 'MTrk'
@@ -42,6 +46,10 @@ export enum SysexEventType {
   F7 = 0xF7
 }
 
+/**
+ * Decoder data structures
+ * -----------------------
+ */
 export interface IChunk {
   type: string;
   size: number;
@@ -52,10 +60,6 @@ export interface IHeader {
   format: number;
   trackCount: number;
   ticksPerBeat: number;
-}
-
-export interface ITrack {
-  trackEvents: ITrackEvent[];
 }
 
 export interface ITrackEvent {
@@ -81,6 +85,26 @@ export interface ISysexEventData {
   data: string;
 }
 
-export interface IMetaEvent extends IMetaEventData, ITrackEvent {}
-export interface IMidiEvent extends IMidiEventData, ITrackEvent {}
-export interface ISysexEvent extends ISysexEventData, ITrackEvent {}
+export interface IMetaEvent extends ITrackEvent, IMetaEventData {}
+export interface IMidiEvent extends ITrackEvent, IMidiEventData {}
+export interface ISysexEvent extends ITrackEvent, ISysexEventData {}
+
+/**
+ * Sequence/Channel/Note data structures
+ * -------------------------------------
+ */
+export interface IChannelEvent {
+  type: MetaEventType | MidiEventType | SysexEventType;
+  delay: number;
+}
+
+export interface INoteEvent extends IChannelEvent {
+  type: MidiEventType.NOTE_ON;
+  pitch: number;
+  duration: number;
+}
+
+export interface ITempoEvent extends IChannelEvent {
+  type: MetaEventType.TEMPO;
+  tempo: number;
+}
